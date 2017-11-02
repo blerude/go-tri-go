@@ -66,7 +66,7 @@ export default TabNavigator(
             name={iconName}
             size={28}
             style={{ marginBottom: -3 }}
-            color={focused ? Colors.tabIconSelected : 'white'}
+            color={focused ? Colors.ourGrey : 'white'}
           />
         );
       },
@@ -78,10 +78,7 @@ export default TabNavigator(
     tabBarOptions: {
       inactiveTintColor: 'white',
       activeBackgroundColor: 'white',
-      inactiveBackgroundColor: Colors.tabIconSelected,
-      // style: {
-      //   fontFamily: 'kalam-bold'
-      // }
+      inactiveBackgroundColor: Colors.ourGrey,
     }
   }
 );

@@ -11,6 +11,7 @@ import {
 import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
+import Colors from '../constants/Colors';
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -29,9 +30,9 @@ export default class HomeScreen extends React.Component {
           </View>
 
           <View style={styles.getStartedContainer}>
-            <Text style={styles.getStartedText}>GO-TRI-GO</Text>
+            <Text style={styles.titleText}>GO-TRI-GO</Text>
 
-            <Text style={styles.getStartedText}>
+            <Text style={styles.subtitleText}>
               Your customizable training plan for your first triathlon.
             </Text>
           </View>
@@ -47,45 +48,12 @@ export default class HomeScreen extends React.Component {
       </View>
     );
   }
-
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
-      );
-    }
-  }
-
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.ourBlue,
   },
   developmentModeText: {
     marginBottom: 20,
@@ -103,8 +71,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   welcomeImage: {
-    width: 100,
-    height: 80,
+    width: 140,
+    height: 120,
     resizeMode: 'contain',
     marginTop: 3,
     marginLeft: -10,
@@ -124,7 +92,15 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     paddingHorizontal: 4,
   },
-  getStartedText: {
+  titleText: {
+    fontFamily: 'kalam-bold',
+    fontSize: 44,
+    color: 'rgba(96,100,109, 1)',
+    lineHeight: 56,
+    textAlign: 'center',
+  },
+  subtitleText: {
+    fontFamily: 'kalam-bold',
     fontSize: 17,
     color: 'rgba(96,100,109, 1)',
     lineHeight: 24,
@@ -151,7 +127,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   tabBarInfoText: {
-    fontSize: 17,
+    fontSize: 30,
     color: 'rgba(96,100,109, 1)',
     textAlign: 'center',
   },
