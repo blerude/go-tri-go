@@ -48,6 +48,9 @@ export default class Registration extends React.Component {
         <View style={styles.getStartedContainer}>
           <Text style={styles.titleText}>GO-TRI-GO</Text>
         </View>
+        <Text style={styles.subtitleText}>
+          Your customizable training plan for your first triathlon.
+        </Text>
         <Text style={styles.headerText}>Register</Text>
         <TextInput
           style={styles.textInput}
@@ -119,6 +122,13 @@ const styles = StyleSheet.create({
     fontSize: 44,
     color: 'rgba(96,100,109, 1)',
     lineHeight: 56,
+    textAlign: 'center',
+  },
+  subtitleText: {
+    fontFamily: 'kalam-bold',
+    fontSize: 17,
+    color: 'rgba(96,100,109, 1)',
+    lineHeight: 24,
     textAlign: 'center',
   }
 });
