@@ -1,7 +1,7 @@
 import React from 'react';
 import Registration from './Registration';
 
-import { ScrollView, StyleSheet, View, Text, Button, TouchableOpacity, TextInput } from 'react-native';
+import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput } from 'react-native';
 
 export default class Login extends React.Component {
   static navigationOptions = {
@@ -31,6 +31,15 @@ export default class Login extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <View style={styles.welcomeContainer}>
+          <Image
+            source={require('../tri.png')}
+            style={styles.welcomeImage}
+          />
+        </View>
+        <View style={styles.getStartedContainer}>
+          <Text style={styles.titleText}>GO-TRI-GO</Text>
+        </View>
         <Text style={styles.headerText}>Log In</Text>
         <TextInput
           style={styles.textInput}
@@ -89,5 +98,28 @@ const styles = StyleSheet.create({
     marginTop: 15,
     marginLeft: 5,
     color: 'grey'
+  },
+  welcomeContainer: {
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  welcomeImage: {
+    width: 140,
+    height: 120,
+    resizeMode: 'contain',
+    marginTop: 3,
+    marginLeft: -10,
+  },
+  getStartedContainer: {
+    alignItems: 'center',
+    marginHorizontal: 50,
+  },
+  titleText: {
+    fontFamily: 'kalam-bold',
+    fontSize: 44,
+    color: 'rgba(96,100,109, 1)',
+    lineHeight: 56,
+    textAlign: 'center',
   }
 });
