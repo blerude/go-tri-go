@@ -6,7 +6,10 @@ import { TabNavigator, TabBarBottom } from 'react-navigation';
 import Colors from '../constants/Colors';
 
 import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
+import WorkoutScreen from '../screens/WorkoutScreen';
+import TrainingPlanScreen from '../screens/TrainingPlanScreen';
+import JournalScreen from '../screens/JournalScreen';
+import TutorialsScreen from '../screens/TutorialsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
 export default TabNavigator(
@@ -14,8 +17,17 @@ export default TabNavigator(
     Home: {
       screen: HomeScreen,
     },
-    Links: {
-      screen: LinksScreen,
+    MyWorkout: {
+      screen: WorkoutScreen,
+    },
+    TrainingPlan: {
+      screen: TrainingPlanScreen,
+    },
+    Tutorials: {
+      screen: TutorialsScreen,
+    },
+    Journal: {
+      screen: JournalScreen,
     },
     Settings: {
       screen: SettingsScreen,
@@ -30,22 +42,31 @@ export default TabNavigator(
           case 'Home':
             iconName =
               Platform.OS === 'ios'
-                ? `ios-information-circle${focused ? '' : '-outline'}`
-                : 'md-information-circle';
+                ? `ios-home${focused ? '' : '-outline'}`
+                : 'md-home';
             break;
-          case 'Links':
-            iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-link';
+          case 'MyWorkout':
+            iconName = Platform.OS === 'ios' ? `ios-pulse${focused ? '' : '-outline'}` : 'md-pulse';
+            break;
+          case 'TrainingPlan':
+            iconName = Platform.OS === 'ios' ? `ios-trending-up${focused ? '' : '-outline'}` : 'md-trending-up';
+            break;
+          case 'Tutorials':
+            iconName = Platform.OS === 'ios' ? `ios-albums${focused ? '' : '-outline'}` : 'md-albums';
+            break;
+          case 'Journal':
+            iconName = Platform.OS === 'ios' ? `ios-create${focused ? '' : '-outline'}` : 'md-create';
             break;
           case 'Settings':
             iconName =
-              Platform.OS === 'ios' ? `ios-options${focused ? '' : '-outline'}` : 'md-options';
+              Platform.OS === 'ios' ? `ios-settings${focused ? '' : '-outline'}` : 'md-settings';
         }
         return (
           <Ionicons
             name={iconName}
             size={28}
             style={{ marginBottom: -3 }}
-            color={focused ? Colors.tabIconSelected : Colors.tabIconDefault}
+            color={focused ? Colors.tabIconSelected : 'white'}
           />
         );
       },
@@ -53,6 +74,11 @@ export default TabNavigator(
     tabBarComponent: TabBarBottom,
     tabBarPosition: 'bottom',
     animationEnabled: false,
-    swipeEnabled: false,
+    swipeEnabled: true,
+    tabBarOptions: {
+      inactiveTintColor: 'white',
+      activeBackgroundColor: 'white',
+      inactiveBackgroundColor: Colors.tabIconSelected
+    }
   }
 );
