@@ -78,7 +78,10 @@ export default TabNavigator(
     tabBarOptions: {
       inactiveTintColor: 'white',
       activeBackgroundColor: 'white',
-      inactiveBackgroundColor: Colors.tabIconSelected
+      inactiveBackgroundColor: Colors.tabIconSelected,
+      // style: {
+      //   fontFamily: 'kalam-bold'
+      // }
     }
   }
 );
