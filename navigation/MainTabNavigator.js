@@ -11,7 +11,7 @@ import TrainingPlanScreen from '../screens/TrainingPlanScreen';
 import JournalScreen from '../screens/JournalScreen';
 import TutorialsScreen from '../screens/TutorialsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-
+ 
 export default TabNavigator(
   {
     Home: {
