@@ -1,5 +1,5 @@
 import React from 'react';
-import Login from './screens/Login';
+import Login from './Login';
 import { ScrollView, StyleSheet, View, Text, Button, TouchableOpacity, TextInput } from 'react-native';
 
 export default class Registration extends React.Component {
@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 5,
     marginRight: 5,
+    marginBottom: 10,
     width: 150,
     borderWidth: 2,
   }

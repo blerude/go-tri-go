@@ -1,4 +1,6 @@
 import React from 'react';
+import Registration from './Registration';
+
 import { ScrollView, StyleSheet, View, Text, Button, TouchableOpacity, TextInput } from 'react-native';
 
 export default class Login extends React.Component {
@@ -14,16 +16,22 @@ export default class Login extends React.Component {
      }
 
      this.loginUser = this.loginUser.bind(this);
+     this.needToRegister = this.needToRegister.bind(this);
   }
 
   loginUser(){
     console.log('wooo logging in good job');
+    this.props.navigation.navigate('MainTabNavigator');
+  }
+
+  needToRegister(){
+    this.props.navigation.navigate('Registration');
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.headerText}>Login</Text>
+        <Text style={styles.headerText}>Log In</Text>
         <TextInput
           style={styles.textInput}
           placeholder="Username"
@@ -35,8 +43,12 @@ export default class Login extends React.Component {
           onChangeText={(text) => this.setState({password: text})}
         />
         <TouchableOpacity
-          onPress={() => {this.registerNewUser()}}>
-          <Text style={styles.registerButton}>Login</Text>
+          onPress={() => {this.loginUser()}}>
+          <Text style={styles.registerButton}>Log In</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {this.needToRegister()}}>
+          <Text style={styles.smallText}>Need to register?</Text>
         </TouchableOpacity>
       </View>
     );
@@ -69,7 +81,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 5,
     marginRight: 5,
+    marginBottom: 10,
     width: 150,
     borderWidth: 2,
+  },
+  smallText: {
+    marginTop: 15,
+    marginLeft: 5,
+    color: 'grey'
   }
 });
