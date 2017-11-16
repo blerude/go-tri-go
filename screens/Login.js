@@ -3,6 +3,8 @@ import Registration from './Registration';
 
 import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput } from 'react-native';
 
+import Colors from '../constants/Colors';
+
 export default class Login extends React.Component {
   static navigationOptions = {
     title: 'Login',
@@ -31,37 +33,37 @@ export default class Login extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.welcomeContainer}>
+        <View style={styles.logoContainer}>
           <Image
             source={require('../tri.png')}
-            style={styles.welcomeImage}
+            style={styles.logo}
           />
-        </View>
-        <View style={styles.getStartedContainer}>
           <Text style={styles.titleText}>GO-TRI-GO</Text>
+          <Text style={styles.subtitleText}>
+            Your customizable training plan for your first triathlon.
+          </Text>
         </View>
-        <Text style={styles.subtitleText}>
-          Your customizable training plan for your first triathlon.
-        </Text>
-        <Text style={styles.headerText}>Log In</Text>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Username"
-          onChangeText={(text) => this.setState({username: text})}
-        />
-        <TextInput
-          style={styles.textInput}
-          placeholder="Password"
-          onChangeText={(text) => this.setState({password: text})}
-        />
-        <TouchableOpacity
-          onPress={() => {this.loginUser()}}>
-          <Text style={styles.registerButton}>Log In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {this.needToRegister()}}>
-          <Text style={styles.smallText}>Need to register?</Text>
-        </TouchableOpacity>
+        <View style={styles.loginContainer}>
+          <Text style={styles.headerText}>Log In</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Username"
+            onChangeText={(text) => this.setState({username: text})}
+          />
+          <TextInput
+            style={styles.textInput}
+            placeholder="Password"
+            onChangeText={(text) => this.setState({password: text})}
+          />
+          <TouchableOpacity
+            onPress={() => {this.loginUser()}}>
+            <Text style={styles.registerButton}>Log In</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {this.needToRegister()}}>
+            <Text style={styles.smallText}>Need to register?</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -70,46 +72,18 @@ export default class Login extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 15,
-    backgroundColor: '#fff',
-  },
-  headerText: {
-    fontSize: 36,
-    textAlign: 'center',
-    margin: 10,
-  },
-  textInput: {
-    height: 40,
-    borderWidth: 2,
-    marginBottom: 5,
-    marginLeft: 5,
-    marginRight: 5
-  },
-  registerButton: {
-    alignSelf: 'center',
-    textAlign: 'center',
     paddingTop: 10,
-    paddingBottom: 10,
-    marginTop: 10,
-    marginLeft: 5,
-    marginRight: 5,
-    marginBottom: 10,
-    width: 150,
-    borderWidth: 2,
+    // backgroundColor: '#fff',
+    backgroundColor: Colors.ourBlue,
   },
-  smallText: {
-    marginTop: 15,
-    marginLeft: 5,
-    color: 'grey'
-  },
-  welcomeContainer: {
+  logoContainer: {
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 0,
     marginBottom: 20,
   },
-  welcomeImage: {
+  logo: {
     width: 140,
-    height: 120,
+    height: 100,
     resizeMode: 'contain',
     marginTop: 3,
     marginLeft: -10,
@@ -120,16 +94,58 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontFamily: 'kalam-bold',
-    fontSize: 44,
+    fontSize: 32,
     color: 'rgba(96,100,109, 1)',
-    lineHeight: 56,
+    lineHeight: 44,
     textAlign: 'center',
   },
   subtitleText: {
     fontFamily: 'kalam-bold',
-    fontSize: 17,
+    fontSize: 15,
     color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
+    lineHeight: 18,
     textAlign: 'center',
+  },
+  loginContainer: {
+
+  },
+  headerText: {
+    fontFamily: 'kalam-bold',
+    fontSize: 28,
+    textAlign: 'center',
+    margin: 10,
+  },
+  textInput: {
+    fontFamily: 'kalam-bold',
+    height: 25,
+    width: 300,
+    alignSelf: 'center',
+    borderWidth: 2,
+    borderRadius: 5,
+    marginBottom: 5,
+    marginLeft: 5,
+    marginRight: 5
+  },
+  registerButton: {
+    fontFamily: 'kalam-bold',
+    alignSelf: 'center',
+    textAlign: 'center',
+    paddingTop: 5,
+    paddingBottom: 5,
+    marginTop: 5,
+    marginLeft: 5,
+    marginRight: 5,
+    marginBottom: 5,
+    width: 150,
+    height: 25,
+    borderWidth: 2,
+    borderRadius: 5
+  },
+  smallText: {
+    fontFamily: 'kalam-bold',
+    marginTop: 15,
+    marginLeft: 5,
+    textAlign: 'center',
+    color: 'grey'
   }
 });

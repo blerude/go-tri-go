@@ -10,8 +10,9 @@ import WorkoutScreen from '../screens/WorkoutScreen';
 import TrainingPlanScreen from '../screens/TrainingPlanScreen';
 import JournalScreen from '../screens/JournalScreen';
 import TutorialsScreen from '../screens/TutorialsScreen';
+import TestimonialScreen from '../screens/TestimonialScreen';
 import SettingsScreen from '../screens/SettingsScreen';
- 
+
 export default TabNavigator(
   {
     Home: {
@@ -29,6 +30,9 @@ export default TabNavigator(
     Journal: {
       screen: JournalScreen,
     },
+    // Testimonials: {
+    //   screen: TestimonialScreen
+    // },
     Settings: {
       screen: SettingsScreen,
     },
@@ -57,6 +61,9 @@ export default TabNavigator(
           case 'Journal':
             iconName = Platform.OS === 'ios' ? `ios-create${focused ? '' : '-outline'}` : 'md-create';
             break;
+          // case 'Testimonial':
+          //   iconName = Platform.OS === 'ios' ? `ios-people${focused ? '' : '-outline'}` : 'md-people';
+          //   break;
           case 'Settings':
             iconName =
               Platform.OS === 'ios' ? `ios-settings${focused ? '' : '-outline'}` : 'md-settings';
