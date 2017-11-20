@@ -25,12 +25,12 @@ export default class Login extends React.Component {
 
   loginUser(){
     console.log('Wooo logging in!');
-    var props = this.props
+    var nav = this.props.navigation
     firebase.auth()
       .signInWithEmailAndPassword(this.state.email, this.state.password)
       .then(user => {
-        console.log('Signed in:', user)
-        props.navigation.navigate('MainTabNavigator');
+        console.log('Signed in: ' + user.uid)
+        nav.navigate('MainTabNavigator');
       }).catch(function(error) {
         // Handle Errors here.
         var errorCode = error.code;

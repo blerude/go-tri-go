@@ -26,6 +26,8 @@ export default class Registration extends React.Component {
 
   registerNewUser() {
     console.log('Wooo registering user!');
+    var nav = this.props.navigation
+
     var path = '';
     var pathArray = this.state.email.split('@')[0]
     pathArray.split('').forEach(letter => {
@@ -35,13 +37,11 @@ export default class Registration extends React.Component {
         path = path + '@'
       }
     })
-    console.log('path: ' + path)
 
-    var props = this.props
     firebase.auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(user => {
-        console.log('User created:', user)
+        console.log('User created: ' + user.uid)
         database.ref('users/' + path).set({
           first: this.state.first,
           last: this.state.last,
@@ -52,10 +52,10 @@ export default class Registration extends React.Component {
         })
         .then(user => {
           console.log('User saved to database!')
-          props.navigation.navigate('Login');
+          nav.navigate('Login');
         })
         .catch(err => {
-          console.log('It DID NOT work: ' + err)
+          console.log('Error saving user to database: ' + err)
         })
       })
       .catch(function(error) {
