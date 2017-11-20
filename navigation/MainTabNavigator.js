@@ -5,7 +5,6 @@ import { TabNavigator, TabBarBottom } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
-import HomeScreen from '../screens/HomeScreen';
 import WorkoutScreen from '../screens/WorkoutScreen';
 import TrainingPlanScreen from '../screens/TrainingPlanScreen';
 import JournalScreen from '../screens/JournalScreen';
@@ -15,9 +14,6 @@ import SettingsScreen from '../screens/SettingsScreen';
 
 export default TabNavigator(
   {
-    Home: {
-      screen: HomeScreen,
-    },
     MyWorkout: {
       screen: WorkoutScreen,
     },

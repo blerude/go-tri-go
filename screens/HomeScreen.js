@@ -1,4 +1,8 @@
 import React from 'react';
+
+import Registration from './Registration';
+import Login from './Login';
+
 import {
   Image,
   Platform,
@@ -13,14 +17,47 @@ import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import Colors from '../constants/Colors';
 
+import Carousel from 'react-native-snap-carousel';
+
+const images = [
+  {image: require('../test1.jpeg'), text: 'Image 1 description'},
+  {image: require('../test2.jpeg'), text: 'Image 2 description'},
+  {image: require('../test3.jpeg'), text: 'Image 3 description'}
+]
+
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
-  componentDidMount() {
-    console.log('hi testing env', process.env.REACT_NATIVE_MONGODB_URI)
+  constructor(props) {
+    super(props)
+
+     this.goToLogin = this.goToLogin.bind(this);
+     this.goToRegistration = this.goToRegistration.bind(this);
+     this._renderItem = this._renderItem.bind(this);
+
   }
+
+  goToLogin(e) {
+    this.props.navigation.navigate('Login');
+  }
+
+  goToRegistration(e) {
+    this.props.navigation.navigate('Registration');
+  }
+
+  _renderItem ({item, index}) {
+    return (
+      <View style={styles.slideContainer}>
+        <Image
+          source={item.image}
+          style={styles.slideImage}
+        />
+        <Text style={styles.slideText}>{item.text}</Text>
+      </View>
+    );
+}
 
   render() {
     return (
@@ -35,6 +72,24 @@ export default class HomeScreen extends React.Component {
 
           <View style={styles.getStartedContainer}>
             <Text style={styles.titleText}>GO-TRI-GO</Text>
+          </View>
+
+          <Carousel
+              renderItem={this._renderItem}
+              data={images}
+              sliderWidth={250}
+              itemWidth={160}
+            />
+
+          <View style={styles.LoginRegisterTextContainer}>
+            <TouchableOpacity
+              onPress={() => {this.goToLogin()}}>
+              <Text style={styles.LoginRegisterText}>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {this.goToRegistration()}}>
+              <Text style={styles.LoginRegisterText}>Register</Text>
+            </TouchableOpacity>
           </View>
 
         </ScrollView>
@@ -55,42 +110,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.ourGrey,
   },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
-  },
   contentContainer: {
-    paddingTop: 30,
+    paddingTop: 20,
+    alignItems: 'center'
   },
   welcomeContainer: {
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 5,
     marginBottom: 10,
   },
   welcomeImage: {
     width: 140,
     height: 120,
     resizeMode: 'contain',
-    marginTop: 3,
+    marginTop: 0,
     marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
   },
   titleText: {
     fontFamily: 'kalam-bold',
@@ -106,43 +140,33 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textAlign: 'center',
   },
-  tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
+  LoginRegisterTextContainer: {
+    marginTop: 50,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 280
   },
-  tabBarInfoText: {
+  LoginRegisterText: {
     fontSize: 30,
-    color: 'rgba(96,100,109, 1)',
+    color: Colors.ourGreen,
     textAlign: 'center',
+    flex: 1,
+    alignItems: 'center'
   },
-  navigationFilename: {
-    marginTop: 5,
+  slideContainer: {
+    marginTop: 20,
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
+  slideImage: {
+    height: 284.44,
+    width: 160
   },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
-  },
+  slideText: {
+    textAlign: 'center',
+    fontSize: 20,
+    color: Colors.ourOrange,
+    marginTop: 14
+  }
 });

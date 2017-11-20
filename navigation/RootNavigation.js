@@ -3,6 +3,7 @@ import React from 'react';
 import { StackNavigator } from 'react-navigation';
 import Login from '../screens/Login';
 import Registration from '../screens/Registration';
+import HomeScreen from '../screens/HomeScreen';
 
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
@@ -10,7 +11,10 @@ import registerForPushNotificationsAsync from '../api/registerForPushNotificatio
 const RootStackNavigator = StackNavigator(
   {
     Main: {
-      screen: Login,
+      screen: HomeScreen,
+    },
+    Login: {
+      screen: Login
     },
     Registration: {
       screen: Registration
