@@ -30,9 +30,9 @@ export default TabNavigator(
     Journal: {
       screen: JournalScreen,
     },
-    // Testimonials: {
-    //   screen: TestimonialScreen
-    // },
+    Testimonials: {
+      screen: TestimonialScreen
+    },
     Settings: {
       screen: SettingsScreen,
     },
@@ -61,9 +61,9 @@ export default TabNavigator(
           case 'Journal':
             iconName = Platform.OS === 'ios' ? `ios-create${focused ? '' : '-outline'}` : 'md-create';
             break;
-          // case 'Testimonial':
-          //   iconName = Platform.OS === 'ios' ? `ios-people${focused ? '' : '-outline'}` : 'md-people';
-          //   break;
+          case 'Testimonial':
+            iconName = Platform.OS === 'ios' ? `ios-people${focused ? '' : '-outline'}` : 'md-people';
+            break;
           case 'Settings':
             iconName =
               Platform.OS === 'ios' ? `ios-settings${focused ? '' : '-outline'}` : 'md-settings';

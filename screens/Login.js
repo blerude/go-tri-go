@@ -4,6 +4,8 @@ import Registration from './Registration';
 import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput } from 'react-native';
 
 import Colors from '../constants/Colors';
+// import firebase from '../firebase';
+// var database = firebase.database();
 
 export default class Login extends React.Component {
   static navigationOptions = {
@@ -51,6 +53,7 @@ export default class Login extends React.Component {
             onChangeText={(text) => this.setState({username: text})}
           />
           <TextInput
+            secureTextEntry={true}
             style={styles.textInput}
             placeholder="Password"
             onChangeText={(text) => this.setState({password: text})}
