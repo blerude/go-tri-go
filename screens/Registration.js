@@ -2,6 +2,9 @@ import React from 'react';
 import Login from './Login';
 import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput } from 'react-native';
 import Colors from '../constants/Colors';
+// import firebase from '../firebase';
+// var database = firebase.database();
+var userId = 1;
 
 export default class Registration extends React.Component {
   static navigationOptions = {
@@ -12,28 +15,22 @@ export default class Registration extends React.Component {
     super(props)
     this.state = {
       username: '',
+      email: '',
       password: '',
      }
 
      this.registerNewUser = this.registerNewUser.bind(this);
   }
 
-  registerNewUser(){
+  registerNewUser(e) {
+    e.preventDefault();
     console.log('wooo registering good job');
-    // axios({
-    //   method: 'post',
-    //   url: '/registerUser',
-    //   data: {
-    //     username: this.state.username,
-    //     password: this.state.password
-    //   }
-    // })
-    // .then((resp) => {
-    //   console.log('new user data sent');
-    // })
-    // .catch(err => {
-    //     console.log('error sending new user data');
-    // })
+    database.ref('users/' + userId).set({
+      username: this.state.username,
+      email: this.state.email,
+      password: this.state.password
+    });
+    userId++;
     this.props.navigation.navigate('Login');
   }
 
@@ -56,11 +53,20 @@ export default class Registration extends React.Component {
             style={styles.textInput}
             placeholder="Username"
             onChangeText={(text) => this.setState({username: text})}
+            required
           />
           <TextInput
             style={styles.textInput}
+            placeholder="Email"
+            onChangeText={(text) => this.setState({email: text})}
+            required
+          />
+          <TextInput
+            secureTextEntry={true}
+            style={styles.textInput}
             placeholder="Password"
             onChangeText={(text) => this.setState({password: text})}
+            required
           />
           <TouchableOpacity
             onPress={() => {this.registerNewUser()}}>
