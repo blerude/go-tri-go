@@ -18,6 +18,10 @@ export default class HomeScreen extends React.Component {
     header: null,
   };
 
+  componentDidMount() {
+    console.log('hi testing env', process.env.REACT_NATIVE_MONGODB_URI)
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -31,10 +35,6 @@ export default class HomeScreen extends React.Component {
 
           <View style={styles.getStartedContainer}>
             <Text style={styles.titleText}>GO-TRI-GO</Text>
-
-            <Text style={styles.subtitleText}>
-              Your customizable training plan for your first triathlon.
-            </Text>
           </View>
 
         </ScrollView>
@@ -53,7 +53,7 @@ export default class HomeScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.ourBlue,
+    backgroundColor: Colors.ourGrey,
   },
   developmentModeText: {
     marginBottom: 20,
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   welcomeContainer: {
     alignItems: 'center',
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   welcomeImage: {
     width: 140,
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontFamily: 'kalam-bold',
     fontSize: 44,
-    color: 'rgba(96,100,109, 1)',
+    color: Colors.ourBlue,
     lineHeight: 56,
     textAlign: 'center',
   },
