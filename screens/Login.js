@@ -4,8 +4,8 @@ import Registration from './Registration';
 import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput } from 'react-native';
 
 import Colors from '../constants/Colors';
-// import firebase from '../firebase';
-// var database = firebase.database();
+import firebase from '../firebase';
+var database = firebase.database();
 
 export default class Login extends React.Component {
   static navigationOptions = {
@@ -15,7 +15,7 @@ export default class Login extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      username: '',
+      email: '',
       password: '',
      }
 
@@ -24,8 +24,19 @@ export default class Login extends React.Component {
   }
 
   loginUser(){
-    console.log('wooo logging in good job');
-    this.props.navigation.navigate('MainTabNavigator');
+    console.log('Wooo logging in!');
+    var props = this.props
+    firebase.auth()
+      .signInWithEmailAndPassword(this.state.email, this.state.password)
+      .then(user => {
+        console.log('Signed in:', user)
+        props.navigation.navigate('MainTabNavigator');
+      }).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log('Error signing in: ' + errorMessage)
+      });
   }
 
   needToRegister(){
@@ -49,8 +60,8 @@ export default class Login extends React.Component {
           <Text style={styles.headerText}>Log In</Text>
           <TextInput
             style={styles.textInput}
-            placeholder="Username"
-            onChangeText={(text) => this.setState({username: text})}
+            placeholder="Email"
+            onChangeText={(text) => this.setState({email: text})}
           />
           <TextInput
             secureTextEntry={true}

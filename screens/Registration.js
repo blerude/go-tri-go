@@ -2,9 +2,8 @@ import React from 'react';
 import Login from './Login';
 import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput } from 'react-native';
 import Colors from '../constants/Colors';
-// import firebase from '../firebase';
-// var database = firebase.database();
-var userId = 1;
+import firebase from '../firebase';
+var database = firebase.database();
 
 export default class Registration extends React.Component {
   static navigationOptions = {
@@ -14,7 +13,10 @@ export default class Registration extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      username: '',
+      first: '',
+      last: '',
+      city: '',
+      state: '',
       email: '',
       password: '',
      }
@@ -22,16 +24,46 @@ export default class Registration extends React.Component {
      this.registerNewUser = this.registerNewUser.bind(this);
   }
 
-  registerNewUser(e) {
-    e.preventDefault();
-    console.log('wooo registering good job');
-    database.ref('users/' + userId).set({
-      username: this.state.username,
-      email: this.state.email,
-      password: this.state.password
-    });
-    userId++;
-    this.props.navigation.navigate('Login');
+  registerNewUser() {
+    console.log('Wooo registering user!');
+    var path = '';
+    var pathArray = this.state.email.split('@')[0]
+    pathArray.split('').forEach(letter => {
+      if (letter != '.') {
+        path = path + letter
+      } else {
+        path = path + '@'
+      }
+    })
+    console.log('path: ' + path)
+
+    var props = this.props
+    firebase.auth()
+      .createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then(user => {
+        console.log('User created:', user)
+        database.ref('users/' + path).set({
+          first: this.state.first,
+          last: this.state.last,
+          city: this.state.city,
+          state: this.state.state,
+          email: this.state.email,
+          password: this.state.password
+        })
+        .then(user => {
+          console.log('User saved to database!')
+          props.navigation.navigate('Login');
+        })
+        .catch(err => {
+          console.log('It DID NOT work: ' + err)
+        })
+      })
+      .catch(function(error) {
+          // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log('Error creating user: ' + errorMessage)
+      });
   }
 
   render() {
@@ -51,8 +83,26 @@ export default class Registration extends React.Component {
           <Text style={styles.headerText}>Register</Text>
           <TextInput
             style={styles.textInput}
-            placeholder="Username"
-            onChangeText={(text) => this.setState({username: text})}
+            placeholder="First Name"
+            onChangeText={(text) => this.setState({first: text})}
+            required
+          />
+          <TextInput
+            style={styles.textInput}
+            placeholder="Last Name"
+            onChangeText={(text) => this.setState({last: text})}
+            required
+          />
+          <TextInput
+            style={styles.textInput}
+            placeholder="City"
+            onChangeText={(text) => this.setState({city: text})}
+            required
+          />
+          <TextInput
+            style={styles.textInput}
+            placeholder="State"
+            onChangeText={(text) => this.setState({state: text})}
             required
           />
           <TextInput
