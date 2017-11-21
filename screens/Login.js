@@ -31,17 +31,32 @@ export default class Login extends React.Component {
   loginUser() {
     console.log('Wooo logging in!');
     var nav = this.props.navigation
-    firebase.auth()
-      .signInWithEmailAndPassword(this.state.email, this.state.password)
-      .then(user => {
-        console.log('Signed in: ' + user.uid)
-        nav.navigate('MainTabNavigator');
-      }).catch(function(error) {
+    var email = this.state.email
+    var password = this.state.password
+
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(result => {
+        // New sign-in will be persisted with local persistence.
+        return firebase.auth()
+          .signInWithEmailAndPassword(email, password)
+          .then(user => {
+            console.log('Signed in: ' + user.uid)
+            nav.navigate('MainTabNavigator');
+          }).catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log('Error signing in: ' + errorMessage)
+          });
+      })
+      .catch(function(error) {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
-        console.log('Error signing in: ' + errorMessage)
+        console.log('Error setting up local persistence: ' + errorMessage)
       });
+
+
   }
 
   forgotPassword() {
@@ -51,6 +66,7 @@ export default class Login extends React.Component {
       console.log('Password reset email sent.')
     }).catch(function(error) {
       console.log('Error sending password reset email: ' + error.message)
+      alert('Please enter a valid email address through which can reset your password.')
     });
   }
 
