@@ -159,18 +159,6 @@ const styles = StyleSheet.create({
     marginTop: 14,
     backgroundColor: 'transparent'
   },
-  triangle: {
-    width: 0,
-    height: 0,
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderRightWidth: screenWidth+50,
-    borderTopWidth: screenHeight+80,
-    borderRightColor: '#5e5d5e',
-    borderTopColor: 'transparent',
-    position: 'absolute',
-    zIndex: -2
-  },
   borderTop: {
     flex: 1,
     height: screenHeight-50,
@@ -188,27 +176,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: -1
   },
-  borderSide: {
-    flex: 1,
-    height: screenHeight-50,
-    width: screenWidth-30,
-    marginTop: 30,
-    marginBottom: 20,
-    marginLeft: 15,
-    marginRight: 15,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderRightColor: 'white',
-    borderLeftColor: 'white',
-    borderWidth: 1,
-    borderRadius: 15,
-    position: 'absolute',
-    zIndex: -1
-  },
   strip: {
     flex: 1,
     height: 375,
-    width: 800,
+    width: 450,
     backgroundColor: '#5e5d5e',
     position: 'absolute',
     zIndex: -1,
@@ -217,7 +188,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 180,
     borderWidth: 1,
-    borderColor: 'white',
+    borderTopColor: 'white',
+    borderBottomColor: 'white',
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
     transform: [
       {rotate: '-10deg'}
     ]

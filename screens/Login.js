@@ -5,7 +5,12 @@ import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableO
 
 import Colors from '../constants/Colors';
 import firebase from '../firebase';
+import { Dimensions } from 'react-native';
+
 var database = firebase.database();
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
 export default class Login extends React.Component {
   static navigationOptions = {
@@ -56,16 +61,21 @@ export default class Login extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.logoContainer}>
+        <View style={styles.borderTop} >
+        </View>
+        <View style={styles.strip} >
+        </View>
+        <View>
           <Image
             source={require('../tri.png')}
             style={styles.logo}
           />
-          <Text style={styles.titleText}>GO-TRI-GO</Text>
-          <Text style={styles.subtitleText}>
-            Your customizable training plan for your first triathlon.
-          </Text>
         </View>
+        <View>
+          <Text style={styles.titleText}>GO-TRI-GO</Text>
+          <Text style={styles.sloganText}>Your customizable training plan for your first triathlon.</Text>
+        </View>
+
         <View style={styles.loginContainer}>
           <Text style={styles.headerText}>Log In</Text>
           <TextInput
@@ -100,59 +110,54 @@ export default class Login extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 10,
-    // backgroundColor: '#fff',
-    backgroundColor: Colors.ourBlue,
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginTop: 0,
-    marginBottom: 20,
+    backgroundColor: Colors.ourGrey,
+    alignItems: 'center'
   },
   logo: {
     width: 140,
-    height: 100,
+    height: 52,
     resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
+    marginTop: 40,
+    marginBottom: 5
   },
   titleText: {
     fontFamily: 'kalam-bold',
-    fontSize: 32,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 44,
+    fontSize: 44,
+    color: Colors.ourBlue,
     textAlign: 'center',
+    backgroundColor: 'transparent'
   },
-  subtitleText: {
+  sloganText: {
     fontFamily: 'kalam-bold',
     fontSize: 15,
-    color: 'rgba(96,100,109, 1)',
+    color: Colors.ourBlue,
     lineHeight: 18,
     textAlign: 'center',
+    backgroundColor: 'transparent'
   },
   loginContainer: {
-
+    marginTop: 50
   },
   headerText: {
     fontFamily: 'kalam-bold',
     fontSize: 28,
     textAlign: 'center',
     margin: 10,
+    backgroundColor: 'transparent',
+    color: 'white'
   },
   textInput: {
     fontFamily: 'kalam-bold',
-    height: 25,
+    height: 35,
     width: 300,
     alignSelf: 'center',
     borderWidth: 2,
     borderRadius: 5,
     marginBottom: 5,
     marginLeft: 5,
-    marginRight: 5
+    marginRight: 5,
+    borderColor: 'white',
+    color: 'white'
   },
   registerButton: {
     fontFamily: 'kalam-bold',
@@ -165,15 +170,56 @@ const styles = StyleSheet.create({
     marginRight: 5,
     marginBottom: 5,
     width: 150,
-    height: 25,
+    height: 30,
     borderWidth: 2,
-    borderRadius: 5
+    borderRadius: 5,
+    backgroundColor: 'transparent',
+    color: 'white',
+    borderColor: 'white'
   },
   smallText: {
-    fontFamily: 'kalam-bold',
-    marginTop: 15,
+    marginTop: 10,
     marginLeft: 5,
     textAlign: 'center',
-    color: 'grey'
+    backgroundColor: 'transparent',
+    color: 'white',
+    fontStyle: 'italic',
+  },
+  borderTop: {
+    flex: 1,
+    height: screenHeight-120,
+    width: screenWidth-30,
+    marginTop: 30,
+    marginBottom: 20,
+    marginLeft: 15,
+    marginRight: 15,
+    borderTopColor: Colors.ourBlue,
+    borderBottomColor: Colors.ourBlue,
+    borderRightColor: 'transparent',
+    borderLeftColor: 'transparent',
+    borderWidth: 1,
+    borderRadius: 15,
+    position: 'absolute',
+    zIndex: -1
+  },
+  strip: {
+    flex: 1,
+    height: 260,
+    width: 450,
+    backgroundColor: Colors.ourBlue,
+    position: 'absolute',
+    zIndex: -1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 235,
+    borderWidth: 1,
+    borderTopColor: 'white',
+    borderBottomColor: 'white',
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    transform: [
+      {rotate: '-10deg'}
+    ]
   }
 });
