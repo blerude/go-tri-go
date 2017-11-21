@@ -4,6 +4,7 @@ import { StackNavigator } from 'react-navigation';
 import Login from '../screens/Login';
 import Registration from '../screens/Registration';
 import HomeScreen from '../screens/HomeScreen';
+import SettingsScreen from '../screens/SettingsScreen'
 
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';

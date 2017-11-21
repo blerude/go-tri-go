@@ -1,12 +1,10 @@
 import React from 'react';
 import Registration from './Registration';
 
-import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Dimensions, ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 import Colors from '../constants/Colors';
 import firebase from '../firebase';
-import { Dimensions } from 'react-native';
-
 var database = firebase.database();
 
 const screenWidth = Dimensions.get('window').width;
@@ -47,6 +45,7 @@ export default class Login extends React.Component {
             var errorCode = error.code;
             var errorMessage = error.message;
             console.log('Error signing in: ' + errorMessage)
+            alert('Error signing in: ' + errorMessage)
           });
       })
       .catch(function(error) {

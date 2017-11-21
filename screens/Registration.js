@@ -1,10 +1,11 @@
 import React from 'react';
 import Login from './Login';
-import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+
+import { Dimensions, ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+
 import Colors from '../constants/Colors';
 import firebase from '../firebase';
 var database = firebase.database();
-import { Dimensions } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -32,21 +33,21 @@ export default class Registration extends React.Component {
     console.log('Wooo registering user!');
     var nav = this.props.navigation
 
-    var path = '';
-    var pathArray = this.state.email.split('@')[0]
-    pathArray.split('').forEach(letter => {
-      if (letter != '.') {
-        path = path + letter
-      } else {
-        path = path + '@'
-      }
-    })
+    // var path = '';
+    // var pathArray = this.state.email.split('@')[0]
+    // pathArray.split('').forEach(letter => {
+    //   if (letter != '.') {
+    //     path = path + letter
+    //   } else {
+    //     path = path + '@'
+    //   }
+    // })
 
     firebase.auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(user => {
         console.log('User created: ' + user.uid)
-        database.ref('users/' + path).set({
+        database.ref('users/' + user.uid).set({
           first: this.state.first,
           last: this.state.last,
           city: this.state.city,

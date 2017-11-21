@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 375,
     width: 450,
-    backgroundColor: '#5e5d5e',
+    backgroundColor: Colors.ourBackgroundGrey,
     position: 'absolute',
     zIndex: -1,
     flexDirection: 'column',
