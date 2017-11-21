@@ -11,6 +11,10 @@ import {
 import { ExpoLinksView } from '@expo/samples';
 
 import Colors from '../constants/Colors';
+import { Dimensions } from 'react-native';
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
 
 export default class LinksScreen extends React.Component {
@@ -20,15 +24,20 @@ export default class LinksScreen extends React.Component {
 
   render() {
     return (
-      <ScrollView style={styles.container}>
-        <View style={styles.welcomeContainer}>
+      <ScrollView style={styles.scrollViewContainer}>
+        <View style={styles.container}>
+        <View style={styles.strip} >
+        </View>
+        <View>
           <Image
             source={require('../tri.png')}
-            style={styles.welcomeImage}
+            style={styles.logo}
           />
         </View>
-        <View style={styles.getStartedContainer}>
+        <View>
           <Text style={styles.titleText}>GO-TRI-GO</Text>
+        </View>
+
         </View>
       </ScrollView>
     );
@@ -38,30 +47,22 @@ export default class LinksScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 15,
-    backgroundColor: Colors.ourOrange,
+    backgroundColor: Colors.ourGrey,
+    paddingTop: 10,
+    alignItems: 'center'
   },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
+  logo: {
     width: 140,
-    height: 120,
+    height: 52,
     resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
+    marginTop: 40,
+    marginBottom: 5
   },
   titleText: {
     fontFamily: 'kalam-bold',
     fontSize: 44,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 56,
+    color: Colors.ourBlue,
     textAlign: 'center',
-  }
+    backgroundColor: 'transparent'
+  },
 });

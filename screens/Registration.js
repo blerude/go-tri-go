@@ -1,6 +1,6 @@
 import React from 'react';
 import Login from './Login';
-import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput } from 'react-native';
+import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import Colors from '../constants/Colors';
 import firebase from '../firebase';
 var database = firebase.database();
@@ -76,6 +76,7 @@ export default class Registration extends React.Component {
 
   render() {
     return (
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <View style={styles.borderTop} >
         </View>
@@ -142,6 +143,7 @@ export default class Registration extends React.Component {
           </TouchableOpacity>
         </View>
       </View>
+      </TouchableWithoutFeedback>
     );
   }
 }
