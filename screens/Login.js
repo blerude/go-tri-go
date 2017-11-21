@@ -23,7 +23,7 @@ export default class Login extends React.Component {
      this.needToRegister = this.needToRegister.bind(this);
   }
 
-  loginUser(){
+  loginUser() {
     console.log('Wooo logging in!');
     var nav = this.props.navigation
     firebase.auth()
@@ -39,7 +39,17 @@ export default class Login extends React.Component {
       });
   }
 
-  needToRegister(){
+  forgotPassword() {
+    var auth = firebase.auth();
+    var emailAddress = this.state.email;
+    auth.sendPasswordResetEmail(emailAddress).then(function() {
+      console.log('Password reset email sent.')
+    }).catch(function(error) {
+      console.log('Error sending password reset email: ' + error.message)
+    });
+  }
+
+  needToRegister() {
     this.props.navigation.navigate('Registration');
   }
 
@@ -72,6 +82,10 @@ export default class Login extends React.Component {
           <TouchableOpacity
             onPress={() => {this.loginUser()}}>
             <Text style={styles.registerButton}>Log In</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {this.forgotPassword()}}>
+            <Text style={styles.smallText}>Forgot password?</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {this.needToRegister()}}>

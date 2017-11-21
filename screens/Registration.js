@@ -47,12 +47,16 @@ export default class Registration extends React.Component {
           last: this.state.last,
           city: this.state.city,
           state: this.state.state,
-          email: this.state.email,
-          password: this.state.password
+          email: this.state.email
         })
         .then(user => {
           console.log('User saved to database!')
-          nav.navigate('Login');
+          var user = firebase.auth().currentUser;
+          user.sendEmailVerification().then(function() {
+            nav.navigate('Login');
+          }).catch(function(error) {
+            console.log('Error sending validation email: ' + error.message)
+          });
         })
         .catch(err => {
           console.log('Error saving user to database: ' + err)

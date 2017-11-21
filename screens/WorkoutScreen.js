@@ -11,12 +11,34 @@ import {
 import { ExpoLinksView } from '@expo/samples';
 
 import Colors from '../constants/Colors';
-
+import firebase from '../firebase';
+var database = firebase.database();
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
     title: 'MyWorkout',
   };
+
+  findPath() {
+    var user = firebase.auth().currentUser;
+
+    var path = '';
+    var pathArray = user.email.split('@')[0]
+    pathArray.split('').forEach(letter => {
+      if (letter != '.') {
+        path = path + letter
+      } else {
+        path = path + '@'
+      }
+    })
+    console.log('path: ' + path)
+    return path
+  }
+
+  componentDidMount() {
+    var user = firebase.auth().currentUser;
+    var path = this.findPath();
+  }
 
   render() {
     return (
