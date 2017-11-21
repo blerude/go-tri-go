@@ -71,6 +71,7 @@ export default class Registration extends React.Component {
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log('Error creating user: ' + errorMessage)
+        alert(errorMessage)
       });
   }
 
@@ -119,7 +120,7 @@ export default class Registration extends React.Component {
             />
             <TextInput
               style={styles.textInputDuo}
-              placeholder="State"
+              placeholder="State/Country"
               onChangeText={(text) => this.setState({state: text})}
               required
             />

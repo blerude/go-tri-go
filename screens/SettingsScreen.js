@@ -2,6 +2,8 @@ import React from 'react';
 import { ExpoConfigView } from '@expo/samples';
 
 import Colors from '../constants/Colors';
+import firebase from '../firebase';
+import { Dimensions } from 'react-native';
 
 export default class SettingsScreen extends React.Component {
   static navigationOptions = {
@@ -55,6 +57,7 @@ export default class SettingsScreen extends React.Component {
         })
       }).catch(function(error) {
         console.log('Error sending new email verification: ' + error.message)
+        alert('Please enter a valid email address through which can reset your password.')
       });
     }).catch(function(error) {
       console.log('Error updating email: ' + error.message)
@@ -69,6 +72,11 @@ export default class SettingsScreen extends React.Component {
     }).catch(function(error) {
       console.log('Error sending password reset email: ' + error.message)
     });
+  }
+
+  signOut() {
+    var auth = firebase.auth();
+    auth.getInstance().signOut()
   }
 
   render() {
