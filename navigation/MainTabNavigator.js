@@ -9,11 +9,14 @@ import WorkoutScreen from '../screens/WorkoutScreen';
 import TrainingPlanScreen from '../screens/TrainingPlanScreen';
 import JournalScreen from '../screens/JournalScreen';
 import TutorialsScreen from '../screens/TutorialsScreen';
-import TestimonialScreen from '../screens/TestimonialScreen';
+import AboutScreen from '../screens/AboutScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
 export default TabNavigator(
   {
+    About: {
+      screen: AboutScreen,
+    },
     MyWorkout: {
       screen: WorkoutScreen,
     },
@@ -26,9 +29,6 @@ export default TabNavigator(
     Journal: {
       screen: JournalScreen,
     },
-    Testimonials: {
-      screen: TestimonialScreen
-    },
     Settings: {
       screen: SettingsScreen,
     },
@@ -39,11 +39,8 @@ export default TabNavigator(
         const { routeName } = navigation.state;
         let iconName;
         switch (routeName) {
-          case 'Home':
-            iconName =
-              Platform.OS === 'ios'
-                ? `ios-home${focused ? '' : '-outline'}`
-                : 'md-home';
+          case 'About':
+            iconName = Platform.OS === 'ios' ? `ios-home${focused ? '' : '-outline'}` : 'md-home';
             break;
           case 'MyWorkout':
             iconName = Platform.OS === 'ios' ? `ios-pulse${focused ? '' : '-outline'}` : 'md-pulse';
@@ -56,9 +53,6 @@ export default TabNavigator(
             break;
           case 'Journal':
             iconName = Platform.OS === 'ios' ? `ios-create${focused ? '' : '-outline'}` : 'md-create';
-            break;
-          case 'Testimonial':
-            iconName = Platform.OS === 'ios' ? `ios-people${focused ? '' : '-outline'}` : 'md-people';
             break;
           case 'Settings':
             iconName =
