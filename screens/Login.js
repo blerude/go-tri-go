@@ -1,7 +1,7 @@
 import React from 'react';
 import Registration from './Registration';
 
-import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard, StatusBar } from 'react-native';
 
 import Colors from '../constants/Colors';
 import firebase from '../firebase';
