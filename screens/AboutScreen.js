@@ -35,7 +35,6 @@ export default class LinksScreen extends React.Component {
     super(props)
 
      this._renderItem = this._renderItem.bind(this);
-
   }
 
   _renderItem ({item, index}) {
@@ -45,7 +44,7 @@ export default class LinksScreen extends React.Component {
         <Text style={styles.slideAuthor}>{item.author}</Text>
       </View>
     );
-}
+  }
 
   render() {
     return (

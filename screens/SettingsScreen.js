@@ -3,12 +3,20 @@ import Login from './Login';
 
 import { Dimensions, ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
+import Carousel from 'react-native-snap-carousel';
+
 import Colors from '../constants/Colors';
 import firebase from '../firebase';
 var database = firebase.database();
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
+
+const testimonials = [
+  {text: 'wooo I love this app SO FRIGGIN MUCH', author: 'Bean Lerude'},
+  {text: 'Im such a good athlete now!!!!!', author: 'Ana'},
+  {text: 'this app rocks Im so fit and I can run and bike and swim so far now thank u!!', author: 'Hallo this is Moose'}
+]
 
 export default class SettingsScreen extends React.Component {
   static navigationOptions = {
@@ -91,6 +99,15 @@ export default class SettingsScreen extends React.Component {
     })
   }
 
+  _renderItem ({item, index}) {
+    return (
+      <View style={styles.slideContainer}>
+        <Text style={styles.slideText}>{item.text}</Text>
+        <Text style={styles.slideAuthor}>{item.author}</Text>
+      </View>
+    );
+  }
+
   render() {
     /* Go ahead and delete ExpoConfigView and replace it with your
      * content, we just wanted to give you a quick view of your config */
@@ -111,6 +128,16 @@ export default class SettingsScreen extends React.Component {
 
         <View style={styles.loginContainer}>
           <Text style={styles.headerText}>Account Settings</Text>
+
+          <Carousel
+              renderItem={this._renderItem}
+              data={testimonials}
+              sliderWidth={320}
+              itemWidth={215}
+              loop={true}
+              activeSlideAlignment={'center'}
+          />
+
           <Text style={styles.sloganText}>Need to change your account info?</Text>
           <TextInput
             style={styles.textInput}
@@ -252,5 +279,28 @@ const styles = StyleSheet.create({
     transform: [
       {rotate: '-10deg'}
     ]
-  }
+  },
+  slideContainer: {
+    marginTop: 10,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 215,
+  },
+  slideAuthor: {
+    textAlign: 'center',
+    fontSize: 17,
+    color: 'white',
+    fontStyle: 'italic',
+    marginTop: 10,
+    backgroundColor: 'transparent',
+    fontWeight: 'bold'
+  },
+  slideText: {
+    textAlign: 'center',
+    fontSize: 17,
+    color: 'white',
+    fontStyle: 'italic',
+    backgroundColor: 'transparent'
+  },
 });
