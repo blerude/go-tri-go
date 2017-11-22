@@ -3,7 +3,7 @@ import Login from './Login';
 
 import { Dimensions, ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
-import Carousel from 'react-native-snap-carousel';
+import Carousel, { Pagination } from 'react-native-snap-carousel';
 
 import Colors from '../constants/Colors';
 import firebase from '../firebase';
@@ -31,12 +31,34 @@ export default class SettingsScreen extends React.Component {
       city: '',
       state: '',
       email: '',
+      activeSlide: 0
      }
 
      this.findPath = this.findPath.bind(this)
      this.changeEmail = this.changeEmail.bind(this);
      this.changePassword = this.changePassword.bind(this)
      this.signOut = this.signOut.bind(this)
+     this._renderItem = this._renderItem.bind(this);
+     this._onScroll = this._onScroll.bind(this);
+  }
+
+  componentWillMount() {
+    var auth = firebase.auth();
+    var user = auth.currentUser;
+    var first = 'Eric';
+    var last = 'Lerude';
+    var city = 'SF';
+    var state = 'IL';
+    database.ref('/users/' + user.uid).once('value').then(snapshot => {
+      first = (snapshot.val() && snapshot.val().first) || 'Anonymous';
+      last = (snapshot.val() && snapshot.val().last) || 'Anonymous';
+      city = (snapshot.val() && snapshot.val().city) || 'Anonymous';
+      state = (snapshot.val() && snapshot.val().state) || 'Anonymous';
+      email = (snapshot.val() && snapshot.val().email) || 'Anonymous';
+    })
+    .then(result => {
+      this.setState({first: first, last: last, city: city, state: state, email: email})
+    })
   }
 
   findPath(email) {
@@ -102,94 +124,75 @@ export default class SettingsScreen extends React.Component {
     })
   }
 
+  _onScroll(index){
+    console.log('CURRENT INDEX: ', index)
+    this.setState({activeSlide: index})
+  }
+
+  get pagination () {
+     const activeSlide = this.state.activeSlide;
+     return (
+         <Pagination style={styles.pagination}
+           dotsLength={settings.length}
+           activeDotIndex={activeSlide}
+         />
+     );
+   }
+
   _renderItem ({item, index}) {
-    // var auth = firebase.auth();
-    // var user = auth.currentUser;
-    var first = 'Eric';
-    var last = 'Lerude';
-    var city = 'SF';
-    var state = 'IL';
-    // database.ref('/users/' + user.uid).once('value').then(snapshot => {
-    //   first = (snapshot.val() && snapshot.val().first) || 'Anonymous';
-    //   last = (snapshot.val() && snapshot.val().last) || 'Anonymous';
-    //   city = (snapshot.val() && snapshot.val().city) || 'Anonymous';
-    //   state = (snapshot.val() && snapshot.val().state) || 'Anonymous';
-    // }).then(result => {
-      // console.log('First: ' + first)
-      // console.log('Last: ' + last)
-      // console.log('City: ' + city)
-      // console.log('State: ' + state)
-      return (
-        <View style={styles.slideContainer}>
-          <Text style={styles.sloganText}>{item.header}</Text>
-          {item.screen === 'edit' ?
-          <View>
-            <TextInput
-              style={styles.textInput}
-              placeholder="New Email"
-              onChangeText={(text) => this.setState({email: text})}
-            />
-            <TouchableOpacity
-              onPress={() => {this.changeEmail()}}>
-              <Text style={styles.registerButton}>Change Email Address</Text>
-            </TouchableOpacity>
+    return (
+      <View style={styles.slideContainer}>
+        <Text style={styles.sloganText}>{item.header}</Text>
+        {item.screen === 'edit' ?
+        <View>
+          <TextInput
+            style={styles.textInput}
+            placeholder="New Email"
+            onChangeText={(text) => this.setState({email: text})}
+          />
+          <TouchableOpacity
+            onPress={() => {this.changeEmail()}}>
+            <Text style={styles.registerButton}>Change Email Address</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => {this.changePassword()}}>
-              <Text style={styles.registerButton}>Change Password</Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {this.changePassword()}}>
+            <Text style={styles.registerButton}>Change Password</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => {this.signOut()}}>
-              <Text style={styles.smallText}>Sign Out</Text>
-            </TouchableOpacity>
-          </View> :
+          <TouchableOpacity
+            onPress={() => {this.signOut()}}>
+            <Text style={styles.smallText}>Sign Out</Text>
+          </TouchableOpacity>
+        </View> :
+        <View>
           <View>
-            <View>
-              <Text style={styles.label}>First Name: </Text>
-              <Text style={styles.slideText}>{first}</Text>
-            </View>
-            <View>
-              <Text style={styles.label}>Last Name: </Text>
-              <Text style={styles.slideText}>{last}</Text>
-            </View>
-            <View>
-              <Text style={styles.label}>City: </Text>
-              <Text style={styles.slideText}>{city}</Text>
-            </View>
-            <View>
-              <Text style={styles.label}>State/Country: </Text>
-              <Text style={styles.slideText}>{state}</Text>
-            </View>
-            <View>
-              <Text style={styles.label}>Email: </Text>
-              {/* <Text style={styles.slideText}>{user.email}</Text> */}
-            </View>
+            <Text style={styles.label}>First Name: </Text>
+            <Text style={styles.slideText}>{this.state.first}</Text>
           </View>
-          }
+          <View>
+            <Text style={styles.label}>Last Name: </Text>
+            <Text style={styles.slideText}>{this.state.last}</Text>
+          </View>
+          <View>
+            <Text style={styles.label}>City: </Text>
+            <Text style={styles.slideText}>{this.state.city}</Text>
+          </View>
+          <View>
+            <Text style={styles.label}>State/Country: </Text>
+            <Text style={styles.slideText}>{this.state.state}</Text>
+          </View>
+          <View>
+            <Text style={styles.label}>Email: </Text>
+            <Text style={styles.slideText}>{this.state.email}</Text>
+          </View>
         </View>
-      );
-    // })
+        }
+      </View>
+    );
   }
 
   render() {
-    // var auth = firebase.auth();
-    // var user = auth.currentUser;
-    // var first = '';
-    // var last = '';
-    // var city = '';
-    // var state = '';
-    // database.ref('/users/' + user.uid).once('value').then(snapshot => {
-    //   first = (snapshot.val() && snapshot.val().first) || 'Anonymous';
-    //   last = (snapshot.val() && snapshot.val().last) || 'Anonymous';
-    //   city = (snapshot.val() && snapshot.val().city) || 'Anonymous';
-    //   state = (snapshot.val() && snapshot.val().state) || 'Anonymous';
-    // })
-    // .then(result => {
-    //   this.setState({first: first, last: last, city: city, state: state})
-    // })
-    /* Go ahead and delete ExpoConfigView and replace it with your
-     * content, we just wanted to give you a quick view of your config */
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -214,7 +217,9 @@ export default class SettingsScreen extends React.Component {
               itemWidth={215}
               loop={true}
               activeSlideAlignment={'center'}
+              onSnapToItem={this._onScroll}
           />
+          { this.pagination }
         </View>
       </View>
       </TouchableWithoutFeedback>
@@ -245,8 +250,8 @@ const styles = StyleSheet.create({
   sloganText: {
     fontFamily: 'kalam-bold',
     fontSize: 17,
-    color: 'white',
-    lineHeight: 18,
+    color: Colors.ourBlue,
+    marginBottom: 5,
     textAlign: 'center',
     backgroundColor: 'transparent'
   },
@@ -360,4 +365,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     backgroundColor: 'transparent'
   },
+  pagination: {
+    marginTop: 10
+  }
 });

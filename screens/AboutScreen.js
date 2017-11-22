@@ -15,7 +15,6 @@ import { Dimensions } from 'react-native';
 
 import Carousel, { Pagination }  from 'react-native-snap-carousel';
 
-
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
