@@ -12,10 +12,9 @@ var database = firebase.database();
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const testimonials = [
-  {text: 'wooo I love this app SO FRIGGIN MUCH', author: 'Bean Lerude'},
-  {text: 'Im such a good athlete now!!!!!', author: 'Ana'},
-  {text: 'this app rocks Im so fit and I can run and bike and swim so far now thank u!!', author: 'Hallo this is Moose'}
+const settings = [
+  {header: 'Your current account information:', screen: 'info'},
+  {header: 'Need to change your account info?', screen: 'edit'},
 ]
 
 export default class SettingsScreen extends React.Component {
@@ -27,6 +26,10 @@ export default class SettingsScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      first: '',
+      last: '',
+      city: '',
+      state: '',
       email: '',
      }
 
@@ -100,15 +103,91 @@ export default class SettingsScreen extends React.Component {
   }
 
   _renderItem ({item, index}) {
-    return (
-      <View style={styles.slideContainer}>
-        <Text style={styles.slideText}>{item.text}</Text>
-        <Text style={styles.slideAuthor}>{item.author}</Text>
-      </View>
-    );
+    // var auth = firebase.auth();
+    // var user = auth.currentUser;
+    var first = 'Eric';
+    var last = 'Lerude';
+    var city = 'SF';
+    var state = 'IL';
+    // database.ref('/users/' + user.uid).once('value').then(snapshot => {
+    //   first = (snapshot.val() && snapshot.val().first) || 'Anonymous';
+    //   last = (snapshot.val() && snapshot.val().last) || 'Anonymous';
+    //   city = (snapshot.val() && snapshot.val().city) || 'Anonymous';
+    //   state = (snapshot.val() && snapshot.val().state) || 'Anonymous';
+    // }).then(result => {
+      // console.log('First: ' + first)
+      // console.log('Last: ' + last)
+      // console.log('City: ' + city)
+      // console.log('State: ' + state)
+      return (
+        <View style={styles.slideContainer}>
+          <Text style={styles.sloganText}>{item.header}</Text>
+          {item.screen === 'edit' ?
+          <View>
+            <TextInput
+              style={styles.textInput}
+              placeholder="New Email"
+              onChangeText={(text) => this.setState({email: text})}
+            />
+            <TouchableOpacity
+              onPress={() => {this.changeEmail()}}>
+              <Text style={styles.registerButton}>Change Email Address</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {this.changePassword()}}>
+              <Text style={styles.registerButton}>Change Password</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {this.signOut()}}>
+              <Text style={styles.smallText}>Sign Out</Text>
+            </TouchableOpacity>
+          </View> :
+          <View>
+            <View>
+              <Text style={styles.label}>First Name: </Text>
+              <Text style={styles.slideText}>{first}</Text>
+            </View>
+            <View>
+              <Text style={styles.label}>Last Name: </Text>
+              <Text style={styles.slideText}>{last}</Text>
+            </View>
+            <View>
+              <Text style={styles.label}>City: </Text>
+              <Text style={styles.slideText}>{city}</Text>
+            </View>
+            <View>
+              <Text style={styles.label}>State/Country: </Text>
+              <Text style={styles.slideText}>{state}</Text>
+            </View>
+            <View>
+              <Text style={styles.label}>Email: </Text>
+              {/* <Text style={styles.slideText}>{user.email}</Text> */}
+            </View>
+          </View>
+          }
+        </View>
+      );
+    // })
   }
 
   render() {
+    // var auth = firebase.auth();
+    // var user = auth.currentUser;
+    // var first = '';
+    // var last = '';
+    // var city = '';
+    // var state = '';
+    // database.ref('/users/' + user.uid).once('value').then(snapshot => {
+    //   first = (snapshot.val() && snapshot.val().first) || 'Anonymous';
+    //   last = (snapshot.val() && snapshot.val().last) || 'Anonymous';
+    //   city = (snapshot.val() && snapshot.val().city) || 'Anonymous';
+    //   state = (snapshot.val() && snapshot.val().state) || 'Anonymous';
+    // })
+    // .then(result => {
+    //   this.setState({first: first, last: last, city: city, state: state})
+    // })
     /* Go ahead and delete ExpoConfigView and replace it with your
      * content, we just wanted to give you a quick view of your config */
     return (
@@ -125,39 +204,17 @@ export default class SettingsScreen extends React.Component {
         <View>
           <Text style={styles.titleText}>GO-TRI-GO</Text>
         </View>
-
         <View style={styles.loginContainer}>
           <Text style={styles.headerText}>Account Settings</Text>
-
           <Carousel
               renderItem={this._renderItem}
-              data={testimonials}
+              data={settings}
               sliderWidth={320}
+              sliderHeight={320}
               itemWidth={215}
               loop={true}
               activeSlideAlignment={'center'}
           />
-
-          <Text style={styles.sloganText}>Need to change your account info?</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="New Email"
-            onChangeText={(text) => this.setState({email: text})}
-          />
-          <TouchableOpacity
-            onPress={() => {this.changeEmail()}}>
-            <Text style={styles.registerButton}>Change Email Address</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => {this.changePassword()}}>
-            <Text style={styles.registerButton}>Change Password</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => {this.signOut()}}>
-            <Text style={styles.smallText}>Sign Out</Text>
-          </TouchableOpacity>
         </View>
       </View>
       </TouchableWithoutFeedback>
@@ -187,7 +244,7 @@ const styles = StyleSheet.create({
   },
   sloganText: {
     fontFamily: 'kalam-bold',
-    fontSize: 15,
+    fontSize: 17,
     color: 'white',
     lineHeight: 18,
     textAlign: 'center',
@@ -201,13 +258,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
     textAlign: 'center',
     margin: 10,
+    marginBottom: 5,
     backgroundColor: 'transparent',
     color: 'white'
   },
   textInput: {
     fontFamily: 'kalam-bold',
     height: 35,
-    width: 300,
+    width: 200,
     alignSelf: 'center',
     borderWidth: 2,
     borderRadius: 5,
@@ -281,24 +339,23 @@ const styles = StyleSheet.create({
     ]
   },
   slideContainer: {
-    marginTop: 10,
+    marginTop: 5,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     width: 215,
   },
-  slideAuthor: {
+  label: {
     textAlign: 'center',
-    fontSize: 17,
+    fontSize: 13,
     color: 'white',
-    fontStyle: 'italic',
-    marginTop: 10,
+    marginTop: 6,
     backgroundColor: 'transparent',
     fontWeight: 'bold'
   },
   slideText: {
     textAlign: 'center',
-    fontSize: 17,
+    fontSize: 13,
     color: 'white',
     fontStyle: 'italic',
     backgroundColor: 'transparent'
