@@ -4,16 +4,13 @@ import { StackNavigator } from 'react-navigation';
 import Login from '../screens/Login';
 import Registration from '../screens/Registration';
 import HomeScreen from '../screens/HomeScreen';
-import SettingsScreen from '../screens/SettingsScreen'
+import AboutScreen from '../screens/AboutScreen'
 
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 
 const RootStackNavigator = StackNavigator(
   {
-    Settings: {
-      screen: SettingsScreen
-    },
     Main: {
       screen: HomeScreen,
     },
