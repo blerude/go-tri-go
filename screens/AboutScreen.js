@@ -13,7 +13,7 @@ import { ExpoLinksView } from '@expo/samples';
 import Colors from '../constants/Colors';
 import { Dimensions } from 'react-native';
 
-import Carousel from 'react-native-snap-carousel';
+import Carousel, { Pagination }  from 'react-native-snap-carousel';
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -22,7 +22,8 @@ const screenHeight = Dimensions.get('window').height;
 const testimonials = [
   {text: 'wooo I love this app SO FRIGGIN MUCH', author: 'Bean Lerude'},
   {text: 'Im such a good athlete now!!!!!', author: 'Ana'},
-  {text: 'this app rocks Im so fit and I can run and bike and swim so far now thank u!!', author: 'Hallo this is Moose'}
+  {text: 'this app rocks Im so fit and I can run and bike and swim so far now thank u!!', author: 'Hallo this is Moose'},
+  {text: 'I just love this app so much its made me so popular', author: 'Lucky Wiener'}
 ]
 
 
@@ -33,8 +34,12 @@ export default class LinksScreen extends React.Component {
 
   constructor(props) {
     super(props)
+    this.state = {
+      activeSlide: 0
+    }
 
      this._renderItem = this._renderItem.bind(this);
+     this._onScroll = this._onScroll.bind(this);
   }
 
   _renderItem ({item, index}) {
@@ -45,6 +50,21 @@ export default class LinksScreen extends React.Component {
       </View>
     );
   }
+
+  _onScroll(index){
+    console.log('CURRENT INDEX: ', index)
+    this.setState({activeSlide: index})
+  }
+
+  get pagination () {
+       const activeSlide = this.state.activeSlide;
+       return (
+           <Pagination style={styles.pagination}
+             dotsLength={testimonials.length}
+             activeDotIndex={activeSlide}
+           />
+       );
+   }
 
   render() {
     return (
@@ -72,7 +92,9 @@ export default class LinksScreen extends React.Component {
               itemWidth={215}
               loop={true}
               activeSlideAlignment={'center'}
+              onSnapToItem={this._onScroll}
           />
+          { this.pagination }
         </View>
       </View>
       </ScrollView>
@@ -113,8 +135,9 @@ const styles = StyleSheet.create({
     marginTop: 50,
     paddingLeft: 15,
     paddingRight: 15,
-    alignItems: 'center'
-  },
+    alignItems: 'center',
+    height: 440
+    },
   contentHeaderText: {
     fontFamily: 'kalam-bold',
     fontSize: 28,
@@ -161,7 +184,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 215,
+    width: 215
   },
   slideAuthor: {
     textAlign: 'center',
@@ -179,4 +202,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     backgroundColor: 'transparent'
   },
+  pagination: {
+    marginTop: 10
+  }
 });
