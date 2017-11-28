@@ -106,19 +106,19 @@ export default class LinksScreen extends React.Component {
                     <TouchableOpacity
                       onPress={() => {this.selectLevel()}}
                       style={styles.levelBox}>
-                      <Text style={styles.levelText}>EASY</Text>
+                      <Text style={styles.levelText}>BEGINNER</Text>
                       <Text style={styles.infoText}>Small desc.</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {this.selectLevel()}}
                       style={styles.levelBox}>
-                      <Text style={styles.levelText}>MEDIUM</Text>
+                      <Text style={styles.levelText}>INTERMED.</Text>
                       <Text style={styles.infoText}>Small desc.</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {this.selectLevel()}}
                       style={styles.levelBox}>
-                      <Text style={styles.levelText}>HARD</Text>
+                      <Text style={styles.levelText}>ADVANCED</Text>
                       <Text style={styles.infoText}>Small desc.</Text>
                     </TouchableOpacity>
                   </View>
@@ -133,19 +133,19 @@ export default class LinksScreen extends React.Component {
                     <TouchableOpacity
                       onPress={() => {this.selectLevel()}}
                       style={styles.levelBox}>
-                      <Text style={styles.levelText}>EASY</Text>
+                      <Text style={styles.levelText}>BEGINNER</Text>
                       <Text style={styles.infoText}>Small desc.</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {this.selectLevel()}}
                       style={styles.levelBox}>
-                      <Text style={styles.levelText}>MEDIUM</Text>
+                      <Text style={styles.levelText}>INTERMED.</Text>
                       <Text style={styles.infoText}>Small desc.</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {this.selectLevel()}}
                       style={styles.levelBox}>
-                      <Text style={styles.levelText}>HARD</Text>
+                      <Text style={styles.levelText}>ADVANCED</Text>
                       <Text style={styles.infoText}>Small desc.</Text>
                     </TouchableOpacity>
                   </View>
@@ -161,21 +161,21 @@ export default class LinksScreen extends React.Component {
                       onPress={() => {this.selectLevel()}}
                       id="swim-easy"
                       style={styles.levelBox}>
-                      <Text style={styles.levelText}>EASY</Text>
+                      <Text style={styles.levelText}>BEGINNER</Text>
                       <Text style={styles.infoText}>Small desc.</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {this.selectLevel()}}
                       id="swim-med"
                       style={styles.levelBox}>
-                      <Text style={styles.levelText}>MEDIUM</Text>
+                      <Text style={styles.levelText}>INTERMED.</Text>
                       <Text style={styles.infoText}>Small desc.</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {this.selectLevel()}}
                       id="swim-hard"
                       style={styles.levelBox}>
-                      <Text style={styles.levelText}>HARD</Text>
+                      <Text style={styles.levelText}>ADVANCED</Text>
                       <Text style={styles.infoText}>Small desc.</Text>
                     </TouchableOpacity>
                   </View>
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   },
   levelText: {
     fontFamily: 'kalam-bold',
-    fontSize: 18,
+    fontSize: 16,
     color: 'white',
     textAlign: 'center',
     backgroundColor: 'transparent'

@@ -12,9 +12,9 @@ export default {
   noticeBackground: tintColor,
   noticeText: '#fff',
   ourBright: '#4deeea',   // Tutorials
-  ourBlue: '#2d7dd2',     // Login, Plan
+  ourBlue: '#2d7dd2',     // Login, Journal
   ourOrange: '#f45d01',   // About
-  ourGreen: '#97cc04',    // Registration, Journal
+  ourGreen: '#97cc04',    // Registration, Plan
   ourYellow: '#eeb902',   // Workout
   ourGrey: '#474647',
   ourBackgroundGrey: '#5e5d5e'
