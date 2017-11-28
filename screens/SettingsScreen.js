@@ -207,7 +207,7 @@ export default class SettingsScreen extends React.Component {
         <View>
           <Text style={styles.titleText}>GO-TRI-GO</Text>
         </View>
-        <View style={styles.loginContainer}>
+        <View style={styles.carouselContainer}>
           <Text style={styles.headerText}>Account Settings</Text>
           <Carousel
               renderItem={this._renderItem}
@@ -255,8 +255,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     backgroundColor: 'transparent'
   },
-  loginContainer: {
-    marginTop: 50
+  carouselContainer: {
+    marginTop: 30,
+    alignItems: 'center',
+    height: 380
   },
   headerText: {
     fontFamily: 'kalam-bold',
