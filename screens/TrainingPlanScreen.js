@@ -42,9 +42,11 @@ export default class TrainingPlanScreen extends React.Component {
           return(
             <View key={workout.date} style={styles.workoutContainer}>
               <Text style={styles.workoutDate}>{workout.date}</Text>
-              {(workout.run !== 'none') ? <View><Image source={require('../assets/images/run.png')}style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.run}</Text></View> : <View></View>}
-              {(workout.bike !== 'none') ? <View><Image source={require('../assets/images/bike.png')}style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.bike}</Text></View> : <View></View>}
-              {(workout.swim !== 'none') ? <View><Image source={require('../assets/images/swim.png')}style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.swim}</Text></View> : <View></View>}
+                <View style={styles.workoutPlanContainer}>
+                  {(workout.run !== 'none') ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.run}</Text></View> : <View></View>}
+                  {(workout.bike !== 'none') ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.bike}</Text></View> : <View></View>}
+                  {(workout.swim !== 'none') ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.swim}</Text></View> : <View></View>}
+                </View>
             </View>
           )
         }
@@ -166,13 +168,28 @@ const styles = StyleSheet.create({
     marginBottom: 4
   },
   workoutWorkout: {
-    textAlign: 'center',
+    textAlign: 'left',
     fontSize: 17,
     color: 'white',
     backgroundColor: 'transparent'
   },
   activityIcon: {
     height: 30,
-    resizeMode: 'contain'
+    width: 30,
+    resizeMode: 'contain',
+  },
+  workoutPlanContainer: {
+    marginTop: 5,
+    width: 270,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end'
+  },
+  eachWorkoutContainer: {
+    width: 80,
+    marginRight: 10,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end'
   }
 });
