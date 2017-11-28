@@ -7,9 +7,13 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions
 } from 'react-native';import { ExpoLinksView } from '@expo/samples';
 
 import Colors from '../constants/Colors';
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
@@ -19,15 +23,22 @@ export default class LinksScreen extends React.Component {
 
   render() {
     return (
-      <ScrollView style={styles.container}>
-        <View style={styles.welcomeContainer}>
-          <Image
-            source={require('../tri.png')}
-            style={styles.welcomeImage}
-          />
-        </View>
-        <View style={styles.getStartedContainer}>
-          <Text style={styles.titleText}>GO-TRI-GO</Text>
+      <ScrollView style={styles.scrollViewContainer}>
+        <View style={styles.container}>
+          <View style={styles.strip} >
+          </View>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../tri.png')}
+              style={styles.logo}
+            />
+          </View>
+          <View style={styles.headerContainer}>
+            <Text style={styles.headerText}>Journal</Text>
+          </View>
+          <View style={styles.contentContainer}>
+            
+          </View>
         </View>
       </ScrollView>
     );
@@ -35,32 +46,62 @@ export default class LinksScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  scrollViewContainer: {
+    flex: 1,
+    backgroundColor: Colors.ourGrey
+  },
   container: {
     flex: 1,
-    paddingTop: 15,
-    backgroundColor: Colors.ourBright,
+    backgroundColor: Colors.ourGrey,
+    paddingTop: 10,
+    alignItems: 'center'
   },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
-    width: 140,
-    height: 120,
+  logo: {
+    width: 70,
+    height: 26,
     resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
+    marginTop: 10,
+    marginBottom: 5,
   },
-  getStartedContainer: {
+  logoContainer: {
+    width: screenWidth,
+    marginLeft: 20,
+  },
+  strip: {
+    flex: 1,
+    height: 58,
+    width: 500,
+    backgroundColor: Colors.ourBlue,
+    position: 'absolute',
+    zIndex: -1,
+    flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 50,
+    marginTop: 45,
+    borderWidth: 1,
+    borderTopColor: 'white',
+    borderBottomColor: 'white',
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    transform: [
+      {rotate: '-10deg'}
+    ]
   },
-  titleText: {
+  headerContainer: {
+    marginTop: 4
+  },
+  headerText: {
     fontFamily: 'kalam-bold',
-    fontSize: 44,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 56,
+    fontSize: 28,
+    color: 'white',
     textAlign: 'center',
-  }
+    backgroundColor: 'transparent'
+  },
+  contentContainer: {
+    marginTop: 30,
+    paddingLeft: 15,
+    paddingRight: 15,
+    alignItems: 'center',
+    width: screenWidth
+  },
 });

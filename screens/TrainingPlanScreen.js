@@ -54,22 +54,22 @@ export default class TrainingPlanScreen extends React.Component {
 
     return (
       <ScrollView style={styles.scrollViewContainer}>
-      <View style={styles.container}>
-        <View style={styles.strip} >
+        <View style={styles.container}>
+          <View style={styles.strip} >
+          </View>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../tri.png')}
+              style={styles.logo}
+            />
+          </View>
+          <View style={styles.headerContainer}>
+            <Text style={styles.headerText}>The Plan</Text>
+          </View>
+          <View style={styles.contentContainer}>
+            {workoutList}
+          </View>
         </View>
-        <View style={styles.logoContainer}>
-          <Image
-            source={require('../tri.png')}
-            style={styles.logo}
-          />
-        </View>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>The Plan</Text>
-        </View>
-        <View style={styles.contentContainer}>
-          {workoutList}
-        </View>
-      </View>
       </ScrollView>
     );
   }
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     alignItems: 'center',
     width: screenWidth
-    },
+  },
   workoutContainer: {
     marginTop: 15,
     borderWidth: 1,

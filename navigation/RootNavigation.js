@@ -5,13 +5,16 @@ import Login from '../screens/Login';
 import Registration from '../screens/Registration';
 import HomeScreen from '../screens/HomeScreen';
 import AboutScreen from '../screens/AboutScreen'
-import TrainingPlanScreen from '../screens/TrainingPlanScreen'
+import WorkoutScreen from '../screens/WorkoutScreen'
 
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 
 const RootStackNavigator = StackNavigator(
   {
+    // Workout: {
+    //   screen: WorkoutScreen
+    // },
     Main: {
       screen: HomeScreen,
     },
