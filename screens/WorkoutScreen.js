@@ -35,14 +35,19 @@ export default class LinksScreen extends React.Component {
       swimLevel: -1,
       bikeLevel: -1,
       runLevel: -1,
-      modalVisible: false,
+      selectModalVisible: false,
       modalVal: -1,
+      workoutModalVisible: false,
       day: 0,
-      dailyWorkout: {},
-      chosenWorkout: {}
+      dailyWorkout: [],
+      chosenWorkout: [],
+      completed: false
     }
     this.select = this.select.bind(this)
     this.submit = this.submit.bind(this)
+    this.openModal = this.openModal.bind(this)
+    this.prepareWorkout = this.prepareWorkout.bind(this)
+    this.complete = this.complete.bind(this)
   }
 
   componentDidMount() {
@@ -59,19 +64,38 @@ export default class LinksScreen extends React.Component {
         var rest = false;
         if (!snapshot.val().swim && !snapshot.val().bike && !snapshot.val().run) {
           rest = true;
+          console.log('REST')
+          var choice = {
+            completed: false,
+            rest: false
+          }
+          var updates = {}
+          updates['/users/' + user.uid + '/selectedWorkouts/' + this.state.day] = choice
+          firebase.database().ref().update(updates)
+          .catch(error => {
+            console.log('Error Updating: ' + error.message)
+          })
+          this.setState({
+            chosenWorkout: []
+          })
         }
         this.setState({
           rest: rest,
           swim: snapshot.val().swim,
           bike: snapshot.val().bike,
-          run: snapshot.val().run
+          run: snapshot.val().run,
+          dailyWorkout: {
+            swim: snapshot.val().swimWorkout,
+            bike: snapshot.val().bikeWorkout,
+            run: snapshot.val().runWorkout
+          }
         })
       });
     })
   }
 
   openModal(val) {
-    this.setState({modalVal: val, modalVisible: true})
+    this.setState({modalVal: val, selectModalVisible: true})
   }
 
   select() {
@@ -84,10 +108,11 @@ export default class LinksScreen extends React.Component {
     } else {
       this.setState({bikeLevel: this.state.modalVal - 3})
     }
-    this.setState({modalVisible: false})
+    this.setState({selectModalVisible: false})
   }
 
   submit() {
+    var user = firebase.auth().currentUser;
     if (this.state.swim && this.state.swimLevel < 0 ||
     this.state.bike && this.state.bikeLevel < 0 ||
     this.state.bike && this.state.runLevel < 0) {
@@ -96,16 +121,88 @@ export default class LinksScreen extends React.Component {
       console.log('SWIM: ' + this.state.swimLevel)
       console.log('BIKE: ' + this.state.bikeLevel)
       console.log('RUN: ' + this.state.runLevel)
-      this.setState
+      var choice = {
+        completed: false,
+        rest: false
+      }
 
+      if (this.state.swim) {
+        console.log('swim: ', this.state.dailyWorkout.swim)
+        choice['swimWorkout'] = this.state.dailyWorkout.swim[this.state.swimLevel]
+        if (this.state.swimLevel === 0) {
+          choice['swimDifficulty'] = 'Beginner'
+        } else if (this.state.swimLevel === 1) {
+          choice['swimDifficulty'] = 'Intermediate'
+        } else if (this.state.swimLevel === 2) {
+          choice['swimDifficulty'] = 'Advanced'
+        }
+      }
+      if (this.state.bike) {
+        console.log('bike: ', this.state.dailyWorkout.bike)
+        choice['bikeWorkout'] = this.state.dailyWorkout.bike[this.state.bikeLevel]
+        if (this.state.bikeLevel === 0) {
+          choice['bikeDifficulty'] = 'Beginner'
+        } else if (this.state.bikeLevel === 1) {
+          choice['bikeDifficulty'] = 'Intermediate'
+        } else if (this.state.bikeLevel === 2) {
+          choice['bikeDifficulty'] = 'Advanced'
+        }
+      }
+      if (this.state.run) {
+        console.log('run: ', this.state.dailyWorkout.run)
+        choice['runWorkout'] = this.state.dailyWorkout.run[this.state.runLevel]
+        if (this.state.runLevel === 0) {
+          choice['runDifficulty'] = 'Beginner'
+        } else if (this.state.runLevel === 1) {
+          choice['runDifficulty'] = 'Intermediate'
+        } else if (this.state.runLevel === 2) {
+          choice['runDifficulty'] = 'Advanced'
+        }
+      }
+      console.log('choice: ', choice)
+      var updates = {}
+      updates['/users/' + user.uid + '/selectedWorkouts/' + this.state.day] = choice
+      firebase.database().ref().update(updates)
+      .catch(error => {
+        console.log('Error Updating: ' + error.message)
+      })
+      this.prepareWorkout(choice)
     }
   }
 
-  nextDay() {
-
+  prepareWorkout(choice) {
+    var thisWorkout = []
+    if (choice.hasOwnProperty('swimDifficulty')) {
+      thisWorkout.push('SWIM: ' + choice.swimDifficulty)
+      thisWorkout.push(choice.swimWorkout)
+    }
+    if (choice.hasOwnProperty('bikeDifficulty')) {
+      thisWorkout.push('BIKE: ' + choice.bikeDifficulty)
+      thisWorkout.push(choice.bikeWorkout)
+    }
+    if (choice.hasOwnProperty('runDifficulty')) {
+      thisWorkout.push('RUN: ' + choice.runDifficulty)
+      thisWorkout.push(choice.runWorkout)
+    }
+    console.log('this: ', thisWorkout)
+    this.setState({
+      chosenWorkout: thisWorkout,
+      workoutModalVisible: true
+    })
   }
 
-  workout(val) {
+  complete() {
+    var user = firebase.auth().currentUser;
+    var updates = {}
+    updates['/users/' + user.uid + '/selectedWorkouts/' + this.state.day + "/completed"] = true
+    firebase.database().ref().update(updates)
+    .catch(error => {
+      console.log('Error Updating: ' + error.message)
+    })
+    this.setState({completed: true})
+  }
+
+  getWorkoutLevel(val) {
     let title = ""
     if (val === 0) {
       title = 'SWIM: Beginner'
@@ -129,6 +226,30 @@ export default class LinksScreen extends React.Component {
     return title;
   }
 
+  getWorkout(val) {
+    let action = ""
+    if (val === 0) {
+      action = this.state.dailyWorkout.swim[0]
+    } else if (val === 1) {
+      action = this.state.dailyWorkout.swim[1]
+    } else if (val === 2) {
+      action = this.state.dailyWorkout.swim[2]
+    } else if (val === 3) {
+      action = this.state.dailyWorkout.bike[0]
+    } else if (val === 4) {
+      action = this.state.dailyWorkout.bike[1]
+    } else if (val === 5) {
+      action = this.state.dailyWorkout.bike[2]
+    } else if (val === 6) {
+      action = this.state.dailyWorkout.run[0]
+    } else if (val === 7) {
+      action = this.state.dailyWorkout.run[1]
+    } else if (val === 8) {
+      action = this.state.dailyWorkout.run[2]
+    }
+    return action;
+  }
+
   render() {
     return (
       <ScrollView style={styles.scrollViewContainer}>
@@ -150,14 +271,14 @@ export default class LinksScreen extends React.Component {
               <Text style={styles.contentHeader}>You're doing great! Rest up today!</Text>
               <View style={styles.submit}>
                 <TouchableOpacity
-                  onPress={() => {this.nextDay()}}
-                  style={styles.submitBox}>
-                  <Text style={styles.submitText}>Completed</Text>
+                  onPress={this.complete}
+                  style={this.state.completed ? styles.modalSubmitComplete : styles.modalSubmit}>
+                  <Text style={styles.modalText}>Completed</Text>
                 </TouchableOpacity>
               </View>
             </View> :
             <View style={styles.contentContainer}>
-              <Text style={styles.contentHeader}>Select your workout for the day:</Text>
+              <Text style={styles.contentHeader}>Select your workout for day {this.state.day}:</Text>
               {
                 this.state.swim ?
                 <View style={styles.workoutGroup} id="swim">
@@ -167,19 +288,17 @@ export default class LinksScreen extends React.Component {
                        onPress={() => this.openModal(0)}
                        style={this.state.swimLevel === 0 ? styles.levelBoxActive : styles.levelBox}>
                        <Text style={styles.levelText}>BEGINNER</Text>
-                       <Text style={styles.infoText}>Small desc.</Text>
+                       {/* <Text style={styles.infoText}>Small desc.</Text> */}
                      </TouchableOpacity>
                      <TouchableOpacity
                        onPress={() => this.openModal(1)}
                        style={this.state.swimLevel === 1 ? styles.levelBoxActive : styles.levelBox}>
                        <Text style={styles.levelText}>INTERMED.</Text>
-                       <Text style={styles.infoText}>Small desc.</Text>
                      </TouchableOpacity>
                      <TouchableOpacity
                        onPress={() => this.openModal(2)}
                        style={this.state.swimLevel === 2 ? styles.levelBoxActive : styles.levelBox}>
                        <Text style={styles.levelText}>ADVANCED</Text>
-                       <Text style={styles.infoText}>Small desc.</Text>
                      </TouchableOpacity>
                    </View>
                 </View> :
@@ -194,19 +313,16 @@ export default class LinksScreen extends React.Component {
                        onPress={() => this.openModal(3)}
                        style={this.state.bikeLevel === 0 ? styles.levelBoxActive : styles.levelBox}>
                        <Text style={styles.levelText}>BEGINNER</Text>
-                       <Text style={styles.infoText}>Small desc.</Text>
                      </TouchableOpacity>
                      <TouchableOpacity
                        onPress={() => this.openModal(4)}
                        style={this.state.bikeLevel === 1 ? styles.levelBoxActive : styles.levelBox}>
                        <Text style={styles.levelText}>INTERMED.</Text>
-                       <Text style={styles.infoText}>Small desc.</Text>
                      </TouchableOpacity>
                      <TouchableOpacity
                        onPress={() => this.openModal(5)}
                        style={this.state.bikeLevel === 2 ? styles.levelBoxActive : styles.levelBox}>
                        <Text style={styles.levelText}>ADVANCED</Text>
-                       <Text style={styles.infoText}>Small desc.</Text>
                      </TouchableOpacity>
                    </View>
                 </View> :
@@ -221,19 +337,16 @@ export default class LinksScreen extends React.Component {
                        onPress={() => this.openModal(6)}
                        style={this.state.runLevel === 0 ? styles.levelBoxActive : styles.levelBox}>
                        <Text style={styles.levelText}>BEGINNER</Text>
-                       <Text style={styles.infoText}>Small desc.</Text>
                      </TouchableOpacity>
                      <TouchableOpacity
                        onPress={() => this.openModal(7)}
                        style={this.state.runLevel === 1 ? styles.levelBoxActive : styles.levelBox}>
                        <Text style={styles.levelText}>INTERMED.</Text>
-                       <Text style={styles.infoText}>Small desc.</Text>
                      </TouchableOpacity>
                      <TouchableOpacity
                        onPress={() => this.openModal(8)}
                        style={this.state.runLevel === 2 ? styles.levelBoxActive : styles.levelBox}>
                        <Text style={styles.levelText}>ADVANCED</Text>
-                       <Text style={styles.infoText}>Small desc.</Text>
                      </TouchableOpacity>
                    </View>
                 </View> :
@@ -251,25 +364,57 @@ export default class LinksScreen extends React.Component {
         </View>
 
         <Modal
-          isVisible={this.state.modalVisible}
+          isVisible={this.state.selectModalVisible}
           style={styles.modalContainer}>
           <View style={styles.modalExitContainer}>
             <TouchableOpacity
-              onPress={() => this.setState({modalVisible: false})}
+              onPress={() => this.setState({selectModalVisible: false})}
               style={styles.modalExit}>
                 <Text style={styles.modalText}>x</Text>
             </TouchableOpacity>
           </View>
           <Text style={styles.modalHeader}>What You'll Do:</Text>
           <View style={styles.modalTextContainer}>
-            <Text style={styles.modalTitle}>{this.workout(this.state.modalVal)}</Text>
-            <Text style={styles.modalText}></Text>
+            <Text style={styles.modalTitle}>{this.getWorkoutLevel(this.state.modalVal)}</Text>
+            <Text style={styles.modalText}>{this.getWorkout(this.state.modalVal)}</Text>
           </View>
           <TouchableOpacity
             onPress={this.select}
             style={styles.modalSubmit}>
             <Text style={styles.modalText}>Select</Text>
           </TouchableOpacity>
+        </Modal>
+
+        <Modal
+          isVisible={this.state.workoutModalVisible}
+          style={styles.modalContainer}>
+          <ScrollView>
+            <View style={styles.modalExitContainer}>
+              <TouchableOpacity
+                onPress={() => this.setState({workoutModalVisible: false})}
+                style={styles.modalExit}>
+                  <Text style={styles.modalText}>x</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.modalHeader}>What To Do:</Text>
+            {
+              this.state.chosenWorkout.map((text, i) => {
+                if (i % 2 === 0) {
+                  return (
+                    <View key={i} style={styles.modalTextContainer}>
+                      <Text style={styles.modalTitle}>{text}</Text>
+                      <Text style={styles.modalText}>{this.state.chosenWorkout[i + 1]}</Text>
+                    </View>
+                  )
+                }
+              })
+            }
+            <TouchableOpacity
+              onPress={this.complete}
+              style={this.state.completed ? styles.modalSubmitComplete : styles.modalSubmit}>
+              <Text style={styles.modalText}>Completed</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </Modal>
       </ScrollView>
     );
@@ -384,6 +529,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 7,
   },
+  modalSubmitComplete: {
+    marginTop: 'auto',
+    borderColor: Colors.ourGreen,
+    backgroundColor: Colors.ourGreen,
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 7,
+  },
   contentContainer: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -425,7 +578,7 @@ const styles = StyleSheet.create({
     'height': 50,
     'marginLeft': 10,
     'marginRight': 10,
-    'padding': 7,
+    'padding': 4,
   },
   levelBoxActive: {
     'flex': 1,
@@ -438,7 +591,7 @@ const styles = StyleSheet.create({
     'height': 50,
     'marginLeft': 10,
     'marginRight': 10,
-    'padding': 7,
+    'padding': 2,
   },
   levelText: {
     fontFamily: 'kalam-bold',

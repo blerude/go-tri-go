@@ -53,7 +53,7 @@ export default class Registration extends React.Component {
           city: this.state.city,
           state: this.state.state,
           email: this.state.email,
-          day: 0,
+          day: 1,
           workouts: []
         })
         .then(user => {
