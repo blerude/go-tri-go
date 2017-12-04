@@ -76,6 +76,7 @@ export default TabNavigator(
       inactiveTintColor: 'white',
       activeBackgroundColor: 'white',
       inactiveBackgroundColor: Colors.ourGrey,
-    }
+    },
+    initialRouteName: 'MyWorkout'
   }
 );

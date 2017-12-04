@@ -12,9 +12,6 @@ import registerForPushNotificationsAsync from '../api/registerForPushNotificatio
 
 const RootStackNavigator = StackNavigator(
   {
-    // Workout: {
-    //   screen: WorkoutScreen
-    // },
     Main: {
       screen: HomeScreen,
     },
