@@ -9,6 +9,7 @@ import {
   View,
   Dimensions
 } from 'react-native';
+import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { ExpoLinksView } from '@expo/samples';
 import RadioGroup from 'react-native-custom-radio-group';
 import Modal from 'react-native-modal'
@@ -20,6 +21,8 @@ var database = firebase.database();
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
+const settings = []
+
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
     title: 'My Workout',
@@ -29,9 +32,10 @@ export default class LinksScreen extends React.Component {
     super(props)
     this.state = {
       rest: false,
-      swim: true,
-      bike: true,
-      run: true,
+      swim: false,
+      bike: false,
+      run: false,
+      total: 0,
       swimLevel: -1,
       bikeLevel: -1,
       runLevel: -1,
@@ -41,16 +45,28 @@ export default class LinksScreen extends React.Component {
       day: 0,
       dailyWorkout: [],
       chosenWorkout: [],
+      activeSlide: 0,
       completed: false
     }
+    this.load = this.load.bind(this)
     this.select = this.select.bind(this)
     this.submit = this.submit.bind(this)
     this.openModal = this.openModal.bind(this)
     this.prepareWorkout = this.prepareWorkout.bind(this)
     this.complete = this.complete.bind(this)
+    this._renderItem = this._renderItem.bind(this);
+    this._onScroll = this._onScroll.bind(this);
   }
 
   componentDidMount() {
+    this.load()
+  }
+
+  // componentDidUpdate() {
+  //   this.load()
+  // }
+
+  load() {
     var user = firebase.auth().currentUser;
     var currDay;
     database.ref('/users/' + user.uid).once('value').then(snapshot => {
@@ -79,15 +95,29 @@ export default class LinksScreen extends React.Component {
             chosenWorkout: []
           })
         }
+        var total = 0;
+        if (snapshot.val().swim) {
+          total = total + 1;
+        }
+        if (snapshot.val().bike) {
+          total = total + 1;
+        }
+        if (snapshot.val().run) {
+          total = total + 1;
+        }
         this.setState({
           rest: rest,
           swim: snapshot.val().swim,
           bike: snapshot.val().bike,
           run: snapshot.val().run,
+          total: total,
           dailyWorkout: {
             swim: snapshot.val().swimWorkout,
+            swimInfo: snapshot.val().swimInfo,
             bike: snapshot.val().bikeWorkout,
-            run: snapshot.val().runWorkout
+            bikeInfo: snapshot.val().bikeInfo,
+            run: snapshot.val().runWorkout,
+            runInfo: snapshot.val().runInfo
           }
         })
       });
@@ -113,9 +143,18 @@ export default class LinksScreen extends React.Component {
 
   submit() {
     var user = firebase.auth().currentUser;
-    if (this.state.swim && this.state.swimLevel < 0 ||
-    this.state.bike && this.state.bikeLevel < 0 ||
-    this.state.bike && this.state.runLevel < 0) {
+    var chosen = 0;
+    if (this.state.swimLevel > -1) {
+      chosen = chosen + 1
+    }
+    if (this.state.bikeLevel > -1) {
+      chosen = chosen + 1
+    }
+    if (this.state.runLevel > -1) {
+      chosen = chosen + 1
+    }
+    console.log('TOTAL: ' + this.state.total + ' and CHOSEN: ' + chosen)
+    if (this.state.total !== chosen) {
       alert('Select an option for each workout!')
     } else {
       console.log('SWIM: ' + this.state.swimLevel)
@@ -129,6 +168,7 @@ export default class LinksScreen extends React.Component {
       if (this.state.swim) {
         console.log('swim: ', this.state.dailyWorkout.swim)
         choice['swimWorkout'] = this.state.dailyWorkout.swim[this.state.swimLevel]
+        choice['swimInfo'] = this.state.dailyWorkout.swimInfo
         if (this.state.swimLevel === 0) {
           choice['swimDifficulty'] = 'Beginner'
         } else if (this.state.swimLevel === 1) {
@@ -140,6 +180,7 @@ export default class LinksScreen extends React.Component {
       if (this.state.bike) {
         console.log('bike: ', this.state.dailyWorkout.bike)
         choice['bikeWorkout'] = this.state.dailyWorkout.bike[this.state.bikeLevel]
+        choice['bikeInfo'] = this.state.dailyWorkout.bikeInfo
         if (this.state.bikeLevel === 0) {
           choice['bikeDifficulty'] = 'Beginner'
         } else if (this.state.bikeLevel === 1) {
@@ -151,6 +192,7 @@ export default class LinksScreen extends React.Component {
       if (this.state.run) {
         console.log('run: ', this.state.dailyWorkout.run)
         choice['runWorkout'] = this.state.dailyWorkout.run[this.state.runLevel]
+        choice['runInfo'] = this.state.dailyWorkout.runInfo
         if (this.state.runLevel === 0) {
           choice['runDifficulty'] = 'Beginner'
         } else if (this.state.runLevel === 1) {
@@ -172,24 +214,60 @@ export default class LinksScreen extends React.Component {
 
   prepareWorkout(choice) {
     var thisWorkout = []
+    settings = []
     if (choice.hasOwnProperty('swimDifficulty')) {
       thisWorkout.push('SWIM: ' + choice.swimDifficulty)
       thisWorkout.push(choice.swimWorkout)
+      settings.push({
+        screen: 'swim',
+        level: 'SWIM: ' + choice.swimDifficulty,
+        text: choice.swimWorkout,
+        info: choice.swimInfo
+      })
     }
     if (choice.hasOwnProperty('bikeDifficulty')) {
       thisWorkout.push('BIKE: ' + choice.bikeDifficulty)
       thisWorkout.push(choice.bikeWorkout)
+      settings.push({
+        screen: 'bike',
+        level: 'BIKE: ' + choice.bikeDifficulty,
+        text: choice.bikeWorkout,
+        info: choice.bikeInfo
+      })
     }
     if (choice.hasOwnProperty('runDifficulty')) {
       thisWorkout.push('RUN: ' + choice.runDifficulty)
       thisWorkout.push(choice.runWorkout)
+      settings.push({
+        screen: 'run',
+        level: 'RUN: ' + runDifficulty,
+        text: choice.runWorkout,
+        info: choice.runInfo
+      })
     }
     console.log('this: ', thisWorkout)
     this.setState({
       chosenWorkout: thisWorkout,
       workoutModalVisible: true
     })
+    console.log('SETTINGS: ', settings)
+    console.log('WORKOUT!', thisWorkout)
   }
+
+  _onScroll(index){
+    console.log('CURRENT INDEX: ', index)
+    this.setState({activeSlide: index})
+  }
+
+  get pagination () {
+     const activeSlide = this.state.activeSlide;
+     return (
+         <Pagination style={styles.pagination}
+           dotsLength={settings.length}
+           activeDotIndex={activeSlide}
+         />
+     );
+   }
 
   complete() {
     var user = firebase.auth().currentUser;
@@ -199,7 +277,10 @@ export default class LinksScreen extends React.Component {
     .catch(error => {
       console.log('Error Updating: ' + error.message)
     })
-    this.setState({completed: true})
+    this.setState({
+      completed: true,
+      day: this.state.day + 1
+    })
   }
 
   getWorkoutLevel(val) {
@@ -246,8 +327,44 @@ export default class LinksScreen extends React.Component {
       action = this.state.dailyWorkout.run[1]
     } else if (val === 8) {
       action = this.state.dailyWorkout.run[2]
+    } else {
+      action = []
     }
+    console.log('action: ', action)
     return action;
+  }
+
+  _renderItem ({item, index}) {
+    console.log('INDEX: ' + index)
+    if (index < settings.length) {
+      console.log('ITEM:', item)
+      return (
+        <View style={styles.slideContainer}>
+          <View key={index} style={styles.modalTextContainer}>
+            <Text style={styles.modalTitle}>{item.level}</Text>
+            <Text style={styles.modalInfo}>{item.info}</Text>
+            {item.text.map((action, i) => {
+              var style;
+              if (i % 2 === 0) {
+                style = styles.modalText
+              } else {
+                style = styles.modalTextYellow
+              }
+              if (typeof(action) === 'string') {
+                return <Text key={i} style={style}>{action}</Text>
+              } else {
+                console.log('next: ', action)
+                return (
+                  action.map((action2, i2) => {
+                    return <Text key={i2} style={style}>{action2}</Text>
+                  })
+                )
+              }
+            })}
+          </View>
+        </View>
+      )
+    }
   }
 
   render() {
@@ -376,7 +493,24 @@ export default class LinksScreen extends React.Component {
           <Text style={styles.modalHeader}>What You'll Do:</Text>
           <View style={styles.modalTextContainer}>
             <Text style={styles.modalTitle}>{this.getWorkoutLevel(this.state.modalVal)}</Text>
-            <Text style={styles.modalText}>{this.getWorkout(this.state.modalVal)}</Text>
+            {this.getWorkout(this.state.modalVal).map((item, i) => {
+              var style;
+              if (i % 2 === 0) {
+                style = styles.modalText
+              } else {
+                style = styles.modalTextBlack
+              }
+              if (typeof(item) === 'string') {
+                return <Text key={i} style={style}>{item}</Text>
+              } else {
+                console.log('next: ', item)
+                return (
+                  item.map((item2, i2) => {
+                    return <Text key={i2} style={style}>{item2}</Text>
+                  })
+                )
+              }
+            })}
           </View>
           <TouchableOpacity
             onPress={this.select}
@@ -397,22 +531,24 @@ export default class LinksScreen extends React.Component {
               </TouchableOpacity>
             </View>
             <Text style={styles.modalHeader}>What To Do:</Text>
-            {
-              this.state.chosenWorkout.map((text, i) => {
-                if (i % 2 === 0) {
-                  return (
-                    <View key={i} style={styles.modalTextContainer}>
-                      <Text style={styles.modalTitle}>{text}</Text>
-                      <Text style={styles.modalText}>{this.state.chosenWorkout[i + 1]}</Text>
-                    </View>
-                  )
-                }
-              })
-            }
+            <View style={styles.carouselContainer}>
+              <Carousel
+                renderItem={this._renderItem}
+                data={settings}
+                sliderWidth={320}
+                sliderHeight={320}
+                itemWidth={215}
+                inactiveSlideOpacity={0.1}
+                loop={false}
+                activeSlideAlignment={'center'}
+                onSnapToItem={this._onScroll}
+              />
+              { this.pagination }
+            </View>
             <TouchableOpacity
               onPress={this.complete}
               style={this.state.completed ? styles.modalSubmitComplete : styles.modalSubmit}>
-              <Text style={styles.modalText}>Completed</Text>
+              <Text style={styles.modalText}>Completed Workout</Text>
             </TouchableOpacity>
           </ScrollView>
         </Modal>
@@ -505,7 +641,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   modalTextContainer: {
-
+    paddingBottom: 8
   },
   modalText: {
     fontFamily: 'kalam-bold',
@@ -514,12 +650,34 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     backgroundColor: 'transparent'
   },
-  modalTitle: {
+  modalTextYellow: {
     fontFamily: 'kalam-bold',
-    fontSize: 20,
+    fontSize: 18,
     color: Colors.ourYellow,
     textAlign: 'center',
     backgroundColor: 'transparent'
+  },
+  modalTextBlack: {
+    fontFamily: 'kalam-bold',
+    fontSize: 18,
+    color: 'black',
+    textAlign: 'center',
+    backgroundColor: 'transparent'
+  },
+  modalTitle: {
+    fontFamily: 'kalam-bold',
+    fontSize: 22,
+    color: Colors.ourYellow,
+    textAlign: 'center',
+    backgroundColor: 'transparent'
+  },
+  modalInfo: {
+    fontFamily: 'kalam-bold',
+    fontSize: 18,
+    color: 'black',
+    textAlign: 'justify',
+    backgroundColor: 'transparent',
+    paddingBottom: 8
   },
   modalSubmit: {
     marginTop: 'auto',
@@ -629,6 +787,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     backgroundColor: 'transparent'
   },
+  carouselContainer: {
+    marginTop: 5,
+    alignItems: 'center',
+  },
+  slideContainer: {
+    marginTop: 5,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 215,
+  },
+  pagination: {
+    marginTop: 10
+  }
 });
 
 // const levelContainer = {

@@ -54,7 +54,7 @@ export default class Registration extends React.Component {
           state: this.state.state,
           email: this.state.email,
           day: 1,
-          workouts: []
+          selectedWorkouts: []
         })
         .then(user => {
           console.log('User saved to database!')

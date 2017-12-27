@@ -22,7 +22,7 @@ const testimonials = [
   {text: 'wooo I love this app SO FRIGGIN MUCH', author: 'Bean Lerude'},
   {text: 'Im such a good athlete now!!!!!', author: 'Ana'},
   {text: 'this app rocks Im so fit and I can run and bike and swim so far now thank u!!', author: 'Hallo this is Moose'},
-  {text: 'I just love this app so much its made me so popular', author: 'Lucky Wiener'}
+  {text: 'I just love this app so much its made me so popular', author: 'Lucky Austrian'}
 ]
 
 

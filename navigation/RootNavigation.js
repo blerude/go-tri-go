@@ -5,6 +5,7 @@ import Login from '../screens/Login';
 import Registration from '../screens/Registration';
 import HomeScreen from '../screens/HomeScreen';
 import AboutScreen from '../screens/AboutScreen'
+import JournalScreen from '../screens/JournalScreen'
 import WorkoutScreen from '../screens/WorkoutScreen'
 
 import MainTabNavigator from './MainTabNavigator';
@@ -12,6 +13,12 @@ import registerForPushNotificationsAsync from '../api/registerForPushNotificatio
 
 const RootStackNavigator = StackNavigator(
   {
+    // Journal: {
+    //   screen: JournalScreen,
+    // },
+    // Workout: {
+    //   screen: WorkoutScreen,
+    // },
     Main: {
       screen: HomeScreen,
     },

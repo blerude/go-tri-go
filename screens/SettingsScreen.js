@@ -1,7 +1,20 @@
 import React from 'react';
 import Login from './Login';
 
-import { Dimensions, ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import {
+  Dimensions,
+  ScrollView,
+  Image,
+  Platform,
+  StyleSheet,
+  View,
+  Text,
+  Button,
+  TouchableOpacity,
+  TextInput,
+  TouchableWithoutFeedback,
+  Keyboard
+} from 'react-native';
 
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 
@@ -45,10 +58,10 @@ export default class SettingsScreen extends React.Component {
   componentWillMount() {
     var auth = firebase.auth();
     var user = auth.currentUser;
-    var first = 'Eric';
-    var last = 'Lerude';
-    var city = 'SF';
-    var state = 'IL';
+    var first = '';
+    var last = '';
+    var city = '';
+    var state = '';
     database.ref('/users/' + user.uid).once('value').then(snapshot => {
       first = (snapshot.val() && snapshot.val().first) || 'Anonymous';
       last = (snapshot.val() && snapshot.val().last) || 'Anonymous';
