@@ -272,6 +272,7 @@ export default class LinksScreen extends React.Component {
   complete() {
     var user = firebase.auth().currentUser;
     var updates = {}
+    console.log('hi')
     updates['/users/' + user.uid + '/selectedWorkouts/' + this.state.day + "/completed"] = true
     firebase.database().ref().update(updates)
     .catch(error => {
@@ -343,24 +344,26 @@ export default class LinksScreen extends React.Component {
           <View key={index} style={styles.modalTextContainer}>
             <Text style={styles.modalTitle}>{item.level}</Text>
             <Text style={styles.modalInfo}>{item.info}</Text>
-            {item.text.map((action, i) => {
-              var style;
-              if (i % 2 === 0) {
-                style = styles.modalText
-              } else {
-                style = styles.modalTextYellow
-              }
-              if (typeof(action) === 'string') {
-                return <Text key={i} style={style}>{action}</Text>
-              } else {
-                console.log('next: ', action)
-                return (
-                  action.map((action2, i2) => {
-                    return <Text key={i2} style={style}>{action2}</Text>
-                  })
-                )
-              }
-            })}
+            <View style={styles.workoutContainer}>
+              {item.text.map((action, i) => {
+                var style;
+                if (i % 2 === 0) {
+                  style = styles.modalText
+                } else {
+                  style = styles.modalTextYellow
+                }
+                if (typeof(action) === 'string') {
+                  return <Text key={i} style={style}>{action}</Text>
+                } else {
+                  console.log('next: ', action)
+                  return (
+                    action.map((action2, i2) => {
+                      return <Text key={i2} style={style}>{action2}</Text>
+                    })
+                  )
+                }
+              })}
+            </View>
           </View>
         </View>
       )
@@ -493,24 +496,26 @@ export default class LinksScreen extends React.Component {
           <Text style={styles.modalHeader}>What You'll Do:</Text>
           <View style={styles.modalTextContainer}>
             <Text style={styles.modalTitle}>{this.getWorkoutLevel(this.state.modalVal)}</Text>
-            {this.getWorkout(this.state.modalVal).map((item, i) => {
-              var style;
-              if (i % 2 === 0) {
-                style = styles.modalText
-              } else {
-                style = styles.modalTextBlack
-              }
-              if (typeof(item) === 'string') {
-                return <Text key={i} style={style}>{item}</Text>
-              } else {
-                console.log('next: ', item)
-                return (
-                  item.map((item2, i2) => {
-                    return <Text key={i2} style={style}>{item2}</Text>
-                  })
-                )
-              }
-            })}
+            <View style={styles.workoutContainer}>
+              {this.getWorkout(this.state.modalVal).map((item, i) => {
+                var style;
+                if (i % 2 === 0) {
+                  style = styles.modalText
+                } else {
+                  style = styles.modalTextBlack
+                }
+                if (typeof(item) === 'string') {
+                  return <Text key={i} style={style}>{item}</Text>
+                } else {
+                  console.log('next: ', item)
+                  return (
+                    item.map((item2, i2) => {
+                      return <Text key={i2} style={style}>{item2}</Text>
+                    })
+                  )
+                }
+              })}
+            </View>
           </View>
           <TouchableOpacity
             onPress={this.select}
@@ -694,6 +699,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     padding: 7,
+  },
+  workoutContainer: {
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: Colors.ourYellow,
+    padding: 10
   },
   contentContainer: {
     display: 'flex',

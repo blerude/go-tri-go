@@ -19,11 +19,12 @@ const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const testimonials = [
-  {text: 'wooo I love this app SO FRIGGIN MUCH', author: 'Bean Lerude'},
-  {text: 'Im such a good athlete now!!!!!', author: 'Ana'},
-  {text: 'this app rocks Im so fit and I can run and bike and swim so far now thank u!!', author: 'Hallo this is Moose'},
-  {text: 'I just love this app so much its made me so popular', author: 'Lucky Austrian'}
+  {text: 'I could barely swim 50 yards in the pool at the beginning of my training process and felt that my swim ended up to be the strongest event on race day!', author: 'Go-Tri-Go user'},
+  {text: 'This training plan was easy to follow, and I was able to modify it to my busy work schedule.', author: 'Beginner triathlete'},
+  {text: 'I would have never successfully reached the finish line on race day without the Go-Tri-Go program. I would recommend this invaluable program without hesitation.', author: 'Newly confident triathlete'},
 ]
+
+const intro = "Go-Tri-Go is an adaptable triathlon training plan meant to get you ready for your first sprint triathlon. You have the power to personalize the program towards your strengths so that you feel confident on race day!"
 
 
 export default class LinksScreen extends React.Component {
@@ -82,7 +83,7 @@ export default class LinksScreen extends React.Component {
         </View>
         <View style={styles.contentContainer}>
           <Text style={styles.contentHeaderText}>About GO-TRI-GO</Text>
-          <Text style={styles.aboutTheAppText}>woooo heres a dope paragraph about all the things we are about and how amazing this app is and how great of an athlete youll be by the end of our friendship. Dont u want to bike and run and swim now??? woooo lets friggin go</Text>
+          <Text style={styles.aboutTheAppText}>{intro}</Text>
           <Text style={styles.contentHeader2Text}>Testimonials</Text>
           <Carousel
               renderItem={this._renderItem}
@@ -150,7 +151,7 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     backgroundColor: 'transparent',
-    marginTop: 50
+    marginTop: 20
   },
   aboutTheAppText: {
     color: 'white',
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
   },
   slideAuthor: {
     textAlign: 'center',
-    fontSize: 17,
+    fontSize: 15,
     color: 'white',
     fontStyle: 'italic',
     marginTop: 10,
@@ -195,13 +196,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   slideText: {
-    textAlign: 'center',
-    fontSize: 17,
+    textAlign: 'justify',
+    fontSize: 15,
     color: 'white',
     fontStyle: 'italic',
     backgroundColor: 'transparent'
   },
   pagination: {
-    marginTop: 10
+    marginTop: 5
   }
 });

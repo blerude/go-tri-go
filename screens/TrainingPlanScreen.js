@@ -26,7 +26,7 @@ const screenHeight = Dimensions.get('window').height;
 
 export default class TrainingPlanScreen extends React.Component {
   static navigationOptions = {
-    title: 'The Plan',
+    title: 'Weekly Plan',
   };
 
   constructor(props) {
@@ -47,7 +47,8 @@ export default class TrainingPlanScreen extends React.Component {
       currDay = snapshot.val().day
       this.setState({day: snapshot.val().day})
       // console.log('state check: ', this.state.day)
-      this.setState({completedWorkouts: snapshot.val().selectedWorkouts})
+      var workouts = snapshot.val().selectedWorkouts ? snapshot.val().selectedWorkouts : []
+      this.setState({completedWorkouts: workouts})
     })
     .then(response => {
       database.ref('/workouts/' + currDay).once('value').then(snapshot => {
@@ -57,91 +58,94 @@ export default class TrainingPlanScreen extends React.Component {
     .then(response => {
       var futureWorkoutArray = [];
       database.ref('/workouts/').once('value').then(snapshot => {
-      var allWorkouts = snapshot.val();
-      allWorkouts.map((workout, day) => {
-        if(day > currDay){
-          futureWorkoutArray[day] = workout
-        }
-      })
-      this.setState({futureWorkouts: futureWorkoutArray})
+        var allWorkouts = snapshot.val();
+        allWorkouts.map((workout, day) => {
+          if(day > currDay){
+            futureWorkoutArray[day] = workout
+          }
+        })
+        this.setState({futureWorkouts: futureWorkoutArray})
       });
     })
   }
 
   render() {
     var futureWorkoutList =
-      this.state.futureWorkouts.map((workout, day) => {
-        if(workout.bike === false && workout.swim === false && workout.run === false){
-          return(
-            <View key={day} style={styles.futureRestDayWorkoutContainer}>
-              <Text style={styles.futureRestDayWorkoutText}>REST DAY</Text>
-            </View>
-          )
-        } else if (day === this.state.day+1){
-          return(
-            <View key={day} style={styles.workoutContainer}>
-              <Text style={styles.workoutDate}>TOMORROW</Text>
-                <View style={styles.workoutPlanContainer}>
-                  {(workout.run === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/></View> : <View></View>}
-                  {(workout.bike === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/></View> : <View></View>}
-                  {(workout.swim === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/></View> : <View></View>}
-                </View>
-            </View>
-          )
-        } else {
-          return(
-            <View key={day} style={styles.workoutContainer}>
-              <Text style={styles.workoutDate}>DAY {day}</Text>
-                <View style={styles.workoutPlanContainer}>
-                  {(workout.run === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/></View> : <View></View>}
-                  {(workout.bike === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/></View> : <View></View>}
-                  {(workout.swim === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/></View> : <View></View>}
-                </View>
-            </View>
-          )
-        }
-      })
-
-      var completedWorkoutList =
-        this.state.completedWorkouts.map((workout, day) => {
-          if(workout.rest === true){
-            return(
-              <View key={day} style={styles.restDayWorkoutContainer}>
-                <Text style={styles.restDayWorkoutText}>REST DAY</Text>
-              </View>
-            )
-          } else {
-            return(
-              <View key={day} style={styles.completedWorkoutContainer}>
-                <Text style={styles.completedWorkoutDate}>DAY {day}</Text>
-                  <View style={styles.workoutPlanContainer}>
-                    {(workout.hasOwnProperty('runDifficulty')) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.runWorkout}</Text></View> : <View></View>}
-                    {(workout.hasOwnProperty('bikeDifficulty')) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.bikeWorkout}</Text></View> : <View></View>}
-                    {(workout.hasOwnProperty('swimDifficulty')) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.swimWorkout}</Text></View> : <View></View>}
-                  </View>
-              </View>
-            )
-          }
-        })
-
-        if (this.state.todaysWorkout.run === false && this.state.todaysWorkout.bike === false && this.state.todaysWorkout.swim === false){
-          var todaysWorkout = (
-          <View style={styles.restDayWorkoutContainer}>
-            <Text style={styles.restDayWorkoutText}>TODAY: REST DAY</Text>
+    this.state.futureWorkouts.map((workout, day) => {
+      if(workout.bike === false && workout.swim === false && workout.run === false){
+        return(
+          <View key={day} style={styles.futureRestDayWorkoutContainer}>
+            <Text style={styles.futureRestDayWorkoutText}>REST DAY</Text>
           </View>
-          )
-        } else {
-          var todaysWorkout = (
-            <View style={styles.workoutContainer}>
-              <Text style={styles.workoutDate}>TODAY</Text>
-                <View style={styles.workoutPlanContainer}>
-                  {(this.state.todaysWorkout.run === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/></View> : <View></View>}
-                  {(this.state.todaysWorkout.bike === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/></View> : <View></View>}
-                  {(this.state.todaysWorkout.swim === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/></View> : <View></View>}
-                </View>
+        )
+      } else if (day === this.state.day+1){
+        return(
+          <View key={day} style={styles.workoutContainer}>
+            <Text style={styles.workoutDate}>TOMORROW</Text>
+            <View style={styles.workoutPlanContainer}>
+              {(workout.run === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/></View> : <View></View>}
+              {(workout.bike === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/></View> : <View></View>}
+              {(workout.swim === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/></View> : <View></View>}
             </View>
-          )
+          </View>
+        )
+      } else {
+        return(
+          <View key={day} style={styles.workoutContainer}>
+            <Text style={styles.workoutDate}>DAY {day}</Text>
+            <View style={styles.workoutPlanContainer}>
+              {(workout.run === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/></View> : <View></View>}
+              {(workout.bike === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/></View> : <View></View>}
+              {(workout.swim === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/></View> : <View></View>}
+            </View>
+          </View>
+        )
       }
+    })
+
+    var completedWorkoutList =
+    this.state.completedWorkouts.map((workout, day) => {
+      console.log('CURR: ' + this.state.day)
+      console.log('DAY: ' + day)
+      if(workout.rest === true){
+        return(
+          <View key={day} style={styles.restDayWorkoutContainer}>
+            <Text style={styles.restDayWorkoutText}>REST DAY</Text>
+          </View>
+        )
+      } else if (this.state.day !== day) {
+        console.log('NO MATCH: ' + day + " " + this.state.day)
+        return(
+          <View key={day} style={styles.completedWorkoutContainer}>
+            <Text style={styles.completedWorkoutDate}>DAY {day}</Text>
+            <View style={styles.workoutPlanContainer}>
+              {(workout.hasOwnProperty('runDifficulty')) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.runWorkout}</Text></View> : <View></View>}
+              {(workout.hasOwnProperty('bikeDifficulty')) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.bikeWorkout}</Text></View> : <View></View>}
+              {(workout.hasOwnProperty('swimDifficulty')) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.swimWorkout}</Text></View> : <View></View>}
+            </View>
+          </View>
+        )
+      }
+    })
+
+    if (this.state.todaysWorkout.run === false && this.state.todaysWorkout.bike === false && this.state.todaysWorkout.swim === false){
+      var todaysWorkout = (
+        <View style={styles.restDayWorkoutContainer}>
+          <Text style={styles.restDayWorkoutText}>TODAY: REST DAY</Text>
+        </View>
+      )
+    } else {
+      var todaysWorkout = (
+        <View style={styles.workoutContainer}>
+          <Text style={styles.workoutDate}>TODAY</Text>
+          <View style={styles.workoutPlanContainer}>
+            {(this.state.todaysWorkout.run === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/></View> : <View></View>}
+            {(this.state.todaysWorkout.bike === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/></View> : <View></View>}
+            {(this.state.todaysWorkout.swim === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/></View> : <View></View>}
+          </View>
+        </View>
+      )
+    }
 
     return (
       <ScrollView style={styles.scrollViewContainer}>

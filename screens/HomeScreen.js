@@ -25,9 +25,9 @@ const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const images = [
-  {image: require('../test1.jpeg'), text: '12 weeks to your first Sprint Tri'},
-  {image: require('../test2.jpeg'), text: '12 week Personalized Training Plan'},
-  {image: require('../test3.jpeg'), text: 'Get Fit, Confident, and RACE READY!'}
+  {image: require('../assets/images/home1.jpeg'), text: '12 weeks to your first Sprint Tri'},
+  {image: require('../assets/images/home2.jpeg'), text: '12 week Personalized Training Plan'},
+  {image: require('../assets/images/home3.jpeg'), text: 'Get Fit, Confident, and RACE READY!'}
 ]
 
 export default class HomeScreen extends React.Component {
@@ -41,7 +41,6 @@ export default class HomeScreen extends React.Component {
      this.goToLogin = this.goToLogin.bind(this);
      this.goToRegistration = this.goToRegistration.bind(this);
      this._renderItem = this._renderItem.bind(this);
-
   }
 
   goToLogin(e) {
@@ -150,6 +149,9 @@ const styles = StyleSheet.create({
   slideImage: {
     height: 284.44,
     width: 160,
+    borderRadius: 2,
+    borderColor: 'black',
+    borderWidth: 1
   },
   slideText: {
     textAlign: 'center',
