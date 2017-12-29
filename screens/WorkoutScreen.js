@@ -62,10 +62,6 @@ export default class LinksScreen extends React.Component {
     this.load()
   }
 
-  // componentDidUpdate() {
-  //   this.load()
-  // }
-
   load() {
     var user = firebase.auth().currentUser;
     var currDay;
@@ -108,8 +104,12 @@ export default class LinksScreen extends React.Component {
         this.setState({
           rest: rest,
           swim: snapshot.val().swim,
+          swimLevel: -1,
           bike: snapshot.val().bike,
+          bikeLevel: -1,
           run: snapshot.val().run,
+          runLevel: -1,
+          modalVal: -1,
           total: total,
           dailyWorkout: {
             swim: snapshot.val().swimWorkout,
@@ -240,13 +240,14 @@ export default class LinksScreen extends React.Component {
       thisWorkout.push(choice.runWorkout)
       settings.push({
         screen: 'run',
-        level: 'RUN: ' + runDifficulty,
+        level: 'RUN: ' + choice.runDifficulty,
         text: choice.runWorkout,
         info: choice.runInfo
       })
     }
     console.log('this: ', thisWorkout)
     this.setState({
+      completed: false,
       chosenWorkout: thisWorkout,
       workoutModalVisible: true
     })
@@ -272,7 +273,7 @@ export default class LinksScreen extends React.Component {
   complete() {
     var user = firebase.auth().currentUser;
     var updates = {}
-    console.log('hi')
+
     updates['/users/' + user.uid + '/selectedWorkouts/' + this.state.day + "/completed"] = true
     firebase.database().ref().update(updates)
     .catch(error => {
@@ -280,7 +281,17 @@ export default class LinksScreen extends React.Component {
     })
     this.setState({
       completed: true,
-      // day: this.state.day + 1
+      day: this.state.day + 1
+    })
+
+    var updates = {}
+    updates['/users/' + user.uid + '/day'] = this.state.day + 1
+    firebase.database().ref().update(updates)
+    .then(result => {
+      this.load()
+    })
+    .catch(error => {
+      console.log('Error Updating: ' + error.message)
     })
   }
 
@@ -408,7 +419,6 @@ export default class LinksScreen extends React.Component {
                        onPress={() => this.openModal(0)}
                        style={this.state.swimLevel === 0 ? styles.levelBoxActive : styles.levelBox}>
                        <Text style={styles.levelText}>BEGINNER</Text>
-                       {/* <Text style={styles.infoText}>Small desc.</Text> */}
                      </TouchableOpacity>
                      <TouchableOpacity
                        onPress={() => this.openModal(1)}
@@ -701,7 +711,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     borderColor: Colors.ourYellow,
-    padding: 10
+    padding: 10,
+    marginBottom: 10
   },
   contentContainer: {
     display: 'flex',
