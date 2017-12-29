@@ -36,6 +36,8 @@ export default class LinksScreen extends React.Component {
       raceText: '',
       write: false
     }
+    this.findEntries = this.findEntries.bind(this)
+    this.delete = this.delete.bind(this)
     this.newEntry = this.newEntry.bind(this)
     this.save = this.save.bind(this)
   }
@@ -45,9 +47,39 @@ export default class LinksScreen extends React.Component {
     database.ref('/users/' + user.uid).once('value').then(snapshot => {
       this.setState({
         day: snapshot.val().day,
-        journals: snapshot.val().journals
+        journals: snapshot.val().journals ? snapshot.val().journals : {}
       })
     })
+  }
+
+  findEntries(x) {
+    var entries = []
+    console.log('FOUND JOURNALS: ', this.state.journals)
+    for (var key in this.state.journals) {
+      if (key) {
+        console.log('KEY: ' + key)
+        console.log('FOUND ENTRY: ' + this.state.journals[key][x])
+        if (this.state.journals[key][x]) {
+          entries.push({
+            day: key,
+            entry: this.state.journals[key][x]
+          })
+        }
+      }
+    }
+    console.log('E: ', entries)
+    return entries
+  }
+
+  delete(x) {
+    // console.log('DELETE!')
+    // var user = firebase.auth().currentUser;
+    // var updates = {}
+    // updates['/users/' + user.uid + '/journals/' + DAY + '/' + x + '/'] = ''
+    // firebase.database().ref().update(updates)
+    // .catch(error => {
+    //   console.log('Error Updating: ' + error.message)
+    // })
   }
 
   newEntry() {
@@ -58,28 +90,66 @@ export default class LinksScreen extends React.Component {
 
   save() {
     var user = firebase.auth().currentUser;
-    var entry = [
-      this.state.trainingText,
-      this.state.nutritionText,
-      this.state.raceText
-    ]
-    console.log('ENTRY: ', entry)
-    var updates = {}
-    updates['/users/' + user.uid + '/journals/' + this.state.thisDay] = entry
-    firebase.database().ref().update(updates)
-    .catch(error => {
-      console.log('Error Updating: ' + error.message)
-    })
+    var train;
+    var nutr;
+    var race;
+    database.ref('/users/' + user.uid).once('value').then(snapshot => {
+      if (!this.state.trainingText &&
+        snapshot.val().journals &&
+        snapshot.val().journals[this.state.thisDay] &&
+        snapshot.val().journals[this.state.thisDay][0]) {
+        console.log('T1')
+        train = snapshot.val().journals[this.state.thisDay][0]
+      } else {
+        console.log('T2')
+        train = this.state.trainingText
+      }
 
-    this.state.journals[this.state.thisDay] = entry
-    console.log('JOURNALS: ', this.state.journals)
+      if (!this.state.nutritionText &&
+        snapshot.val().journals &&
+        snapshot.val().journals[this.state.thisDay] &&
+        snapshot.val().journals[this.state.thisDay][1]) {
+        console.log('N1')
+        nutr = snapshot.val().journals[this.state.thisDay][1]
+      } else {
+        console.log('N2')
+        nutr = this.state.nutritionText
+      }
 
-    this.setState({
-      write: false,
-      trainingText: '',
-      nutritionText: '',
-      raceText: '',
-      journals: this.state.journals
+      if (!this.state.raceText &&
+        snapshot.val().journals &&
+        snapshot.val().journals[this.state.thisDay] &&
+        snapshot.val().journals[this.state.thisDay][2]) {
+        console.log('R1')
+        race = snapshot.val().journals[this.state.thisDay][2]
+      } else {
+        console.log('R2')
+        race = this.state.raceText
+      }
+
+      var entry = [
+        train,
+        nutr,
+        race
+      ]
+      console.log('NEW ENTRY: ', entry)
+      var updates = {}
+      updates['/users/' + user.uid + '/journals/' + this.state.thisDay] = entry
+      firebase.database().ref().update(updates)
+      .catch(error => {
+        console.log('Error Updating: ' + error.message)
+      })
+
+      this.state.journals[this.state.thisDay] = entry
+      console.log('UPDATED JOURNALS: ', this.state.journals)
+
+      this.setState({
+        write: false,
+        trainingText: '',
+        nutritionText: '',
+        raceText: '',
+        journals: this.state.journals
+      })
     })
   }
 
@@ -99,11 +169,64 @@ export default class LinksScreen extends React.Component {
             <Text style={styles.headerText}>Journal</Text>
           </View>
           <View style={styles.contentContainer}>
+            <Text style={styles.prompt}>Take notes on how your workout went!</Text>
             <TouchableOpacity
               onPress={() => this.setState({write: true})}
               style={styles.modalSubmit}>
               <Text style={styles.buttonText}>Add an Entry</Text>
             </TouchableOpacity>
+            <Text style={styles.title}>Journal Log:</Text>
+            <Text style={styles.label}>Training:</Text>
+            <View style={styles.entryContainer}>
+              {this.findEntries(0).map((entry, i) => {
+                return (
+                  <View key={i} style={styles.entryPair}>
+                    <TouchableOpacity
+                      onPress={() => this.delete(0)}
+                      style={styles.removeEntry}>
+                      <Text style={styles.removeText}>x</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
+                    <Text style={styles.entryEntry}>{entry.entry}</Text>
+                    <View style={styles.line}></View>
+                  </View>
+                )
+              })}
+            </View>
+            <Text style={styles.label}>Nutrition:</Text>
+            <View style={styles.entryContainer}>
+              {this.findEntries(1).map((entry, i) => {
+                return (
+                  <View key={i} style={styles.entryPair}>
+                    <TouchableOpacity
+                      onPress={() => this.delete(1)}
+                      style={styles.removeEntry}>
+                      <Text style={styles.removeText}>x</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
+                    <Text style={styles.entryEntry}>{entry.entry}</Text>
+                    <View style={styles.line}></View>
+                  </View>
+                )
+              })}
+            </View>
+            <Text style={styles.label}>Race Day:</Text>
+            <View style={styles.entryContainer}>
+              {this.findEntries(2).map((entry, i) => {
+                return (
+                  <View key={i} style={styles.entryPair}>
+                    <TouchableOpacity
+                      onPress={() => this.delete(2)}
+                      style={styles.removeEntry}>
+                      <Text style={styles.removeText}>x</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
+                    <Text style={styles.entryEntry}>{entry.entry}</Text>
+                    <View style={styles.line}></View>
+                  </View>
+                )
+              })}
+            </View>
           </View>
         </View>
 
@@ -120,7 +243,6 @@ export default class LinksScreen extends React.Component {
             </View>
             <Text style={styles.modalHeader}>Write about your workout:</Text>
             <View style={styles.modalTextContainer}>
-              {/* <Text style={styles.modalTitle}>{"Day " + this.state.day}</Text> */}
               <View style={styles.entryContainer}>
                 <Text style={styles.modalEntryLabel}>Day:</Text>
                 <View style={styles.center}>
@@ -228,6 +350,13 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     // borderColor: Colors.ourBlue
   },
+  prompt: {
+    fontFamily: 'kalam-bold',
+    fontSize: 19,
+    color: Colors.ourBlue,
+    textAlign: 'center',
+    backgroundColor: 'transparent'
+  },
   buttonText: {
     fontFamily: 'kalam-bold',
     fontSize: 18,
@@ -236,7 +365,61 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     backgroundColor: 'transparent',
-    paddingBottom: 6
+  },
+  title: {
+    fontFamily: 'kalam-bold',
+    fontSize: 24,
+    color: Colors.ourBlue,
+    textAlign: 'center',
+    backgroundColor: 'transparent'
+  },
+  label: {
+    fontFamily: 'kalam-bold',
+    fontSize: 21,
+    color: 'white',
+    textAlign: 'center',
+    backgroundColor: 'transparent'
+  },
+  entryPair: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginBottom: 5
+  },
+  removeEntry: {
+
+  },
+  removeText: {
+    width: 20,
+    paddingRight: 10,
+    fontSize: 14,
+    fontWeight: '900',
+    color: 'white',
+    textAlign: 'center',
+    backgroundColor: 'transparent'
+  },
+  entryDay: {
+    width: 60,
+    paddingRight: 10,
+    fontSize: 14,
+    fontWeight: '900',
+    color: Colors.ourBlue,
+    textAlign: 'center',
+    backgroundColor: 'transparent'
+  },
+  entryEntry: {
+    width: 130,
+    fontSize: 14,
+    fontWeight: 'bold',
+    width: 250,
+    color: 'white',
+    textAlign: 'justify',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'white'
+  },
+  line: {
+    borderBottomColor: Colors.ourBlue,
+    borderBottomWidth: 1
   },
   modalContainer: {
     flex: 1,
@@ -280,7 +463,6 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     backgroundColor: 'transparent',
-    paddingBottom: 6
   },
   modalTextBlue: {
     fontSize: 18,
@@ -290,13 +472,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     backgroundColor: 'transparent',
     paddingBottom: 6
-  },
-  modalTitle: {
-    fontFamily: 'kalam-bold',
-    fontSize: 22,
-    color: Colors.ourBlue,
-    textAlign: 'center',
-    backgroundColor: 'transparent'
   },
   modalEntryLabel: {
     fontFamily: 'kalam-bold',
@@ -320,6 +495,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     padding: 7,
+    marginBottom: 15
   },
   modalSubmitComplete: {
     marginTop: 'auto',
