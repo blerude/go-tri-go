@@ -280,7 +280,7 @@ export default class LinksScreen extends React.Component {
     })
     this.setState({
       completed: true,
-      day: this.state.day + 1
+      // day: this.state.day + 1
     })
   }
 
@@ -343,7 +343,7 @@ export default class LinksScreen extends React.Component {
         <View style={styles.slideContainer}>
           <View key={index} style={styles.modalTextContainer}>
             <Text style={styles.modalTitle}>{item.level}</Text>
-            <Text style={styles.modalInfo}>{item.info}</Text>
+            <Text style={styles.modalInfo}>{'FOCUS: ' + item.info}</Text>
             <View style={styles.workoutContainer}>
               {item.text.map((action, i) => {
                 var style;
@@ -502,7 +502,7 @@ export default class LinksScreen extends React.Component {
                 if (i % 2 === 0) {
                   style = styles.modalText
                 } else {
-                  style = styles.modalTextBlack
+                  style = styles.modalTextYellow
                 }
                 if (typeof(item) === 'string') {
                   return <Text key={i} style={style}>{item}</Text>
@@ -649,25 +649,22 @@ const styles = StyleSheet.create({
     paddingBottom: 8
   },
   modalText: {
-    fontFamily: 'kalam-bold',
     fontSize: 18,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
+    paddingBottom: 6
   },
   modalTextYellow: {
-    fontFamily: 'kalam-bold',
     fontSize: 18,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
     color: Colors.ourYellow,
     textAlign: 'center',
-    backgroundColor: 'transparent'
-  },
-  modalTextBlack: {
-    fontFamily: 'kalam-bold',
-    fontSize: 18,
-    color: 'black',
-    textAlign: 'center',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
+    paddingBottom: 6
   },
   modalTitle: {
     fontFamily: 'kalam-bold',
@@ -677,12 +674,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   modalInfo: {
-    fontFamily: 'kalam-bold',
     fontSize: 18,
-    color: 'black',
+    fontWeight: 'bold',
+    color: 'white',
     textAlign: 'justify',
     backgroundColor: 'transparent',
-    paddingBottom: 8
+    paddingBottom: 15
   },
   modalSubmit: {
     marginTop: 'auto',

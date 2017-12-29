@@ -19,9 +19,11 @@ const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const testimonials = [
-  {text: 'I could barely swim 50 yards in the pool at the beginning of my training process and felt that my swim ended up to be the strongest event on race day!', author: 'Go-Tri-Go user'},
-  {text: 'This training plan was easy to follow, and I was able to modify it to my busy work schedule.', author: 'Beginner triathlete'},
-  {text: 'I would have never successfully reached the finish line on race day without the Go-Tri-Go program. I would recommend this invaluable program without hesitation.', author: 'Newly confident triathlete'},
+  {text: "I could barely swim 50 yards in the pool at the beginning of my training process and felt that my swim ended up to be the strongest event on race day!", author: 'Tiffany Barnett'},
+  {text: "I am an active but heavier female. The adaptability of the program helped me to build on each aspect of my baseline strengths and turn my perceived weaknesses into measurable training opportunities.", author: 'Lillian Morton'},
+  {text: "I would have never successfully reached the finish line on race day without the Go-Tri-Go program. I would recommend this invaluable program without hesitation.", author: 'Go-Tri-Go user'},
+  {text: "GO-TRI- GO was a great program and helped me achieve my goal. Without it I am certain I would not have been able to finish, or maybe even start, the race.", author: 'Cheryl Olson'},
+  {text: "This program helped me to tailor my training to my specific skill level in the various disciplines, which kept me motivated and engaged. I was able to build up my confidence in my weak areas!", author: 'Beginner Triathlete'}
 ]
 
 const intro = "Go-Tri-Go is an adaptable triathlon training plan meant to get you ready for your first sprint triathlon. You have the power to personalize the program towards your strengths so that you feel confident on race day!"
@@ -132,12 +134,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   contentContainer: {
-    marginTop: 50,
+    marginTop: 30,
     paddingLeft: 15,
     paddingRight: 15,
     alignItems: 'center',
-    height: 440
-    },
+    height: 460
+  },
   contentHeaderText: {
     fontFamily: 'kalam-bold',
     fontSize: 28,
@@ -151,7 +153,7 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     backgroundColor: 'transparent',
-    marginTop: 20
+    marginTop: 5
   },
   aboutTheAppText: {
     color: 'white',
@@ -180,7 +182,7 @@ const styles = StyleSheet.create({
     ]
   },
   slideContainer: {
-    marginTop: 10,
+    marginTop: 5,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
@@ -202,7 +204,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     backgroundColor: 'transparent'
   },
-  pagination: {
-    marginTop: 5
-  }
+  // pagination: {
+  //   marginTop: 5
+  // }
 });

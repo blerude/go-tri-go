@@ -159,7 +159,7 @@ export default class TrainingPlanScreen extends React.Component {
             />
           </View>
           <View style={styles.headerContainer}>
-            <Text style={styles.headerText}>The Plan</Text>
+            <Text style={styles.headerText}>Weekly Plan</Text>
           </View>
           <View style={styles.contentContainer}>
             {completedWorkoutList}

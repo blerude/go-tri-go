@@ -63,6 +63,7 @@ export default class Login extends React.Component {
     var emailAddress = this.state.email;
     auth.sendPasswordResetEmail(emailAddress).then(function() {
       console.log('Password reset email sent.')
+      alert('Check your email to reset your password.')
     }).catch(function(error) {
       console.log('Error sending password reset email: ' + error.message)
       alert('Please enter a valid email address through which can reset your password.')

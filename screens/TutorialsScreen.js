@@ -18,7 +18,7 @@ const screenHeight = Dimensions.get('window').height;
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
-    title: 'Tutorials',
+    title: "How To's",
     color: 'white'
   };
 
@@ -35,10 +35,10 @@ export default class LinksScreen extends React.Component {
           />
         </View>
         <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Tutorials</Text>
+          <Text style={styles.headerText}>How To's</Text>
         </View>
         <View style={styles.contentContainer}>
-          
+
         </View>
       </View>
       </ScrollView>
