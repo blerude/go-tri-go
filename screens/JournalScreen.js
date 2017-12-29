@@ -5,38 +5,19 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
   Dimensions
 } from 'react-native';import { ExpoLinksView } from '@expo/samples';
-// import Select from 'react-select';
+import Modal from 'react-native-modal'
 
 import Colors from '../constants/Colors';
+import firebase from '../firebase';
+var database = firebase.database();
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-// const defaultOption = options[0]
-//
-// const options = [{
-//     value: 'date', label: "Date"
-//   }, {
-//     value: 'nutrition', label: "Tag: Nutrition"
-//   }, {
-//     value: 'prep', label: "Tag: Prep/Warmup"
-//   }, {
-//     value: 'challenge', label: "Tag: Challenge Level"
-//   }, {
-//     value: 'work', label: "Tag: What worked"
-//   }, {
-//     value: 'nowork', label: "Tag: What didn't work"
-//   }, {
-//     value: 'swim', label: "Tag: Swim"
-//   }, {
-//     value: 'bike', label: "Tag: Bike"
-//   }, {
-//     value: 'run', label: "Tag: Run"
-//   }
-// ]
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
@@ -47,13 +28,59 @@ export default class LinksScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      dropwdown: 'date'
+      day: 0,
+      thisDay: '',
+      journals: {},
+      trainingText: '',
+      nutritionText: '',
+      raceText: '',
+      write: false
     }
-    this._onSelect = this._onSelect.bind(this)
+    this.newEntry = this.newEntry.bind(this)
+    this.save = this.save.bind(this)
   }
 
-  _onSelect() {
+  componentDidMount() {
+    var user = firebase.auth().currentUser;
+    database.ref('/users/' + user.uid).once('value').then(snapshot => {
+      this.setState({
+        day: snapshot.val().day,
+        journals: snapshot.val().journals
+      })
+    })
+  }
 
+  newEntry() {
+    this.setState({
+      write: true
+    })
+  }
+
+  save() {
+    var user = firebase.auth().currentUser;
+    var entry = [
+      this.state.trainingText,
+      this.state.nutritionText,
+      this.state.raceText
+    ]
+    console.log('ENTRY: ', entry)
+    var updates = {}
+    updates['/users/' + user.uid + '/journals/' + this.state.thisDay] = entry
+    firebase.database().ref().update(updates)
+    .catch(error => {
+      console.log('Error Updating: ' + error.message)
+    })
+
+    this.state.journals[this.state.thisDay] = entry
+    console.log('JOURNALS: ', this.state.journals)
+
+    this.setState({
+      write: false,
+      trainingText: '',
+      nutritionText: '',
+      raceText: '',
+      journals: this.state.journals
+    })
   }
 
   render() {
@@ -72,16 +99,71 @@ export default class LinksScreen extends React.Component {
             <Text style={styles.headerText}>Journal</Text>
           </View>
           <View style={styles.contentContainer}>
-            <Text style={styles.dropdownTitle}>Sort Journals by:</Text>
-            {/* <Select
-              style={styles.dropdown}
-              onChange={this._onSelect}
-              value={this.state.dropdown}
-              placeholder="Select a filter">
-              {/* <option value="date">Date</option>
-            </Select> */}
+            <TouchableOpacity
+              onPress={() => this.setState({write: true})}
+              style={styles.modalSubmit}>
+              <Text style={styles.buttonText}>Add an Entry</Text>
+            </TouchableOpacity>
           </View>
         </View>
+
+        <Modal
+          isVisible={this.state.write}
+          style={styles.modalContainer}>
+          <ScrollView>
+            <View style={styles.modalExitContainer}>
+              <TouchableOpacity
+                onPress={() => this.setState({write: false})}
+                style={styles.modalExit}>
+                  <Text style={styles.modalText}>x</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.modalHeader}>Write about your workout:</Text>
+            <View style={styles.modalTextContainer}>
+              {/* <Text style={styles.modalTitle}>{"Day " + this.state.day}</Text> */}
+              <View style={styles.entryContainer}>
+                <Text style={styles.modalEntryLabel}>Day:</Text>
+                <View style={styles.center}>
+                  <TextInput
+                      onChangeText={(thisDay) => this.setState({thisDay})}
+                      value={this.state.thisDay}
+                      style={styles.textInputDay}
+                      required/>
+                </View>
+                <Text style={styles.modalEntryLabel}>Training:</Text>
+                <Text style={styles.modalInfo}>What went well, what didn't, challenge level</Text>
+                <TextInput
+                    multiline={true}
+                    numberOfLines={4}
+                    onChangeText={(trainingText) => this.setState({trainingText})}
+                    value={this.state.trainingText}
+                    style={styles.textInput}/>
+                <Text style={styles.modalEntryLabel}>Nutrition:</Text>
+                <Text style={styles.modalInfo}>What you ate, what you drank</Text>
+                <TextInput
+                    multiline={true}
+                    numberOfLines={8}
+                    onChangeText={(nutritionText) => this.setState({nutritionText})}
+                    value={this.state.nutritionText}
+                    style={styles.textInput}/>
+                <Text style={styles.modalEntryLabel}>Race Day:</Text>
+                <Text style={styles.modalInfo}>What to think about before your race</Text>
+                <TextInput
+                    multiline={true}
+                    numberOfLines={12}
+                    onChangeText={(raceText) => this.setState({raceText})}
+                    value={this.state.raceText}
+                    style={styles.textInput}/>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={this.save}
+              style={styles.modalSubmit}>
+              <Text style={styles.modalText}>Submit</Text>
+            </TouchableOpacity>
+          </ScrollView>
+
+        </Modal>
       </ScrollView>
     );
   }
@@ -143,17 +225,142 @@ const styles = StyleSheet.create({
     marginTop: 30,
     padding: 15,
     alignItems: 'center',
+    // borderWidth: 1,
+    // borderColor: Colors.ourBlue
+  },
+  buttonText: {
+    fontFamily: 'kalam-bold',
+    fontSize: 18,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    paddingBottom: 6
+  },
+  modalContainer: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: Colors.ourGrey,
+    borderColor: Colors.ourBlue,
+    borderWidth: 5,
+    borderRadius: 5,
+  },
+  modalExitContainer: {
+    marginTop: 3,
+    display: 'flex',
+    alignItems: 'flex-end'
+  },
+  modalExit: {
+    display: 'flex',
+    justifyContent: 'center',
+    borderColor: Colors.ourBlue,
+    backgroundColor: Colors.ourBlue,
     borderWidth: 1,
-    borderColor: Colors.ourBlue
+    borderRadius: 5,
+    padding: 7,
+    width: 30,
+    height: 30,
   },
-  dropDown: {
-
+  modalHeader: {
+    fontFamily: 'kalam-bold',
+    fontSize: 26,
+    color: 'white',
+    textAlign: 'center',
+    backgroundColor: 'transparent'
   },
-  dropdownTitle: {
+  modalTextContainer: {
+    paddingBottom: 8
+  },
+  modalText: {
+    fontFamily: 'kalam-bold',
+    fontSize: 18,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    paddingBottom: 6
+  },
+  modalTextBlue: {
+    fontSize: 18,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    color: Colors.ourBlue,
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    paddingBottom: 6
+  },
+  modalTitle: {
+    fontFamily: 'kalam-bold',
+    fontSize: 22,
+    color: Colors.ourBlue,
+    textAlign: 'center',
+    backgroundColor: 'transparent'
+  },
+  modalEntryLabel: {
     fontFamily: 'kalam-bold',
     fontSize: 20,
     color: 'white',
     textAlign: 'center',
     backgroundColor: 'transparent'
+  },
+  modalInfo: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    paddingBottom: 5
+  },
+  modalSubmit: {
+    marginTop: 'auto',
+    borderColor: Colors.ourBlue,
+    backgroundColor: Colors.ourBlue,
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 7,
+  },
+  modalSubmitComplete: {
+    marginTop: 'auto',
+    borderColor: Colors.ourGreen,
+    backgroundColor: Colors.ourGreen,
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 7,
+  },
+  entryContainer: {
+    borderWidth: 2,
+    borderRadius: 5,
+    borderColor: Colors.ourBlue,
+    padding: 10,
+    marginBottom: 10
+  },
+  textInput: {
+    borderWidth: 1,
+    borderRadius: 4,
+    borderColor: Colors.ourBlue,
+    backgroundColor: 'white',
+    color: Colors.ourBlue,
+    fontSize: 15,
+    paddingBottom: 15,
+    marginBottom: 15
+  },
+  textInputDay: {
+    borderWidth: 1,
+    borderRadius: 4,
+    borderColor: Colors.ourBlue,
+    backgroundColor: 'white',
+    color: Colors.ourBlue,
+    fontSize: 15,
+    width: 50,
+    textAlign: 'center',
+    paddingBottom: 15,
+    marginBottom: 15
+  },
+  center: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });

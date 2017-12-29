@@ -13,12 +13,6 @@ import registerForPushNotificationsAsync from '../api/registerForPushNotificatio
 
 const RootStackNavigator = StackNavigator(
   {
-    // Journal: {
-    //   screen: JournalScreen,
-    // },
-    // Workout: {
-    //   screen: WorkoutScreen,
-    // },
     Main: {
       screen: HomeScreen,
     },
