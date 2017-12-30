@@ -375,7 +375,6 @@ export default class WorkoutScreen extends React.Component {
                 if (typeof(action) === 'string') {
                   return <Text key={i} style={style}>{action}</Text>
                 } else {
-                  //console.log('next: ', action)
                   return (
                     action.map((action2, i2) => {
                       return <Text key={i2} style={style}>{action2}</Text>
@@ -384,6 +383,7 @@ export default class WorkoutScreen extends React.Component {
                 }
               })}
             </View>
+            <Text style={styles.modalTitle}>Today's How To's:</Text>
           </View>
         </View>
       )
