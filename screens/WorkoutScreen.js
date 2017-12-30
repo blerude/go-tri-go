@@ -48,6 +48,9 @@ export default class WorkoutScreen extends React.Component {
       day: 0,
       dailyWorkout: [],
       chosenWorkout: [],
+      swimHows: [],
+      bikeHows: [],
+      runHows: [],
       activeSlide: 0,
       completed: false
     }
@@ -56,6 +59,7 @@ export default class WorkoutScreen extends React.Component {
     this.submit = this.submit.bind(this)
     this.openModal = this.openModal.bind(this)
     this.prepareWorkout = this.prepareWorkout.bind(this)
+    this.getHowTos = this.getHowTos.bind(this)
     this.complete = this.complete.bind(this)
     this._renderItem = this._renderItem.bind(this);
     this._onScroll = this._onScroll.bind(this);
@@ -69,17 +73,13 @@ export default class WorkoutScreen extends React.Component {
     var user = firebase.auth().currentUser;
     var currDay;
     database.ref('/users/' + user.uid).once('value').then(snapshot => {
-      //console.log('USER: ', snapshot.val())
       currDay = snapshot.val().day
       this.setState({day: snapshot.val().day})
     }).then(response => {
-      //console.log('CURR DAY: ' + currDay)
       database.ref('/workouts/' + currDay).once('value').then(snapshot => {
-        //console.log('DAY: ', snapshot.val())
         var rest = false;
         if (!snapshot.val().swim && !snapshot.val().bike && !snapshot.val().run) {
           rest = true;
-          //console.log('REST')
           var choice = {
             completed: false,
             rest: false
@@ -156,20 +156,15 @@ export default class WorkoutScreen extends React.Component {
     if (this.state.runLevel > -1) {
       chosen = chosen + 1
     }
-    //console.log('TOTAL: ' + this.state.total + ' and CHOSEN: ' + chosen)
     if (this.state.total !== chosen) {
       alert('Select an option for each workout!')
     } else {
-      // console.log('SWIM: ' + this.state.swimLevel)
-      // console.log('BIKE: ' + this.state.bikeLevel)
-      // console.log('RUN: ' + this.state.runLevel)
       var choice = {
         completed: false,
         rest: false
       }
 
       if (this.state.swim) {
-        //console.log('swim: ', this.state.dailyWorkout.swim)
         choice['swimWorkout'] = this.state.dailyWorkout.swim[this.state.swimLevel]
         choice['swimInfo'] = this.state.dailyWorkout.swimInfo
         if (this.state.swimLevel === 0) {
@@ -181,7 +176,6 @@ export default class WorkoutScreen extends React.Component {
         }
       }
       if (this.state.bike) {
-        //console.log('bike: ', this.state.dailyWorkout.bike)
         choice['bikeWorkout'] = this.state.dailyWorkout.bike[this.state.bikeLevel]
         choice['bikeInfo'] = this.state.dailyWorkout.bikeInfo
         if (this.state.bikeLevel === 0) {
@@ -193,7 +187,6 @@ export default class WorkoutScreen extends React.Component {
         }
       }
       if (this.state.run) {
-        //console.log('run: ', this.state.dailyWorkout.run)
         choice['runWorkout'] = this.state.dailyWorkout.run[this.state.runLevel]
         choice['runInfo'] = this.state.dailyWorkout.runInfo
         if (this.state.runLevel === 0) {
@@ -204,7 +197,6 @@ export default class WorkoutScreen extends React.Component {
           choice['runDifficulty'] = 'Advanced'
         }
       }
-      //console.log('choice: ', choice)
       var updates = {}
       updates['/users/' + user.uid + '/selectedWorkouts/' + this.state.day] = choice
       firebase.database().ref().update(updates)
@@ -248,18 +240,61 @@ export default class WorkoutScreen extends React.Component {
         info: choice.runInfo
       })
     }
-    //console.log('this: ', thisWorkout)
     this.setState({
       completed: false,
       chosenWorkout: thisWorkout,
       workoutModalVisible: true
     })
-    // console.log('SETTINGS: ', settings)
-    // console.log('WORKOUT!', thisWorkout)
+  }
+
+  getHowTos(l) {
+    var list = []
+    var user = firebase.auth().currentUser;
+    console.log('START: ' + l)
+    var typeA
+    var typeB
+    if (l === 'S') {
+      typeA = 'swim'
+      typeB = 'swim/bike'
+    } else if (l === 'B') {
+      typeA = 'bike'
+      typeB = 'bike/run'
+    } else if (l === 'R') {
+      typeA = 'run'
+      typeB = 'none'
+    }
+    database.ref('/tutorials/').once('value').then(snapshot => {
+      tuts = snapshot.val()
+      tuts[this.state.day].forEach(item => {
+        if (item.type === typeA || item.type === typeB) {
+          list.push(item)
+        }
+      })
+
+      console.log('LIST for ' + l + ': ', list)
+      if (l === 'S') {
+        console.log('S')
+        this.setState({
+          swimHows: list
+        })
+      } else if (l === 'B') {
+        console.log('B')
+        this.setState({
+          bikeHows: list
+        })
+      } else if (l === 'R') {
+        console.log('R')
+        this.setState({
+          runHows: list
+        })
+      }
+    })
+    .catch(error => {
+      console.log('Error getting tutorials: ' + error.message)
+    })
   }
 
   _onScroll(index){
-    //console.log('CURRENT INDEX: ', index)
     this.setState({activeSlide: index})
   }
 
@@ -351,14 +386,21 @@ export default class WorkoutScreen extends React.Component {
     } else {
       action = []
     }
-    // console.log('action: ', action)
     return action;
   }
 
   _renderItem ({item, index}) {
-    // console.log('INDEX: ' + index)
+    var l = item.level[0]
+    this.getHowTos(l)
+    var list
+    if (l === 'S') {
+      list = this.state.swimHows
+    } else if (l === 'B') {
+      list = this.state.bikeHows
+    } else if (l === 'R') {
+      list = this.state.runHows
+    }
     if (index < settings.length) {
-      // console.log('ITEM:', item)
       return (
         <View style={styles.slideContainer}>
           <View key={index} style={styles.modalTextContainer}>
@@ -384,6 +426,21 @@ export default class WorkoutScreen extends React.Component {
               })}
             </View>
             <Text style={styles.modalTitle}>Today's How To's:</Text>
+            {list.map((item, i) => {
+              return <View key={i}>
+                <Text style={styles.toTextYellow}>{item.text}</Text>
+                <Text style={styles.toText}>{item.description}</Text>
+                {item.category === 'gear' ?
+                <Text>MAP</Text> :
+                null
+                }
+                {item.category === 'video' ?
+                <Text>VIDEO</Text> :
+                null
+                }
+                <Text></Text>
+              </View>
+            })}
           </View>
         </View>
       )
@@ -526,7 +583,6 @@ export default class WorkoutScreen extends React.Component {
                 if (typeof(item) === 'string') {
                   return <Text key={i} style={style}>{item}</Text>
                 } else {
-                  //console.log('next: ', item)
                   return (
                     item.map((item2, i2) => {
                       return <Text key={i2} style={style}>{item2}</Text>
@@ -576,30 +632,6 @@ export default class WorkoutScreen extends React.Component {
             </TouchableOpacity>
           </ScrollView>
         </Modal>
-
-        {/* <Modal
-          isVisible={this.state.journalModalVisible}
-          style={styles.modalContainer}>
-          <View style={styles.modalExitContainer}>
-            <TouchableOpacity
-              onPress={() => this.setState({journalModalVisible: false})}
-              style={styles.modalExit}>
-                <Text style={styles.modalText}>x</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.modalHeader}>Write about it!</Text>
-          <View style={styles.modalTextContainer}>
-            <Text style={styles.modalTitle}>{this.getWorkoutLevel(this.state.modalVal)}</Text>
-            <View style={styles.workoutContainer}>
-
-            </View>
-          </View>
-          <TouchableOpacity
-            onPress={this.save}
-            style={styles.modalSubmit}>
-            <Text style={styles.modalText}>Submit</Text>
-          </TouchableOpacity>
-        </Modal> */}
       </ScrollView>
     );
   }
@@ -849,6 +881,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: 215,
+  },
+  toText: {
+    fontSize: 15,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'justify',
+    backgroundColor: 'transparent',
+    paddingBottom: 4
+  },
+  toTextYellow: {
+    fontSize: 15,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    color: Colors.ourYellow,
+    textAlign: 'justify',
+    backgroundColor: 'transparent',
+    paddingBottom: 4
   },
   pagination: {
     marginTop: 10

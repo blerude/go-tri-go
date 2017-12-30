@@ -181,11 +181,11 @@ export default class LinksScreen extends React.Component {
               {this.findEntries(0).map((entry, i) => {
                 return (
                   <View key={i} style={styles.entryPair}>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                       onPress={() => this.delete(0)}
                       style={styles.removeEntry}>
                       <Text style={styles.removeText}>x</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
                     <Text style={styles.entryEntry}>{entry.entry}</Text>
                     <View style={styles.line}></View>
@@ -198,11 +198,11 @@ export default class LinksScreen extends React.Component {
               {this.findEntries(1).map((entry, i) => {
                 return (
                   <View key={i} style={styles.entryPair}>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                       onPress={() => this.delete(1)}
                       style={styles.removeEntry}>
                       <Text style={styles.removeText}>x</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
                     <Text style={styles.entryEntry}>{entry.entry}</Text>
                     <View style={styles.line}></View>
@@ -215,11 +215,11 @@ export default class LinksScreen extends React.Component {
               {this.findEntries(2).map((entry, i) => {
                 return (
                   <View key={i} style={styles.entryPair}>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                       onPress={() => this.delete(2)}
                       style={styles.removeEntry}>
                       <Text style={styles.removeText}>x</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
                     <Text style={styles.entryEntry}>{entry.entry}</Text>
                     <View style={styles.line}></View>
@@ -414,8 +414,8 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'justify',
     backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: 'white'
+    // borderWidth: 1,
+    // borderColor: 'white'
   },
   line: {
     borderBottomColor: Colors.ourBlue,
