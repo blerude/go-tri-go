@@ -54,7 +54,6 @@ export default class LinksScreen extends React.Component {
     this.state.tuts.forEach(day => {
       day.forEach(item => {
         if (item.type === type && item.category === category) {
-          console.log(type + ' ' + category)
           list.push(item)
         }
       })
@@ -185,6 +184,8 @@ export default class LinksScreen extends React.Component {
             <Text style={styles.headerText}>How To's</Text>
           </View>
           <View style={styles.contentContainer}>
+            <Text style={styles.title}>How to use the app:</Text>
+            <Text></Text>
             {this.renderGroup('Swim', 'showS', 'swim')}
             {this.renderGroup('Swim -> Bike', 'showSB', 'swim/bike')}
             {this.renderGroup('Bike', 'showB', 'bike')}
@@ -250,7 +251,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   contentContainer: {
-    marginTop: 50,
+    marginTop: 30,
     paddingLeft: 15,
     paddingRight: 15,
     alignItems: 'center',

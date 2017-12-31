@@ -42,9 +42,10 @@ export default class WorkoutScreen extends React.Component {
       swimLevel: -1,
       bikeLevel: -1,
       runLevel: -1,
-      selectModalVisible: false,
       modalVal: -1,
+      selectModalVisible: false,
       workoutModalVisible: false,
+      congratsModalVisible: false,
       day: 0,
       dailyWorkout: [],
       chosenWorkout: [],
@@ -55,6 +56,7 @@ export default class WorkoutScreen extends React.Component {
       completed: false
     }
     this.load = this.load.bind(this)
+    this.readDayChanges = this.readDayChanges.bind(this)
     this.select = this.select.bind(this)
     this.submit = this.submit.bind(this)
     this.openModal = this.openModal.bind(this)
@@ -67,6 +69,7 @@ export default class WorkoutScreen extends React.Component {
 
   componentDidMount() {
     this.load()
+    this.readDayChanges()
   }
 
   load() {
@@ -74,7 +77,38 @@ export default class WorkoutScreen extends React.Component {
     var currDay;
     database.ref('/users/' + user.uid).once('value').then(snapshot => {
       currDay = snapshot.val().day
-      this.setState({day: snapshot.val().day})
+      var workouts = snapshot.val().selectedWorkouts ? snapshot.val().selectedWorkouts : []
+      var workout = workouts[currDay] ? workouts[currDay] : {}
+      var swimLevel = workout.swimDifficulty ? workout.swimDifficulty : -1
+      var bikeLevel = workout.bikeDifficulty ? workout.bikeDifficulty : -1
+      var runLevel = workout.runDifficulty ? workout.runDifficulty : -1
+      if (swimLevel === 'Beginner') {
+        swimLevel = 0
+      } else if (swimLevel === 'Intermediate') {
+        swimLevel = 1
+      } else if (swimLevel === 'Advanced') {
+        swimLevel = 2
+      }
+      if (bikeLevel === 'Beginner') {
+        bikeLevel = 0
+      } else if (bikeLevel === 'Intermediate') {
+        bikeLevel = 1
+      } else if (bikeLevel === 'Advanced') {
+        bikeLevel = 2
+      }
+      if (runLevel === 'Beginner') {
+        runLevel = 0
+      } else if (runLevel === 'Intermediate') {
+        runLevel = 1
+      } else if (runLevel === 'Advanced') {
+        runLevel = 2
+      }
+      this.setState({
+        day: snapshot.val().day,
+        swimLevel: swimLevel,
+        bikeLevel: bikeLevel,
+        runLevel: runLevel
+      })
     }).then(response => {
       database.ref('/workouts/' + currDay).once('value').then(snapshot => {
         var rest = false;
@@ -107,11 +141,8 @@ export default class WorkoutScreen extends React.Component {
         this.setState({
           rest: rest,
           swim: snapshot.val().swim,
-          swimLevel: -1,
           bike: snapshot.val().bike,
-          bikeLevel: -1,
           run: snapshot.val().run,
-          runLevel: -1,
           modalVal: -1,
           total: total,
           dailyWorkout: {
@@ -125,6 +156,13 @@ export default class WorkoutScreen extends React.Component {
         })
       });
     })
+  }
+
+  readDayChanges() {
+    var user = firebase.auth().currentUser;
+    firebase.database().ref('users/' + user.uid + '/day/').on('value', (snapshot) => {
+      this.load()
+    });
   }
 
   openModal(val) {
@@ -161,7 +199,8 @@ export default class WorkoutScreen extends React.Component {
     } else {
       var choice = {
         completed: false,
-        rest: false
+        rest: false,
+        day: this.state.day
       }
 
       if (this.state.swim) {
@@ -250,7 +289,6 @@ export default class WorkoutScreen extends React.Component {
   getHowTos(l) {
     var list = []
     var user = firebase.auth().currentUser;
-    console.log('START: ' + l)
     var typeA
     var typeB
     if (l === 'S') {
@@ -265,25 +303,22 @@ export default class WorkoutScreen extends React.Component {
     }
     database.ref('/tutorials/').once('value').then(snapshot => {
       tuts = snapshot.val()
-      tuts[this.state.day].forEach(item => {
+      var tutList = tuts[this.state.day] ? tuts[this.state.day] : []
+      tutList.forEach(item => {
         if (item.type === typeA || item.type === typeB) {
           list.push(item)
         }
       })
 
-      console.log('LIST for ' + l + ': ', list)
       if (l === 'S') {
-        console.log('S')
         this.setState({
           swimHows: list
         })
       } else if (l === 'B') {
-        console.log('B')
         this.setState({
           bikeHows: list
         })
       } else if (l === 'R') {
-        console.log('R')
         this.setState({
           runHows: list
         })
@@ -335,8 +370,15 @@ export default class WorkoutScreen extends React.Component {
     this.setState({
       workoutModalVisible: false,
     })
-    const { navigate } = this.props.navigation
-    navigate('Journal', { new: true })
+
+    if (this.state.day % 7 === 0) {
+      this.setState({
+        congratsModalVisible: true
+      })
+    } else {
+      const { navigate } = this.props.navigation
+      navigate('Journal', { new: true })
+    }
   }
 
   getWorkoutLevel(val) {

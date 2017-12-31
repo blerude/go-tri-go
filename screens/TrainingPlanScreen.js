@@ -35,20 +35,43 @@ export default class TrainingPlanScreen extends React.Component {
       day: 0,
       completedWorkouts: [],
       todaysWorkout: {},
+      todaysChoice: {},
       futureWorkouts: []
     }
+    this.load = this.load.bind(this)
+    this.readDayChanges = this.readDayChanges.bind(this)
+    this.readWorkoutChanges = this.readWorkoutChanges.bind(this)
   }
 
   componentDidMount() {
+    this.load()
+    this.readDayChanges()
+    this.readWorkoutChanges()
+  }
+
+  load() {
     var user = firebase.auth().currentUser;
     var currDay;
     database.ref('/users/' + user.uid).once('value').then(snapshot => {
-      // console.log('USER IS: ', snapshot.val())
       currDay = snapshot.val().day
       this.setState({day: snapshot.val().day})
-      // console.log('state check: ', this.state.day)
-      var workouts = snapshot.val().selectedWorkouts ? snapshot.val().selectedWorkouts : []
-      this.setState({completedWorkouts: workouts})
+      var workouts = snapshot.val().selectedWorkouts
+      var chosen = {}
+      var completed = []
+      if (workouts) {
+        console.log('w', workouts)
+        chosen = workouts[currDay] ? workouts[currDay] : {}
+        for (var key in workouts) {
+          var item = workouts[key]
+          if (item.day && item.day !== currDay) {
+            completed.push(item)
+          }
+        }
+      }
+      this.setState({
+        completedWorkouts: completed,
+        todaysChoice: chosen
+      })
     })
     .then(response => {
       database.ref('/workouts/' + currDay).once('value').then(snapshot => {
@@ -59,9 +82,9 @@ export default class TrainingPlanScreen extends React.Component {
       var futureWorkoutArray = [];
       database.ref('/workouts/').once('value').then(snapshot => {
         var allWorkouts = snapshot.val();
-        allWorkouts.map((workout, day) => {
-          if(day > currDay){
-            futureWorkoutArray[day] = workout
+        allWorkouts.forEach((workout, day) => {
+          if (workout.day > this.state.day){
+            futureWorkoutArray[workout.day] = workout
           }
         })
         this.setState({futureWorkouts: futureWorkoutArray})
@@ -69,35 +92,51 @@ export default class TrainingPlanScreen extends React.Component {
     })
   }
 
+  readDayChanges() {
+    var user = firebase.auth().currentUser;
+    firebase.database().ref('users/' + user.uid + '/day/').on('value', (snapshot) => {
+      this.load()
+    });
+  }
+
+  readWorkoutChanges() {
+    var user = firebase.auth().currentUser;
+    firebase.database().ref('users/' + user.uid + '/selectedWorkouts/').on('value', (snapshot) => {
+      this.load()
+    });
+  }
+
   render() {
     var futureWorkoutList =
     this.state.futureWorkouts.map((workout, day) => {
+      var weekday = workout.day % 7
+      var weekdayPrint
+      if (!weekday) {
+        weekdayPrint = 7
+      } else if (weekday === 1) {
+        weekdayPrint = '1 of this week'
+      } else {
+        weekdayPrint = weekday
+      }
+      var week = workout.day / 7
       if(workout.bike === false && workout.swim === false && workout.run === false){
         return(
           <View key={day} style={styles.futureRestDayWorkoutContainer}>
             <Text style={styles.futureRestDayWorkoutText}>REST DAY</Text>
           </View>
         )
-      } else if (day === this.state.day+1){
-        return(
-          <View key={day} style={styles.workoutContainer}>
-            <Text style={styles.workoutDate}>TOMORROW</Text>
-            <View style={styles.workoutPlanContainer}>
-              {(workout.run === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/></View> : <View></View>}
-              {(workout.bike === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/></View> : <View></View>}
-              {(workout.swim === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/></View> : <View></View>}
-            </View>
-          </View>
-        )
       } else {
         return(
-          <View key={day} style={styles.workoutContainer}>
-            <Text style={styles.workoutDate}>DAY {day}</Text>
-            <View style={styles.workoutPlanContainer}>
-              {(workout.run === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/></View> : <View></View>}
-              {(workout.bike === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/></View> : <View></View>}
-              {(workout.swim === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/></View> : <View></View>}
-            </View>
+          <View key={day}>
+            {weekday === 1 ? <Text style={styles.week}>WEEK {Math.ceil(week)}</Text> : null}
+            <TouchableOpacity style={styles.workoutContainer}>
+              <Text style={styles.workoutDate}>DAY {workout.day} ({weekdayPrint})</Text>
+              <View style={styles.workoutPlanContainer}>
+                {(workout.run) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/></View> : null}
+                {(workout.bike) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/></View> : null}
+                {(workout.swim) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/></View> : null}
+              </View>
+            </TouchableOpacity>
           </View>
         )
       }
@@ -105,29 +144,49 @@ export default class TrainingPlanScreen extends React.Component {
 
     var completedWorkoutList =
     this.state.completedWorkouts.map((workout, day) => {
-      console.log('CURR: ' + this.state.day)
-      console.log('DAY: ' + day)
-      if(workout.rest === true){
+      var weekday = workout.day % 7
+      var weekdayPrint
+      if (!weekday) {
+        weekdayPrint = 7
+      } else if (weekday === 1) {
+        weekdayPrint = '1 of this week'
+      } else {
+        weekdayPrint = weekday
+      }
+      var week = workout.day / 7
+      if (workout.rest){
         return(
           <View key={day} style={styles.restDayWorkoutContainer}>
             <Text style={styles.restDayWorkoutText}>REST DAY</Text>
           </View>
         )
-      } else if (this.state.day !== day) {
-        console.log('NO MATCH: ' + day + " " + this.state.day)
+      } else {
         return(
-          <View key={day} style={styles.completedWorkoutContainer}>
-            <Text style={styles.completedWorkoutDate}>DAY {day}</Text>
-            <View style={styles.workoutPlanContainer}>
-              {(workout.hasOwnProperty('runDifficulty')) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.runWorkout}</Text></View> : <View></View>}
-              {(workout.hasOwnProperty('bikeDifficulty')) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.bikeWorkout}</Text></View> : <View></View>}
-              {(workout.hasOwnProperty('swimDifficulty')) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.swimWorkout}</Text></View> : <View></View>}
-            </View>
+          <View key={day}>
+            {weekday === 1 ? <Text style={styles.week}>WEEK {Math.ceil(week)}</Text> : null}
+            <TouchableOpacity style={styles.completedWorkoutContainer}>
+              <Text style={styles.completedWorkoutDate}>DAY {workout.day} ({weekdayPrint})</Text>
+              <View style={styles.workoutPlanContainer}>
+                {(workout.hasOwnProperty('runDifficulty')) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.runDifficulty}</Text></View> : <View></View>}
+                {(workout.hasOwnProperty('bikeDifficulty')) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.bikeDifficulty}</Text></View> : <View></View>}
+                {(workout.hasOwnProperty('swimDifficulty')) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{workout.swimDifficulty}</Text></View> : <View></View>}
+              </View>
+            </TouchableOpacity>
           </View>
         )
       }
     })
 
+    var weekday = this.state.day % 7
+    var weekdayPrint
+    if (!weekday) {
+      weekdayPrint = 7
+    } else if (weekday === 1) {
+      weekdayPrint = '1 of this week'
+    } else {
+      weekdayPrint = weekday
+    }
+    var week = this.state.day / 7
     if (this.state.todaysWorkout.run === false && this.state.todaysWorkout.bike === false && this.state.todaysWorkout.swim === false){
       var todaysWorkout = (
         <View style={styles.restDayWorkoutContainer}>
@@ -136,13 +195,16 @@ export default class TrainingPlanScreen extends React.Component {
       )
     } else {
       var todaysWorkout = (
-        <View style={styles.workoutContainer}>
-          <Text style={styles.workoutDate}>TODAY</Text>
-          <View style={styles.workoutPlanContainer}>
-            {(this.state.todaysWorkout.run === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/></View> : <View></View>}
-            {(this.state.todaysWorkout.bike === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/></View> : <View></View>}
-            {(this.state.todaysWorkout.swim === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/></View> : <View></View>}
-          </View>
+        <View>
+          {weekday === 1 ? <Text style={styles.week}>WEEK {Math.ceil(week)}</Text> : null}
+          <TouchableOpacity style={styles.workoutContainer}>
+            <Text style={styles.workoutDate}>TODAY ({weekdayPrint})</Text>
+            <View style={styles.workoutPlanContainer}>
+              {(this.state.todaysWorkout.run === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/run.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{this.state.todaysChoice.runDifficulty}</Text></View> : null}
+              {(this.state.todaysWorkout.bike === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/bike.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{this.state.todaysChoice.bikeDifficulty}</Text></View> : null}
+              {(this.state.todaysWorkout.swim === true) ? <View style={styles.eachWorkoutContainer}><Image source={require('../assets/images/swim.png')} style={styles.activityIcon}/><Text style={styles.workoutWorkout}>{this.state.todaysChoice.swimDifficulty}</Text></View> : null}
+            </View>
+          </TouchableOpacity>
         </View>
       )
     }
@@ -263,6 +325,7 @@ const styles = StyleSheet.create({
     marginTop: 3,
     color: Colors.ourYellow,
     fontWeight: 'bold',
+    fontStyle: 'italic',
     backgroundColor: 'transparent'
   },
   futureRestDayWorkoutContainer: {
@@ -281,11 +344,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     backgroundColor: 'transparent'
   },
+  week: {
+    fontFamily: 'kalam-bold',
+    fontSize: 24,
+    color: 'white',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    paddingTop: 15
+  },
   workoutDate: {
     textAlign: 'left',
     fontSize: 17,
     color: Colors.ourGreen,
     fontWeight: 'bold',
+    fontStyle: 'italic',
     backgroundColor: 'transparent',
     marginBottom: 4
   },
@@ -300,6 +372,8 @@ const styles = StyleSheet.create({
   workoutWorkout: {
     textAlign: 'left',
     fontSize: 17,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
     color: 'white',
     backgroundColor: 'transparent'
   },

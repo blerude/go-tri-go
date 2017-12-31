@@ -34,7 +34,8 @@ export default class LinksScreen extends React.Component {
       trainingText: '',
       nutritionText: '',
       raceText: '',
-      write: false
+      write: false,
+      quote: ''
     }
     this.findEntries = this.findEntries.bind(this)
     this.delete = this.delete.bind(this)
@@ -45,20 +46,24 @@ export default class LinksScreen extends React.Component {
   componentDidMount() {
     var user = firebase.auth().currentUser;
     database.ref('/users/' + user.uid).once('value').then(snapshot => {
+      var week = Math.ceil(snapshot.val().day / 7)
       this.setState({
         day: snapshot.val().day,
         journals: snapshot.val().journals ? snapshot.val().journals : {}
+      })
+    })
+    database.ref('/quotes/').once('value').then(snapshot => {
+      var week = Math.ceil(this.state.day / 7)
+      this.setState({
+        quote: snapshot.val()[week - 1]
       })
     })
   }
 
   findEntries(x) {
     var entries = []
-    console.log('FOUND JOURNALS: ', this.state.journals)
     for (var key in this.state.journals) {
       if (key) {
-        console.log('KEY: ' + key)
-        console.log('FOUND ENTRY: ' + this.state.journals[key][x])
         if (this.state.journals[key][x]) {
           entries.push({
             day: key,
@@ -67,7 +72,6 @@ export default class LinksScreen extends React.Component {
         }
       }
     }
-    console.log('E: ', entries)
     return entries
   }
 
@@ -98,10 +102,8 @@ export default class LinksScreen extends React.Component {
         snapshot.val().journals &&
         snapshot.val().journals[this.state.thisDay] &&
         snapshot.val().journals[this.state.thisDay][0]) {
-        console.log('T1')
         train = snapshot.val().journals[this.state.thisDay][0]
       } else {
-        console.log('T2')
         train = this.state.trainingText
       }
 
@@ -109,10 +111,8 @@ export default class LinksScreen extends React.Component {
         snapshot.val().journals &&
         snapshot.val().journals[this.state.thisDay] &&
         snapshot.val().journals[this.state.thisDay][1]) {
-        console.log('N1')
         nutr = snapshot.val().journals[this.state.thisDay][1]
       } else {
-        console.log('N2')
         nutr = this.state.nutritionText
       }
 
@@ -120,10 +120,8 @@ export default class LinksScreen extends React.Component {
         snapshot.val().journals &&
         snapshot.val().journals[this.state.thisDay] &&
         snapshot.val().journals[this.state.thisDay][2]) {
-        console.log('R1')
         race = snapshot.val().journals[this.state.thisDay][2]
       } else {
-        console.log('R2')
         race = this.state.raceText
       }
 
@@ -132,7 +130,6 @@ export default class LinksScreen extends React.Component {
         nutr,
         race
       ]
-      console.log('NEW ENTRY: ', entry)
       var updates = {}
       updates['/users/' + user.uid + '/journals/' + this.state.thisDay] = entry
       firebase.database().ref().update(updates)
@@ -141,7 +138,6 @@ export default class LinksScreen extends React.Component {
       })
 
       this.state.journals[this.state.thisDay] = entry
-      console.log('UPDATED JOURNALS: ', this.state.journals)
 
       this.setState({
         write: false,
@@ -175,6 +171,9 @@ export default class LinksScreen extends React.Component {
               style={styles.modalSubmit}>
               <Text style={styles.buttonText}>Add an Entry</Text>
             </TouchableOpacity>
+            <Text style={styles.label}>This week's affirmation:</Text>
+            <Text style={styles.entryEntry}>{this.state.quote}</Text>
+            <Text></Text>
             <Text style={styles.title}>Journal Log:</Text>
             <Text style={styles.label}>Training:</Text>
             <View style={styles.entryContainer}>
