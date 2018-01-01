@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { ExpoLinksView } from '@expo/samples';
-import RadioGroup from 'react-native-custom-radio-group';
 import Modal from 'react-native-modal'
 
 import { StackNavigator } from 'react-navigation'
@@ -115,8 +114,9 @@ export default class WorkoutScreen extends React.Component {
         if (!snapshot.val().swim && !snapshot.val().bike && !snapshot.val().run) {
           rest = true;
           var choice = {
+            day: currDay,
             completed: false,
-            rest: false
+            rest: rest
           }
           var updates = {}
           updates['/users/' + user.uid + '/selectedWorkouts/' + this.state.day] = choice
@@ -204,8 +204,9 @@ export default class WorkoutScreen extends React.Component {
       }
 
       if (this.state.swim) {
+        choice['swim'] = true
         choice['swimWorkout'] = this.state.dailyWorkout.swim[this.state.swimLevel]
-        choice['swimInfo'] = this.state.dailyWorkout.swimInfo
+        choice['swimInfo'] = this.state.dailyWorkout.swimInfo || ''
         if (this.state.swimLevel === 0) {
           choice['swimDifficulty'] = 'Beginner'
         } else if (this.state.swimLevel === 1) {
@@ -215,8 +216,9 @@ export default class WorkoutScreen extends React.Component {
         }
       }
       if (this.state.bike) {
+        choice['bike'] = true
         choice['bikeWorkout'] = this.state.dailyWorkout.bike[this.state.bikeLevel]
-        choice['bikeInfo'] = this.state.dailyWorkout.bikeInfo
+        choice['bikeInfo'] = this.state.dailyWorkout.bikeInfo || ''
         if (this.state.bikeLevel === 0) {
           choice['bikeDifficulty'] = 'Beginner'
         } else if (this.state.bikeLevel === 1) {
@@ -226,8 +228,9 @@ export default class WorkoutScreen extends React.Component {
         }
       }
       if (this.state.run) {
+        choice['run'] = true
         choice['runWorkout'] = this.state.dailyWorkout.run[this.state.runLevel]
-        choice['runInfo'] = this.state.dailyWorkout.runInfo
+        choice['runInfo'] = this.state.dailyWorkout.runInfo || ''
         if (this.state.runLevel === 0) {
           choice['runDifficulty'] = 'Beginner'
         } else if (this.state.runLevel === 1) {
@@ -346,7 +349,6 @@ export default class WorkoutScreen extends React.Component {
   complete() {
     var user = firebase.auth().currentUser;
     var updates = {}
-
     updates['/users/' + user.uid + '/selectedWorkouts/' + this.state.day + "/completed"] = true
     firebase.database().ref().update(updates)
     .catch(error => {
@@ -442,7 +444,9 @@ export default class WorkoutScreen extends React.Component {
     } else if (l === 'R') {
       list = this.state.runHows
     }
+    console.log('TO LIST: ' + list)
     if (index < settings.length) {
+
       return (
         <View style={styles.slideContainer}>
           <View key={index} style={styles.modalTextContainer}>
@@ -467,7 +471,7 @@ export default class WorkoutScreen extends React.Component {
                 }
               })}
             </View>
-            <Text style={styles.modalTitle}>Today's How To's:</Text>
+            {list.length ? <Text style={styles.modalTitle}>Today's How To's:</Text> : null}
             {list.map((item, i) => {
               return <View key={i}>
                 <Text style={styles.toTextYellow}>{item.text}</Text>

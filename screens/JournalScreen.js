@@ -132,6 +132,7 @@ export default class LinksScreen extends React.Component {
       ]
       var updates = {}
       updates['/users/' + user.uid + '/journals/' + this.state.thisDay] = entry
+      updates['/users/' + user.uid + '/selectedWorkouts/' + this.state.thisDay + '/journal/'] = entry
       firebase.database().ref().update(updates)
       .catch(error => {
         console.log('Error Updating: ' + error.message)
