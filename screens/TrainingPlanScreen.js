@@ -190,7 +190,7 @@ export default class TrainingPlanScreen extends React.Component {
           <TouchableOpacity
             key={day}
             style={containerStyle}
-            onPress={() => this.switch(workout.day)}>
+            onPress={workout.completed ? null : () => this.switch(workout.day)}>
             <Text style={textStyle}>REST DAY</Text>
           </TouchableOpacity>
         )
@@ -467,7 +467,6 @@ export default class TrainingPlanScreen extends React.Component {
   }
 
   getJournal() {
-    console.log('HELLO')
     var journ = this.state.tempChoice.journal || []
     var list = []
     journ.forEach((entry, i) => {
@@ -486,7 +485,6 @@ export default class TrainingPlanScreen extends React.Component {
         })
       }
     })
-    console.log('LIST:', list)
     return list
   }
 

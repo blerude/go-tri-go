@@ -35,8 +35,10 @@ export default class LinksScreen extends React.Component {
       nutritionText: '',
       raceText: '',
       write: false,
+      quotes: [],
       quote: ''
     }
+    this.readDayChanges = this.readDayChanges.bind(this)
     this.findEntries = this.findEntries.bind(this)
     this.delete = this.delete.bind(this)
     this.newEntry = this.newEntry.bind(this)
@@ -53,11 +55,26 @@ export default class LinksScreen extends React.Component {
       })
     })
     database.ref('/quotes/').once('value').then(snapshot => {
-      var week = Math.ceil(this.state.day / 7)
+      var week = Math.floor(this.state.day / 7)
+      console.log('SET WEEK: ' + week + ' DAY: ' + this.state.day)
       this.setState({
-        quote: snapshot.val()[week - 1]
+        quotes: snapshot.val(),
+        quote: snapshot.val()[week]
       })
     })
+    this.readDayChanges()
+  }
+
+  readDayChanges() {
+    var user = firebase.auth().currentUser;
+    database.ref('users/' + user.uid + '/day/').on('value', (snapshot) => {
+      console.log("DAY CHANGE: " + snapshot.val())
+      var week = Math.floor(snapshot.val() / 7)
+      this.setState({
+        day: snapshot.val(),
+        quote: this.state.quotes[week]
+      })
+    });
   }
 
   findEntries(x) {
@@ -250,6 +267,7 @@ export default class LinksScreen extends React.Component {
                       onChangeText={(thisDay) => this.setState({thisDay})}
                       value={this.state.thisDay}
                       style={styles.textInputDay}
+                      placeholder={this.state.day}
                       required/>
                 </View>
                 <Text style={styles.modalEntryLabel}>Training:</Text>

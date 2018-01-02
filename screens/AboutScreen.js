@@ -54,7 +54,6 @@ export default class LinksScreen extends React.Component {
   }
 
   _onScroll(index){
-    console.log('CURRENT INDEX: ', index)
     this.setState({activeSlide: index})
   }
 

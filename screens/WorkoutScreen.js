@@ -373,14 +373,8 @@ export default class WorkoutScreen extends React.Component {
       workoutModalVisible: false,
     })
 
-    if (this.state.day % 7 === 0) {
-      this.setState({
-        congratsModalVisible: true
-      })
-    } else {
-      const { navigate } = this.props.navigation
-      navigate('Journal', { new: true })
-    }
+    const { navigate } = this.props.navigation
+    navigate('Journal', { new: true })
   }
 
   getWorkoutLevel(val) {
@@ -444,7 +438,6 @@ export default class WorkoutScreen extends React.Component {
     } else if (l === 'R') {
       list = this.state.runHows
     }
-    console.log('TO LIST: ' + list)
     if (index < settings.length) {
 
       return (
