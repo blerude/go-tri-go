@@ -140,6 +140,7 @@ export default class WorkoutScreen extends React.Component {
         }
         this.setState({
           rest: rest,
+          completed: false,
           swim: snapshot.val().swim,
           bike: snapshot.val().bike,
           run: snapshot.val().run,

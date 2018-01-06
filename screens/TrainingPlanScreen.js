@@ -546,7 +546,7 @@ export default class TrainingPlanScreen extends React.Component {
               {this.getChoice(this.state.modalVal).map((item, j) => {
                 if (item) {
                   var boxStyle = item.chosen ? styles.workoutBoxChosen : styles.workoutBox
-                  var titleStyle = item.chosen ? styles.labelChosen : styles.greenModalLabel
+                  var titleStyle = item.chosen ? styles.greenModalLabel : styles.labelChosen
                   var title = item.chosen ? 'You Chose ' + item.title : item.title
                   return (
                     <View key={j}>
@@ -555,9 +555,9 @@ export default class TrainingPlanScreen extends React.Component {
                         {item.workout.map((text, i) => {
                           var style;
                           if (i % 2 === 0) {
-                            style = styles.modalText
-                          } else {
                             style = styles.modalTextYellow
+                          } else {
+                            style = styles.modalText
                           }
                           if (typeof(text) === 'string') {
                             return <Text key={i} style={style}>{text}</Text>
@@ -570,6 +570,9 @@ export default class TrainingPlanScreen extends React.Component {
                           }
                         })}
                       </View>
+                      {item.title[item.title.length - 1] === 'd' ?
+                      <Text></Text>
+                      : null}
                     </View>
                   )
                 }
@@ -608,9 +611,9 @@ export default class TrainingPlanScreen extends React.Component {
                       {item.workout.map((text, i) => {
                         var style;
                         if (i % 2 === 0) {
-                          style = styles.modalText
-                        } else {
                           style = styles.modalTextYellow
+                        } else {
+                          style = styles.modalText
                         }
                         if (typeof(text) === 'string') {
                           return <Text key={i} style={style}>{text}</Text>
@@ -623,6 +626,9 @@ export default class TrainingPlanScreen extends React.Component {
                         }
                       })}
                     </View>
+                    {item.title[item.title.length - 1] === 'd' ?
+                    <Text></Text>
+                    : null}
                   </View>
                 )
               })}

@@ -21,13 +21,13 @@ const screenHeight = Dimensions.get('window').height;
 const testimonials = [
   {text: "I could barely swim 50 yards in the pool at the beginning of my training process and felt that my swim ended up to be the strongest event on race day!", author: 'Tiffany Barnett'},
   {text: "I am an active but heavier female. The adaptability of the program helped me to build on each aspect of my baseline strengths and turn my perceived weaknesses into measurable training opportunities.", author: 'Lillian Morton'},
-  {text: "I would have never successfully reached the finish line on race day without the Go-Tri-Go program. I would recommend this invaluable program without hesitation.", author: 'Go-Tri-Go user'},
+  {text: "I would have never successfully reached the finish line on race day without the GO-TRI-GO program. I would recommend this invaluable program without hesitation.", author: 'GO-TRI-GO user'},
   {text: "GO-TRI- GO was a great program and helped me achieve my goal. Without it I am certain I would not have been able to finish, or maybe even start, the race.", author: 'Cheryl Olson'},
   {text: "This program helped me to tailor my training to my specific skill level in the various disciplines, which kept me motivated and engaged. I was able to build up my confidence in my weak areas!", author: 'Beginner Triathlete'}
 ]
 
-const intro = "Go-Tri-Go is an adaptable triathlon training plan meant to get you ready for your first sprint triathlon. You have the power to personalize the program towards your strengths so that you feel confident on race day!"
-
+const slogan = "Plan your work and work your plan!"
+const intro = "GO-TRI-GO is a comprehensive 12 week Sprint Triathlon training program that will get you fit, confident, and race ready! You choose the level of difficulty, and we'll give you the 'how-tos' so you can get it done!"
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
@@ -84,6 +84,7 @@ export default class LinksScreen extends React.Component {
         </View>
         <View style={styles.contentContainer}>
           <Text style={styles.contentHeaderText}>About GO-TRI-GO</Text>
+          <Text style={styles.sloganText}>{slogan}</Text>
           <Text style={styles.aboutTheAppText}>{intro}</Text>
           <Text style={styles.contentHeader2Text}>Testimonials</Text>
           <Carousel
@@ -125,13 +126,6 @@ const styles = StyleSheet.create({
     width: screenWidth,
     marginLeft: 20,
   },
-  titleText: {
-    fontFamily: 'kalam-bold',
-    fontSize: 44,
-    color: Colors.ourBlue,
-    textAlign: 'center',
-    backgroundColor: 'transparent'
-  },
   contentContainer: {
     marginTop: 30,
     paddingLeft: 15,
@@ -154,11 +148,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     marginTop: 5
   },
+  sloganText: {
+    fontFamily: 'kalam-bold',
+    fontSize: 20,
+    color: Colors.ourBackgroundGrey,
+    textAlign: 'center',
+    backgroundColor: 'transparent'
+  },
   aboutTheAppText: {
     color: 'white',
     textAlign: 'center',
     backgroundColor: 'transparent',
-    fontSize: 17
+    fontSize: 15
   },
   strip: {
     flex: 1,

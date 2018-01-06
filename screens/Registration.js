@@ -10,6 +10,8 @@ var database = firebase.database();
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
+const slogan = "Plan your work and work your plan!"
+
 export default class Registration extends React.Component {
   static navigationOptions = {
     title: 'Registration',
@@ -95,7 +97,7 @@ export default class Registration extends React.Component {
         </View>
         <View>
           <Text style={styles.titleText}>GO-TRI-GO</Text>
-          <Text style={styles.sloganText}>Your customizable training plan for your first triathlon.</Text>
+          <Text style={styles.sloganText}>{slogan}</Text>
         </View>
 
         <View style={styles.registerContainer}>
@@ -196,9 +198,8 @@ const styles = StyleSheet.create({
   },
   sloganText: {
     fontFamily: 'kalam-bold',
-    fontSize: 15,
+    fontSize: 18,
     color: Colors.ourGreen,
-    lineHeight: 18,
     textAlign: 'center',
     backgroundColor: 'transparent'
   },
@@ -265,7 +266,7 @@ const styles = StyleSheet.create({
   },
   strip: {
     flex: 1,
-    height: 270,
+    height: 290,
     width: 450,
     backgroundColor: Colors.ourGreen,
     position: 'absolute',
