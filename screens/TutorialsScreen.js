@@ -17,6 +17,17 @@ var database = firebase.database();
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
+const instructions = [
+  'Training for a triathlon and managing three sports at once can be a bit of a "three ring circus"',
+  'GO-TRI-GO takes your training week and maps it out for you: specific workouts with a specific focus. Training with a purpose and having a well-thought-out and progressive program is the key to success at any level or distance.',
+  'This plan is unique in that each every day YOU choose the level of training that best fits your skill and fitness levels. If you are just starting to train for your first Sprint Triathlon then choose to start with the Beginner workouts. If you have an extensive sports background, then choose from the Intermediate or Advanced workouts.',
+  'For example, say you are a strong cyclist but a weak swimmer. You would choose the advanced cycling workout and the beginner swim workout. This way, you can continue to maintain your cycling fitness as you work to build your swimming skill and speed to a higher level.',
+  'GO-TRI-GO is a foundational program from which you can learn the tricks and terminology of the sport, things like a proper wet suit fit. Where to start on the beach? How should I set up my transition area (the fourth event)? What is a "brick"?',
+  "In your Weekly Plan, you can look at previous workouts you chose (in yellow) as well as preview future workouts (in green). Need to switch the order of workouts around? Just click on the workout you'd rather do and skip back and forth between days.",
+  'Finally, write journal entries to track how you feel, what you ate, what went well during your workout, what you should remember on race day, and more!',
+  'And remember, "Success will come from planning your work and working your plan!" Have fun!',
+  '---Katie and the GO-TRI-GO team'
+]
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
@@ -28,15 +39,16 @@ export default class LinksScreen extends React.Component {
     super(props)
     this.state = {
       tuts: [],
+      showI: false,
       showS: false,
-      showBS: false,
       showB: false,
-      showBR: false,
-      showR: false
+      showR: false,
+      showT: false
     }
     this.getList = this.getList.bind(this)
     this.setNewState = this.setNewState.bind(this)
     this.getTitle = this.getTitle.bind(this)
+    this.renderInstructions = this.renderInstructions.bind(this)
     this.renderGroup = this.renderGroup.bind(this)
   }
 
@@ -59,7 +71,24 @@ export default class LinksScreen extends React.Component {
       })
     })
 
-    return list
+    var sortedList = list.sort((a, b) => {
+      return a.text > b.text
+    })
+    // list.forEach(item => {
+    //   var added = false
+    //   for (var i = 0; i < sortedList.length; i++) {
+    //     var curr = sortedList[i]
+    //     if () {
+    //       added = true
+    //       sortedList.push(item)
+    //     }
+    //   }
+    //   if (!added) {
+    //     sortedList.push(item)
+    //   }
+    // })
+
+    return sortedList
   }
 
   setNewState(newVar) {
@@ -67,21 +96,21 @@ export default class LinksScreen extends React.Component {
       this.setState({
         showS: !this.state.showS
       })
-    } else if (newVar === 'showSB') {
-      this.setState({
-        showSB: !this.state.showSB
-      })
     } else if (newVar === 'showB') {
       this.setState({
         showB: !this.state.showB
       })
-    } else if (newVar === 'showBR') {
-      this.setState({
-        showBR: !this.state.showBR
-      })
     } else if (newVar === 'showR') {
       this.setState({
         showR: !this.state.showR
+      })
+    } else if (newVar === 'showT') {
+      this.setState({
+        showT: !this.state.showT
+      })
+    } else if (newVar === 'showI') {
+      this.setState({
+        showI: !this.state.showI
       })
     }
   }
@@ -92,20 +121,16 @@ export default class LinksScreen extends React.Component {
       this.state.showS ?
         title = <Text style={styles.title}>{type + ' '} &and;</Text> :
         title = <Text style={styles.title}>{type + ' '} &or;</Text>
-    } else if (newVar === 'showSB') {
-      this.state.showSB ?
-        title = <Text style={styles.title}>{type + ' '} &and;</Text> :
-        title = <Text style={styles.title}>{type + ' '} &or;</Text>
     } else if (newVar === 'showB') {
       this.state.showB ?
         title = <Text style={styles.title}>{type + ' '} &and;</Text> :
         title = <Text style={styles.title}>{type + ' '} &or;</Text>
-    } else if (newVar === 'showBR') {
-      this.state.showBR ?
-        title = <Text style={styles.title}>{type + ' '} &and;</Text> :
-        title = <Text style={styles.title}>{type + ' '} &or;</Text>
     } else if (newVar === 'showR') {
       this.state.showR ?
+        title = <Text style={styles.title}>{type + ' '} &and;</Text> :
+        title = <Text style={styles.title}>{type + ' '} &or;</Text>
+    } else if (newVar === 'showT') {
+      this.state.showT ?
         title = <Text style={styles.title}>{type + ' '} &and;</Text> :
         title = <Text style={styles.title}>{type + ' '} &or;</Text>
     }
@@ -116,16 +141,39 @@ export default class LinksScreen extends React.Component {
     var ourVar = ''
     if (stateVar === 'showS') {
       ourVar = this.state.showS
-    } else if (stateVar === 'showSB') {
-      ourVar = this.state.showSB
     } else if (stateVar === 'showB') {
       ourVar = this.state.showB
-    } else if (stateVar === 'showBR') {
-      ourVar = this.state.showBR
     } else if (stateVar === 'showR') {
       ourVar = this.state.showR
+    } else if (stateVar === 'showT') {
+      ourVar = this.state.showT
     }
     return ourVar
+  }
+
+  renderInstructions(stateVar) {
+    return <View style={styles.groupContainer}>
+      <TouchableOpacity
+        onPress={() => this.setNewState(stateVar)}>
+          {this.state.showI ?
+            <Text style={styles.title}>Instructions: &and;</Text> :
+            <Text style={styles.title}>Instructions: &or;</Text>
+          }
+      </TouchableOpacity>
+      {this.state.showI ?
+        <View>
+          {instructions.map((item, i) => {
+            var style;
+            i % 2 ? style = styles.toTextBright : style = styles.toText
+            return <View key={i}>
+              <Text style={style}>{item}</Text>
+              <Text></Text>
+            </View>
+          })}
+        </View>
+        : null
+      }
+    </View>
   }
 
   renderGroup(type, stateVar, getVar) {
@@ -139,7 +187,7 @@ export default class LinksScreen extends React.Component {
           <Text style={styles.label}>Vocabulary</Text>
           {this.getList(getVar, 'vocabulary').map((item, i) => {
             return <View key={i}>
-              <Text style={styles.toTextBright}>{'Day ' + item.day + ': ' + item.text}</Text>
+              <Text style={styles.toTextBright}>{item.text} ({'Day ' + item.day})</Text>
               <Text style={styles.toText}>{item.description}</Text>
               <Text></Text>
             </View>
@@ -184,13 +232,12 @@ export default class LinksScreen extends React.Component {
             <Text style={styles.headerText}>How To's</Text>
           </View>
           <View style={styles.contentContainer}>
-            <Text style={styles.title}>How to use the app:</Text>
+            {this.renderInstructions('showI')}
             <Text></Text>
             {this.renderGroup('Swim', 'showS', 'swim')}
-            {this.renderGroup('Swim -> Bike', 'showSB', 'swim/bike')}
             {this.renderGroup('Bike', 'showB', 'bike')}
-            {this.renderGroup('Bike -> Run', 'showBR', 'bike/run')}
             {this.renderGroup('Run', 'showR', 'run')}
+            {this.renderGroup('Transitions', 'showT', 'transition')}
           </View>
         </View>
       </ScrollView>
@@ -251,7 +298,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   contentContainer: {
-    marginTop: 30,
+    marginTop: 40,
     paddingLeft: 15,
     paddingRight: 15,
     alignItems: 'center',

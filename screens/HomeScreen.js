@@ -24,6 +24,8 @@ import Carousel from 'react-native-snap-carousel';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
+const slogan = "Plan your work and work your plan!"
+
 const images = [
   {image: require('../assets/images/home1.jpeg'), text: '12 weeks to your first Sprint Tri'},
   {image: require('../assets/images/home2.jpeg'), text: '12 week Personalized Training Plan'},

@@ -10,6 +10,8 @@ var database = firebase.database();
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
+const slogan = "Plan your work and work your plan!"
+
 export default class Login extends React.Component {
   static navigationOptions = {
     title: 'Login',
@@ -90,7 +92,7 @@ export default class Login extends React.Component {
         </View>
         <View>
           <Text style={styles.titleText}>GO-TRI-GO</Text>
-          <Text style={styles.sloganText}>Your customizable training plan for your first triathlon.</Text>
+          <Text style={styles.sloganText}>{slogan}</Text>
         </View>
 
         <View style={styles.loginContainer}>
@@ -147,9 +149,8 @@ const styles = StyleSheet.create({
   },
   sloganText: {
     fontFamily: 'kalam-bold',
-    fontSize: 15,
+    fontSize: 18,
     color: Colors.ourBlue,
-    lineHeight: 18,
     textAlign: 'center',
     backgroundColor: 'transparent'
   },
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
   },
   strip: {
     flex: 1,
-    height: 260,
+    height: 270,
     width: 450,
     backgroundColor: Colors.ourBlue,
     position: 'absolute',
