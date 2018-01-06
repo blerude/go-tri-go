@@ -40,7 +40,6 @@ export default class LinksScreen extends React.Component {
     }
     this.readDayChanges = this.readDayChanges.bind(this)
     this.findEntries = this.findEntries.bind(this)
-    this.delete = this.delete.bind(this)
     this.save = this.save.bind(this)
   }
 
@@ -87,17 +86,6 @@ export default class LinksScreen extends React.Component {
       }
     }
     return entries
-  }
-
-  delete(x) {
-    // console.log('DELETE!')
-    // var user = firebase.auth().currentUser;
-    // var updates = {}
-    // updates['/users/' + user.uid + '/journals/' + DAY + '/' + x + '/'] = ''
-    // firebase.database().ref().update(updates)
-    // .catch(error => {
-    //   console.log('Error Updating: ' + error.message)
-    // })
   }
 
   save() {
@@ -189,11 +177,6 @@ export default class LinksScreen extends React.Component {
               {this.findEntries(0).map((entry, i) => {
                 return (
                   <View key={i} style={styles.entryPair}>
-                    {/* <TouchableOpacity
-                      onPress={() => this.delete(0)}
-                      style={styles.removeEntry}>
-                      <Text style={styles.removeText}>x</Text>
-                    </TouchableOpacity> */}
                     <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
                     <Text style={styles.entryEntry}>{entry.entry}</Text>
                     <View style={styles.line}></View>
@@ -206,11 +189,6 @@ export default class LinksScreen extends React.Component {
               {this.findEntries(1).map((entry, i) => {
                 return (
                   <View key={i} style={styles.entryPair}>
-                    {/* <TouchableOpacity
-                      onPress={() => this.delete(1)}
-                      style={styles.removeEntry}>
-                      <Text style={styles.removeText}>x</Text>
-                    </TouchableOpacity> */}
                     <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
                     <Text style={styles.entryEntry}>{entry.entry}</Text>
                     <View style={styles.line}></View>
@@ -223,11 +201,6 @@ export default class LinksScreen extends React.Component {
               {this.findEntries(2).map((entry, i) => {
                 return (
                   <View key={i} style={styles.entryPair}>
-                    {/* <TouchableOpacity
-                      onPress={() => this.delete(2)}
-                      style={styles.removeEntry}>
-                      <Text style={styles.removeText}>x</Text>
-                    </TouchableOpacity> */}
                     <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
                     <Text style={styles.entryEntry}>{entry.entry}</Text>
                     <View style={styles.line}></View>
