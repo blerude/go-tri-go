@@ -1,8 +1,4 @@
 import React from 'react';
-
-import Registration from './Registration';
-import Login from './Login';
-
 import {
   Image,
   Platform,
@@ -11,26 +7,28 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions
 } from 'react-native';
+import Carousel from 'react-native-snap-carousel';
 import { WebBrowser } from 'expo';
 
-import { Dimensions } from 'react-native';
+import Registration from './Registration';
+import Login from './Login';
 
 import { MonoText } from '../components/StyledText';
 import Colors from '../constants/Colors';
 
-import Carousel from 'react-native-snap-carousel';
-
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const slogan = "Plan your work and work your plan!"
-
+// Images used in the landing page carousel
 const images = [
   {image: require('../assets/images/home1.jpeg'), text: '12 weeks to your first Sprint Tri'},
   {image: require('../assets/images/home2.jpeg'), text: '12 week Personalized Training Plan'},
   {image: require('../assets/images/home3.jpeg'), text: 'Get Fit, Confident, and RACE READY!'}
 ]
+const slogan = "Plan your work and work your plan!"
+
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -40,19 +38,22 @@ export default class HomeScreen extends React.Component {
   constructor(props) {
     super(props)
 
-     this.goToLogin = this.goToLogin.bind(this);
-     this.goToRegistration = this.goToRegistration.bind(this);
-     this._renderItem = this._renderItem.bind(this);
+    this.goToRegistration = this.goToRegistration.bind(this);
+    this.goToLogin = this.goToLogin.bind(this);
+    this._renderItem = this._renderItem.bind(this);
   }
 
-  goToLogin(e) {
-    this.props.navigation.navigate('Login');
-  }
-
+  // Redirect to registration screen
   goToRegistration(e) {
     this.props.navigation.navigate('Registration');
   }
 
+  // Redirect to login screen
+  goToLogin(e) {
+    this.props.navigation.navigate('Login');
+  }
+
+  // Renders each slide of the carousel
   _renderItem ({item, index}) {
     return (
       <View style={styles.slideContainer}>
@@ -63,42 +64,43 @@ export default class HomeScreen extends React.Component {
         <Text style={styles.slideText}>{item.text}</Text>
       </View>
     );
-}
+  }
 
   render() {
     return (
       <View style={styles.container}>
-          <View style={styles.borderTop} >
-          </View>
-          <View style={styles.strip} >
-          </View>
-          <View>
-            <Image
-              source={require('../tri.png')}
-              style={styles.logo}
-            />
-          </View>
-          <View>
-            <Text style={styles.titleText}>GO-TRI-GO</Text>
-          </View>
-          <Carousel
-              renderItem={this._renderItem}
-              data={images}
-              sliderWidth={320}
-              itemWidth={215}
-              loop={true}
-              activeSlideAlignment={'center'}
+        <View style={styles.borderTop} >
+        </View>
+        <View style={styles.strip} >
+        </View>
+        <View>
+          <Image
+            source={require('../tri.png')}
+            style={styles.logo}
           />
-          <View style={styles.LoginRegisterTextContainer}>
-            <TouchableOpacity
-              onPress={() => {this.goToLogin()}}>
-              <Text style={styles.LoginRegisterText}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {this.goToRegistration()}}>
-              <Text style={styles.LoginRegisterText}>Register</Text>
-            </TouchableOpacity>
-          </View>
+        </View>
+        
+        <View>
+          <Text style={styles.titleText}>GO-TRI-GO</Text>
+        </View>
+        <Carousel
+          renderItem={this._renderItem}
+          data={images}
+          sliderWidth={320}
+          itemWidth={215}
+          loop={true}
+          activeSlideAlignment={'center'}
+        />
+        <View style={styles.LoginRegisterTextContainer}>
+          <TouchableOpacity
+            onPress={() => {this.goToLogin()}}>
+            <Text style={styles.LoginRegisterText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {this.goToRegistration()}}>
+            <Text style={styles.LoginRegisterText}>Register</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }

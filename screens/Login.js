@@ -1,16 +1,31 @@
 import React from 'react';
-import Registration from './Registration';
+import {
+  Dimensions,
+  ScrollView,
+  Image,
+  Platform,
+  StyleSheet,
+  View,
+  Text,
+  Button,
+  TouchableOpacity,
+  TextInput,
+  TouchableWithoutFeedback,
+  Keyboard
+} from 'react-native';
 
-import { Dimensions, ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
-
-import Colors from '../constants/Colors';
 import firebase from '../firebase';
 var database = firebase.database();
+
+import Registration from './Registration';
+
+import Colors from '../constants/Colors';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const slogan = "Plan your work and work your plan!"
+
 
 export default class Login extends React.Component {
   static navigationOptions = {
@@ -22,44 +37,42 @@ export default class Login extends React.Component {
     this.state = {
       email: '',
       password: '',
-     }
+    }
 
-     this.loginUser = this.loginUser.bind(this);
-     this.needToRegister = this.needToRegister.bind(this);
+    this.loginUser = this.loginUser.bind(this);
+    this.needToRegister = this.needToRegister.bind(this);
   }
 
+  // Initiates the Firebase authentication process of logging a user in while
+  //  setting the persistence to a local status; navigates into the main app
   loginUser() {
-    console.log('Wooo logging in!');
     var nav = this.props.navigation
     var email = this.state.email
     var password = this.state.password
 
+    // New sign-in will be persisted with local persistence.
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(result => {
-        // New sign-in will be persisted with local persistence.
-        return firebase.auth()
-          .signInWithEmailAndPassword(email, password)
-          .then(user => {
-            console.log('Signed in: ' + user.uid)
-            nav.navigate('MainTabNavigator');
-          }).catch(function(error) {
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            console.log('Error signing in: ' + errorMessage)
-            alert('Error signing in: ' + errorMessage)
-          });
-      })
-      .catch(function(error) {
+    .then(result => {
+      return firebase.auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(user => {
+        nav.navigate('MainTabNavigator');
+      }).catch(function(error) {
         // Handle Errors here.
-        var errorCode = error.code;
         var errorMessage = error.message;
-        console.log('Error setting up local persistence: ' + errorMessage)
+        console.log('Error signing in: ' + errorMessage)
+        alert('Error signing in: ' + errorMessage)
       });
-
-
+    })
+    .catch(function(error) {
+      // Handle Errors here.
+      var errorMessage = error.message;
+      console.log('Error setting up local persistence: ' + errorMessage)
+    });
   }
 
+  // Initiates the Firebase method of sending a password reset email and alerts
+  //  the user that an email has been sent to their registered email
   forgotPassword() {
     var auth = firebase.auth();
     var emailAddress = this.state.email;
@@ -72,6 +85,7 @@ export default class Login extends React.Component {
     });
   }
 
+  // Redirects to the Registration page
   needToRegister() {
     this.props.navigation.navigate('Registration');
   }
@@ -79,49 +93,49 @@ export default class Login extends React.Component {
   render() {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <View style={styles.borderTop} >
-        </View>
-        <View style={styles.strip} >
-        </View>
-        <View>
-          <Image
-            source={require('../tri.png')}
-            style={styles.logo}
-          />
-        </View>
-        <View>
-          <Text style={styles.titleText}>GO-TRI-GO</Text>
-          <Text style={styles.sloganText}>{slogan}</Text>
-        </View>
+        <View style={styles.container}>
+          <View style={styles.borderTop} >
+          </View>
+          <View style={styles.strip} >
+          </View>
+          <View>
+            <Image
+              source={require('../tri.png')}
+              style={styles.logo}
+            />
+          </View>
+          <View>
+            <Text style={styles.titleText}>GO-TRI-GO</Text>
+            <Text style={styles.sloganText}>{slogan}</Text>
+          </View>
 
-        <View style={styles.loginContainer}>
-          <Text style={styles.headerText}>Log In</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Email"
-            onChangeText={(text) => this.setState({email: text})}
-          />
-          <TextInput
-            secureTextEntry={true}
-            style={styles.textInput}
-            placeholder="Password"
-            onChangeText={(text) => this.setState({password: text})}
-          />
-          <TouchableOpacity
-            onPress={() => {this.loginUser()}}>
-            <Text style={styles.registerButton}>Log In</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {this.forgotPassword()}}>
-            <Text style={styles.smallText}>Forgot password?</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {this.needToRegister()}}>
-            <Text style={styles.smallText}>Need to register?</Text>
-          </TouchableOpacity>
+          <View style={styles.loginContainer}>
+            <Text style={styles.headerText}>Log In</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Email"
+              onChangeText={(text) => this.setState({email: text})}
+            />
+            <TextInput
+              secureTextEntry={true}
+              style={styles.textInput}
+              placeholder="Password"
+              onChangeText={(text) => this.setState({password: text})}
+            />
+            <TouchableOpacity
+              onPress={() => {this.loginUser()}}>
+              <Text style={styles.registerButton}>Log In</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {this.forgotPassword()}}>
+              <Text style={styles.smallText}>Forgot password?</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {this.needToRegister()}}>
+              <Text style={styles.smallText}>Need to register?</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
       </TouchableWithoutFeedback>
     );
   }

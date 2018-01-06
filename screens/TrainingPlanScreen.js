@@ -7,7 +7,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';import { ExpoLinksView } from '@expo/samples';
+  Dimensions,
+} from 'react-native';
 import Modal from 'react-native-modal'
 import { Ionicons } from '@expo/vector-icons';
 
@@ -15,7 +16,6 @@ import firebase from '../firebase';
 var database = firebase.database();
 
 import Colors from '../constants/Colors';
-import { Dimensions } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -25,6 +25,7 @@ const screenHeight = Dimensions.get('window').height;
 // change color of "todays workout" based on if its done or not
 // change the styling of future days to look better without all the words
 //if you click on previous workout, modal with all the info comes up
+
 
 export default class TrainingPlanScreen extends React.Component {
   static navigationOptions = {
@@ -45,6 +46,7 @@ export default class TrainingPlanScreen extends React.Component {
       temp: {},
       tempChoice: {}
     }
+
     this.load = this.load.bind(this)
     this.readDayChanges = this.readDayChanges.bind(this)
     this.readWorkoutChanges = this.readWorkoutChanges.bind(this)

@@ -9,21 +9,21 @@ import {
   View,
   Dimensions
 } from 'react-native';
-import Carousel, { Pagination } from 'react-native-snap-carousel';
-import { ExpoLinksView } from '@expo/samples';
 import Modal from 'react-native-modal'
+import Carousel, { Pagination } from 'react-native-snap-carousel';
 
-import { StackNavigator } from 'react-navigation'
+import firebase from '../firebase';
+var database = firebase.database();
+
 import JournalScreen from '../screens/JournalScreen'
 
 import Colors from '../constants/Colors';
-import firebase from '../firebase';
-var database = firebase.database();
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const settings = []
+
 
 export default class WorkoutScreen extends React.Component {
   static navigationOptions = {
@@ -54,6 +54,7 @@ export default class WorkoutScreen extends React.Component {
       activeSlide: 0,
       completed: false
     }
+
     this.load = this.load.bind(this)
     this.readDayChanges = this.readDayChanges.bind(this)
     this.select = this.select.bind(this)
@@ -333,20 +334,6 @@ export default class WorkoutScreen extends React.Component {
     })
   }
 
-  _onScroll(index){
-    this.setState({activeSlide: index})
-  }
-
-  get pagination () {
-     const activeSlide = this.state.activeSlide;
-     return (
-         <Pagination style={styles.pagination}
-           dotsLength={settings.length}
-           activeDotIndex={activeSlide}
-         />
-     );
-   }
-
   complete() {
     var user = firebase.auth().currentUser;
     var updates = {}
@@ -428,6 +415,7 @@ export default class WorkoutScreen extends React.Component {
     return action;
   }
 
+  // Renders each slide of the carousel
   _renderItem ({item, index}) {
     var l = item.level[0]
     this.getHowTos(l)
@@ -439,8 +427,8 @@ export default class WorkoutScreen extends React.Component {
     } else if (l === 'R') {
       list = this.state.runHows
     }
-    if (index < settings.length) {
 
+    if (index < settings.length) {
       return (
         <View style={styles.slideContainer}>
           <View key={index} style={styles.modalTextContainer}>
@@ -473,18 +461,36 @@ export default class WorkoutScreen extends React.Component {
                 {item.category === 'gear' ?
                 <Text>MAP</Text> :
                 null
-                }
-                {item.category === 'video' ?
-                <Text>VIDEO</Text> :
-                null
-                }
-                <Text></Text>
+              }
+              {item.category === 'video' ?
+                <Text>VIDEO</Text>
+                : null
+              }
+              <Text></Text>
               </View>
             })}
           </View>
         </View>
       )
     }
+  }
+
+  // Allows carousel to be scrolled through, changing the state to mirror
+  //  which slide is being viewed
+  _onScroll(index){
+    this.setState({activeSlide: index})
+  }
+
+  // Controls the appearance of the dots indicating which slide of the carousel
+  //  is being viewed
+  get pagination () {
+    const activeSlide = this.state.activeSlide;
+    return (
+      <Pagination style={styles.pagination}
+        dotsLength={settings.length}
+        activeDotIndex={activeSlide}
+      />
+    );
   }
 
   render() {
@@ -499,11 +505,12 @@ export default class WorkoutScreen extends React.Component {
               style={styles.logo}
             />
           </View>
+
+          {/* View for displaying clickable workout options */}
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>My Workout</Text>
           </View>
-          {
-            this.state.rest ?
+          {this.state.rest ?
             <View style={styles.contentContainer}>
               <Text style={styles.contentHeader}>You're doing great! Rest up today!</Text>
               <View style={styles.submit}>
@@ -516,75 +523,72 @@ export default class WorkoutScreen extends React.Component {
             </View> :
             <View style={styles.contentContainer}>
               <Text style={styles.contentHeader}>Select your workout for day {this.state.day}:</Text>
-              {
-                this.state.swim ?
+              {this.state.swim ?
                 <View style={styles.workoutGroup} id="swim">
                   <Text style={styles.workoutHeader}>Swim:</Text>
                   <View style={styles.levelSelectionBox}>
-                     <TouchableOpacity
-                       onPress={() => this.openModal(0)}
-                       style={this.state.swimLevel === 0 ? styles.levelBoxActive : styles.levelBox}>
-                       <Text style={styles.levelText}>BEGINNER</Text>
-                     </TouchableOpacity>
-                     <TouchableOpacity
-                       onPress={() => this.openModal(1)}
-                       style={this.state.swimLevel === 1 ? styles.levelBoxActive : styles.levelBox}>
-                       <Text style={styles.levelText}>INTERMED.</Text>
-                     </TouchableOpacity>
-                     <TouchableOpacity
-                       onPress={() => this.openModal(2)}
-                       style={this.state.swimLevel === 2 ? styles.levelBoxActive : styles.levelBox}>
-                       <Text style={styles.levelText}>ADVANCED</Text>
-                     </TouchableOpacity>
-                   </View>
+                    <TouchableOpacity
+                      onPress={() => this.openModal(0)}
+                      style={this.state.swimLevel === 0 ? styles.levelBoxActive : styles.levelBox}>
+                      <Text style={styles.levelText}>BEGINNER</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.openModal(1)}
+                      style={this.state.swimLevel === 1 ? styles.levelBoxActive : styles.levelBox}>
+                      <Text style={styles.levelText}>INTERMED.</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.openModal(2)}
+                      style={this.state.swimLevel === 2 ? styles.levelBoxActive : styles.levelBox}>
+                      <Text style={styles.levelText}>ADVANCED</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View> :
                 <View></View>
               }
-              {
-                this.state.bike ?
+              {this.state.bike ?
                 <View style={styles.workoutGroup} id="bike">
                   <Text style={styles.workoutHeader}>Bike:</Text>
                   <View style={styles.levelSelectionBox}>
-                     <TouchableOpacity
-                       onPress={() => this.openModal(3)}
-                       style={this.state.bikeLevel === 0 ? styles.levelBoxActive : styles.levelBox}>
-                       <Text style={styles.levelText}>BEGINNER</Text>
-                     </TouchableOpacity>
-                     <TouchableOpacity
-                       onPress={() => this.openModal(4)}
-                       style={this.state.bikeLevel === 1 ? styles.levelBoxActive : styles.levelBox}>
-                       <Text style={styles.levelText}>INTERMED.</Text>
-                     </TouchableOpacity>
-                     <TouchableOpacity
-                       onPress={() => this.openModal(5)}
-                       style={this.state.bikeLevel === 2 ? styles.levelBoxActive : styles.levelBox}>
-                       <Text style={styles.levelText}>ADVANCED</Text>
-                     </TouchableOpacity>
-                   </View>
+                    <TouchableOpacity
+                      onPress={() => this.openModal(3)}
+                      style={this.state.bikeLevel === 0 ? styles.levelBoxActive : styles.levelBox}>
+                      <Text style={styles.levelText}>BEGINNER</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.openModal(4)}
+                      style={this.state.bikeLevel === 1 ? styles.levelBoxActive : styles.levelBox}>
+                      <Text style={styles.levelText}>INTERMED.</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.openModal(5)}
+                      style={this.state.bikeLevel === 2 ? styles.levelBoxActive : styles.levelBox}>
+                      <Text style={styles.levelText}>ADVANCED</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View> :
                 <View></View>
               }
-              {
-                this.state.run ?
+              {this.state.run ?
                 <View style={styles.workoutGroup} id="run">
                   <Text style={styles.workoutHeader}>Run:</Text>
                   <View style={styles.levelSelectionBox}>
-                     <TouchableOpacity
-                       onPress={() => this.openModal(6)}
-                       style={this.state.runLevel === 0 ? styles.levelBoxActive : styles.levelBox}>
-                       <Text style={styles.levelText}>BEGINNER</Text>
-                     </TouchableOpacity>
-                     <TouchableOpacity
-                       onPress={() => this.openModal(7)}
-                       style={this.state.runLevel === 1 ? styles.levelBoxActive : styles.levelBox}>
-                       <Text style={styles.levelText}>INTERMED.</Text>
-                     </TouchableOpacity>
-                     <TouchableOpacity
-                       onPress={() => this.openModal(8)}
-                       style={this.state.runLevel === 2 ? styles.levelBoxActive : styles.levelBox}>
-                       <Text style={styles.levelText}>ADVANCED</Text>
-                     </TouchableOpacity>
-                   </View>
+                    <TouchableOpacity
+                      onPress={() => this.openModal(6)}
+                      style={this.state.runLevel === 0 ? styles.levelBoxActive : styles.levelBox}>
+                      <Text style={styles.levelText}>BEGINNER</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.openModal(7)}
+                      style={this.state.runLevel === 1 ? styles.levelBoxActive : styles.levelBox}>
+                      <Text style={styles.levelText}>INTERMED.</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.openModal(8)}
+                      style={this.state.runLevel === 2 ? styles.levelBoxActive : styles.levelBox}>
+                      <Text style={styles.levelText}>ADVANCED</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View> :
                 <View></View>
               }
@@ -599,6 +603,7 @@ export default class WorkoutScreen extends React.Component {
           }
         </View>
 
+        {/* Modal screen for choosing workout option */}
         <Modal
           isVisible={this.state.selectModalVisible}
           style={styles.modalContainer}>
@@ -606,7 +611,7 @@ export default class WorkoutScreen extends React.Component {
             <TouchableOpacity
               onPress={() => this.setState({selectModalVisible: false})}
               style={styles.modalExit}>
-                <Text style={styles.modalText}>x</Text>
+              <Text style={styles.modalText}>x</Text>
             </TouchableOpacity>
           </View>
           <Text style={styles.modalHeader}>What You'll Do:</Text>
@@ -639,6 +644,7 @@ export default class WorkoutScreen extends React.Component {
           </TouchableOpacity>
         </Modal>
 
+        {/* Modal screen for viewing and completing chosen workout */}
         <Modal
           isVisible={this.state.workoutModalVisible}
           style={styles.modalContainer}>
@@ -647,7 +653,7 @@ export default class WorkoutScreen extends React.Component {
               <TouchableOpacity
                 onPress={() => this.setState({workoutModalVisible: false})}
                 style={styles.modalExit}>
-                  <Text style={styles.modalText}>x</Text>
+                <Text style={styles.modalText}>x</Text>
               </TouchableOpacity>
             </View>
             <Text style={styles.modalHeader}>What To Do:</Text>
@@ -878,14 +884,6 @@ const styles = StyleSheet.create({
   levelText: {
     fontFamily: 'kalam-bold',
     fontSize: 16,
-    color: 'white',
-    textAlign: 'center',
-    backgroundColor: 'transparent'
-  },
-
-  infoText: {
-    fontFamily: 'kalam-bold',
-    fontSize: 14,
     color: 'white',
     textAlign: 'center',
     backgroundColor: 'transparent'

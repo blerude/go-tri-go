@@ -8,11 +8,12 @@ import {
   TouchableOpacity,
   View,
   Dimensions
-} from 'react-native';import { ExpoLinksView } from '@expo/samples';
+} from 'react-native';
 
-import Colors from '../constants/Colors';
 import firebase from '../firebase';
 var database = firebase.database();
+
+import Colors from '../constants/Colors';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -28,6 +29,7 @@ const instructions = [
   'And remember, "Success will come from planning your work and working your plan!" Have fun!',
   '---Katie and the GO-TRI-GO team'
 ]
+
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
@@ -45,6 +47,7 @@ export default class LinksScreen extends React.Component {
       showR: false,
       showT: false
     }
+
     this.getList = this.getList.bind(this)
     this.setNewState = this.setNewState.bind(this)
     this.getTitle = this.getTitle.bind(this)
@@ -74,19 +77,6 @@ export default class LinksScreen extends React.Component {
     var sortedList = list.sort((a, b) => {
       return a.text > b.text
     })
-    // list.forEach(item => {
-    //   var added = false
-    //   for (var i = 0; i < sortedList.length; i++) {
-    //     var curr = sortedList[i]
-    //     if () {
-    //       added = true
-    //       sortedList.push(item)
-    //     }
-    //   }
-    //   if (!added) {
-    //     sortedList.push(item)
-    //   }
-    // })
 
     return sortedList
   }

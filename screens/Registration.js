@@ -1,16 +1,31 @@
 import React from 'react';
-import Login from './Login';
+import {
+  Dimensions,
+  ScrollView,
+  Image,
+  Platform,
+  StyleSheet,
+  View,
+  Text,
+  Button,
+  TouchableOpacity,
+  TextInput,
+  TouchableWithoutFeedback,
+  Keyboard
+} from 'react-native';
 
-import { Dimensions, ScrollView, Image, Platform, StyleSheet, View, Text, Button, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
-
-import Colors from '../constants/Colors';
 import firebase from '../firebase';
 var database = firebase.database();
+
+import Login from './Login';
+
+import Colors from '../constants/Colors';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const slogan = "Plan your work and work your plan!"
+
 
 export default class Registration extends React.Component {
   static navigationOptions = {
@@ -26,129 +41,117 @@ export default class Registration extends React.Component {
       state: '',
       email: '',
       password: '',
-     }
+    }
 
-     this.registerNewUser = this.registerNewUser.bind(this);
+    this.registerNewUser = this.registerNewUser.bind(this);
   }
 
+  // Initiates the Firebase authentication process of creating a user; saves the
+  //  user information in the database as well; navigates to the Login screen
   registerNewUser() {
-    console.log('Wooo registering user!');
     var nav = this.props.navigation
-
-    // var path = '';
-    // var pathArray = this.state.email.split('@')[0]
-    // pathArray.split('').forEach(letter => {
-    //   if (letter != '.') {
-    //     path = path + letter
-    //   } else {
-    //     path = path + '@'
-    //   }
-    // })
-
     firebase.auth()
-      .createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(user => {
-        console.log('User created: ' + user.uid)
-        database.ref('users/' + user.uid).set({
-          first: this.state.first,
-          last: this.state.last,
-          city: this.state.city,
-          state: this.state.state,
-          email: this.state.email,
-          day: 1,
-          selectedWorkouts: []
-        })
-        .then(user => {
-          console.log('User saved to database!')
-          var user = firebase.auth().currentUser;
-          user.sendEmailVerification().then(function() {
-            nav.navigate('Login');
-          }).catch(function(error) {
-            console.log('Error sending validation email: ' + error.message)
-          });
-        })
-        .catch(err => {
-          console.log('Error saving user to database: ' + err)
-        })
+    .createUserWithEmailAndPassword(this.state.email, this.state.password)
+    .then(user => {
+      database.ref('users/' + user.uid).set({
+        first: this.state.first,
+        last: this.state.last,
+        city: this.state.city,
+        state: this.state.state,
+        email: this.state.email,
+        day: 1,
+        selectedWorkouts: []
       })
-      .catch(function(error) {
+      .then(user => {
+        var user = firebase.auth().currentUser;
+        user.sendEmailVerification().then(function() {
+          nav.navigate('Login');
+        }).catch(function(error) {
           // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log('Error creating user: ' + errorMessage)
-        alert(errorMessage)
-      });
+          console.log('Error sending validation email: ' + error.message)
+        });
+      })
+      .catch(err => {
+        // Handle Errors here.
+        console.log('Error saving user to database: ' + err)
+      })
+    })
+    .catch(function(error) {
+      // Handle Errors here.
+      var errorMessage = error.message;
+      console.log('Error creating user: ' + errorMessage)
+      alert('Error creating user: ' + errorMessage)
+    });
   }
 
   render() {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <View style={styles.borderTop} >
-        </View>
-        <View style={styles.strip} >
-        </View>
-
-        <View>
-          <Image
-            source={require('../tri.png')}
-            style={styles.logo}
-          />
-        </View>
-        <View>
-          <Text style={styles.titleText}>GO-TRI-GO</Text>
-          <Text style={styles.sloganText}>{slogan}</Text>
-        </View>
-
-        <View style={styles.registerContainer}>
-          <Text style={styles.headerText}>Register</Text>
-          <View style={styles.textGroup}>
-            <TextInput
-              style={styles.textInputDuo}
-              placeholder="First Name"
-              onChangeText={(text) => this.setState({first: text})}
-              required
-            />
-            <TextInput
-              style={styles.textInputDuo}
-              placeholder="Last Name"
-              onChangeText={(text) => this.setState({last: text})}
-              required
+        <View style={styles.container}>
+          <View style={styles.borderTop} >
+          </View>
+          <View style={styles.strip} >
+          </View>
+          <View>
+            <Image
+              source={require('../tri.png')}
+              style={styles.logo}
             />
           </View>
-          <View style={styles.textGroup}>
-            <TextInput
-              style={styles.textInputDuo}
-              placeholder="City"
-              onChangeText={(text) => this.setState({city: text})}
-              required
-            />
-            <TextInput
-              style={styles.textInputDuo}
-              placeholder="State/Country"
-              onChangeText={(text) => this.setState({state: text})}
-              required
-            />
+          <View>
+            <Text style={styles.titleText}>GO-TRI-GO</Text>
+            <Text style={styles.sloganText}>{slogan}</Text>
           </View>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Email"
-            onChangeText={(text) => this.setState({email: text})}
-            required
-          />
-          <TextInput
-            secureTextEntry={true}
-            style={styles.textInput}
-            placeholder="Password"
-            onChangeText={(text) => this.setState({password: text})}
-            required
-          />
-          <TouchableOpacity
-            onPress={() => {this.registerNewUser()}}>
-            <Text style={styles.registerButton}>Register</Text>
-          </TouchableOpacity>
+
+          <View style={styles.registerContainer}>
+            <Text style={styles.headerText}>Register</Text>
+            <View style={styles.textGroup}>
+              <TextInput
+                style={styles.textInputDuo}
+                placeholder="First Name"
+                onChangeText={(text) => this.setState({first: text})}
+                required
+              />
+              <TextInput
+                style={styles.textInputDuo}
+                placeholder="Last Name"
+                onChangeText={(text) => this.setState({last: text})}
+                required
+              />
+            </View>
+            <View style={styles.textGroup}>
+              <TextInput
+                style={styles.textInputDuo}
+                placeholder="City"
+                onChangeText={(text) => this.setState({city: text})}
+                required
+              />
+              <TextInput
+                style={styles.textInputDuo}
+                placeholder="State/Country"
+                onChangeText={(text) => this.setState({state: text})}
+                required
+              />
+            </View>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Email"
+              onChangeText={(text) => this.setState({email: text})}
+              required
+            />
+            <TextInput
+              secureTextEntry={true}
+              style={styles.textInput}
+              placeholder="Password"
+              onChangeText={(text) => this.setState({password: text})}
+              required
+            />
+            <TouchableOpacity
+              onPress={() => {this.registerNewUser()}}>
+              <Text style={styles.registerButton}>Register</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
       </TouchableWithoutFeedback>
     );
   }
@@ -177,13 +180,6 @@ const styles = StyleSheet.create({
     color: Colors.ourGreen,
     textAlign: 'center',
     backgroundColor: 'transparent'
-  },
-  subtitleText: {
-    fontFamily: 'kalam-bold',
-    fontSize: 15,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 18,
-    textAlign: 'center',
   },
   registerContainer: {
     marginTop: 45

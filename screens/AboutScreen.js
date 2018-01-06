@@ -5,19 +5,18 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View
+  View,
+  Dimensions
 } from 'react-native';
+import Carousel, { Pagination }  from 'react-native-snap-carousel';
 import { ExpoLinksView } from '@expo/samples';
 
 import Colors from '../constants/Colors';
-import { Dimensions } from 'react-native';
-
-import Carousel, { Pagination }  from 'react-native-snap-carousel';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
+// Used in the carousel
 const testimonials = [
   {text: "I could barely swim 50 yards in the pool at the beginning of my training process and felt that my swim ended up to be the strongest event on race day!", author: 'Tiffany Barnett'},
   {text: "I am an active but heavier female. The adaptability of the program helped me to build on each aspect of my baseline strengths and turn my perceived weaknesses into measurable training opportunities.", author: 'Lillian Morton'},
@@ -28,6 +27,7 @@ const testimonials = [
 
 const slogan = "Plan your work and work your plan!"
 const intro = "GO-TRI-GO is a comprehensive 12 week Sprint Triathlon training program that will get you fit, confident, and race ready! You choose the level of difficulty, and we'll give you the 'how-tos' so you can get it done!"
+
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
@@ -40,10 +40,11 @@ export default class LinksScreen extends React.Component {
       activeSlide: 0
     }
 
-     this._renderItem = this._renderItem.bind(this);
-     this._onScroll = this._onScroll.bind(this);
+    this._renderItem = this._renderItem.bind(this);
+    this._onScroll = this._onScroll.bind(this);
   }
 
+  // Renders each slide of the carousel
   _renderItem ({item, index}) {
     return (
       <View style={styles.slideContainer}>
@@ -53,41 +54,45 @@ export default class LinksScreen extends React.Component {
     );
   }
 
+  // Allows carousel to be scrolled through, changing the state to mirror
+  //  which slide is being viewed
   _onScroll(index){
     this.setState({activeSlide: index})
   }
 
+  // Controls the appearance of the dots indicating which slide of the carousel
+  //  is being viewed
   get pagination () {
-       const activeSlide = this.state.activeSlide;
-       return (
-           <Pagination style={styles.pagination}
-             dotsLength={testimonials.length}
-             activeDotIndex={activeSlide}
-           />
-       );
-   }
+    const activeSlide = this.state.activeSlide;
+    return (
+      <Pagination style={styles.pagination}
+        dotsLength={testimonials.length}
+        activeDotIndex={activeSlide}
+      />
+    );
+  }
 
   render() {
     return (
-
       <ScrollView style={styles.scrollViewContainer}>
-      <View style={styles.container}>
-        <View style={styles.strip} >
-        </View>
-        <View style={styles.logoContainer}>
-          <Image
-            source={require('../tri.png')}
-            style={styles.logo}
-          />
-        </View>
-        <View>
-        </View>
-        <View style={styles.contentContainer}>
-          <Text style={styles.contentHeaderText}>About GO-TRI-GO</Text>
-          <Text style={styles.sloganText}>{slogan}</Text>
-          <Text style={styles.aboutTheAppText}>{intro}</Text>
-          <Text style={styles.contentHeader2Text}>Testimonials</Text>
-          <Carousel
+        <View style={styles.container}>
+          <View style={styles.strip} >
+          </View>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../tri.png')}
+              style={styles.logo}
+            />
+          </View>
+          <View>
+          </View>
+          
+          <View style={styles.contentContainer}>
+            <Text style={styles.contentHeaderText}>About GO-TRI-GO</Text>
+            <Text style={styles.sloganText}>{slogan}</Text>
+            <Text style={styles.aboutTheAppText}>{intro}</Text>
+            <Text style={styles.contentHeader2Text}>Testimonials</Text>
+            <Carousel
               renderItem={this._renderItem}
               data={testimonials}
               sliderWidth={320}
@@ -95,10 +100,10 @@ export default class LinksScreen extends React.Component {
               loop={true}
               activeSlideAlignment={'center'}
               onSnapToItem={this._onScroll}
-          />
-          { this.pagination }
+            />
+            { this.pagination }
+          </View>
         </View>
-      </View>
       </ScrollView>
     );
   }
@@ -203,8 +208,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontStyle: 'italic',
     backgroundColor: 'transparent'
-  },
-  // pagination: {
-  //   marginTop: 5
-  // }
+  }
 });

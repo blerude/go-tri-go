@@ -1,6 +1,4 @@
 import React from 'react';
-import Login from './Login';
-
 import {
   Dimensions,
   ScrollView,
@@ -15,20 +13,24 @@ import {
   TouchableWithoutFeedback,
   Keyboard
 } from 'react-native';
-
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 
-import Colors from '../constants/Colors';
 import firebase from '../firebase';
 var database = firebase.database();
+
+import Login from './Login';
+
+import Colors from '../constants/Colors';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
+// Information for the carousel
 const settings = [
   {header: 'Your current account information:', screen: 'info'},
   {header: 'Need to change your account info?', screen: 'edit'},
 ]
+
 
 export default class SettingsScreen extends React.Component {
   static navigationOptions = {
@@ -45,14 +47,13 @@ export default class SettingsScreen extends React.Component {
       state: '',
       email: '',
       activeSlide: 0
-     }
+    }
 
-     this.findPath = this.findPath.bind(this)
-     this.changeEmail = this.changeEmail.bind(this);
-     this.changePassword = this.changePassword.bind(this)
-     this.signOut = this.signOut.bind(this)
-     this._renderItem = this._renderItem.bind(this);
-     this._onScroll = this._onScroll.bind(this);
+    this.changeEmail = this.changeEmail.bind(this);
+    this.changePassword = this.changePassword.bind(this)
+    this.signOut = this.signOut.bind(this)
+    this._renderItem = this._renderItem.bind(this);
+    this._onScroll = this._onScroll.bind(this);
   }
 
   componentWillMount() {
@@ -62,40 +63,32 @@ export default class SettingsScreen extends React.Component {
     var last = '';
     var city = '';
     var state = '';
+
     database.ref('/users/' + user.uid).once('value').then(snapshot => {
       first = (snapshot.val() && snapshot.val().first) || 'Anonymous';
       last = (snapshot.val() && snapshot.val().last) || 'Anonymous';
-      city = (snapshot.val() && snapshot.val().city) || 'Anonymous';
-      state = (snapshot.val() && snapshot.val().state) || 'Anonymous';
-      email = (snapshot.val() && snapshot.val().email) || 'Anonymous';
+      city = (snapshot.val() && snapshot.val().city) || 'N/A';
+      state = (snapshot.val() && snapshot.val().state) || 'N/A';
+      email = (snapshot.val() && snapshot.val().email) || 'N/A';
     })
     .then(result => {
-      this.setState({first: first, last: last, city: city, state: state, email: email})
+      this.setState({
+        first: first,
+        last: last,
+        city: city,
+        state: state,
+        email: email
+      })
     })
   }
 
-  findPath(email) {
-    var user = firebase.auth().currentUser;
-
-    var path = '';
-    var pathArray = email.split('@')[0]
-    pathArray.split('').forEach(letter => {
-      if (letter != '.') {
-        path = path + letter
-      } else {
-        path = path + '@'
-      }
-    })
-    console.log('path: ' + path)
-    return path
-  }
-
+  // Update the database to match the firebase system upon user requesting to
+  //  change their email address
   changeEmail() {
     var user = firebase.auth().currentUser;
     var newEmail = this.state.email
 
     user.updateEmail(newEmail).then(function() {
-      console.log('New email verification sent.')
       var updates = {}
       updates['/users/' + user.uid + '/email'] = newEmail
       firebase.database().ref().update(updates)
@@ -108,13 +101,14 @@ export default class SettingsScreen extends React.Component {
     });
   }
 
+  // Initiate Firebase process of sending a password reset email to the user's
+  //  registered email address; navigate to the Login page
   changePassword() {
     var auth = firebase.auth();
     var user = auth.currentUser;
     var nav = this.props.navigation
 
     auth.sendPasswordResetEmail(user.email).then(function() {
-      console.log('Password change email sent.')
       alert("Check your account's email to reset your password!")
       nav.navigate('Login');
     }).catch(function(error) {
@@ -123,13 +117,12 @@ export default class SettingsScreen extends React.Component {
     });
   }
 
+  // Log user out of their account and redirect to the Login screen
   signOut() {
     var auth = firebase.auth();
-    var user = auth.currentUser;
     var nav = this.props.navigation
 
     auth.signOut().then(result => {
-      console.log('Successfully signed out', result)
       nav.navigate('Login');
     })
     .catch(error => {
@@ -137,21 +130,8 @@ export default class SettingsScreen extends React.Component {
     })
   }
 
-  _onScroll(index){
-    console.log('CURRENT INDEX: ', index)
-    this.setState({activeSlide: index})
-  }
-
-  get pagination () {
-     const activeSlide = this.state.activeSlide;
-     return (
-         <Pagination style={styles.pagination}
-           dotsLength={settings.length}
-           activeDotIndex={activeSlide}
-         />
-     );
-   }
-
+  // Renders each slide of the carousel, with either the editing screen or
+  //  their user info
   _renderItem ({item, index}) {
     return (
       <View style={styles.slideContainer}>
@@ -165,12 +145,12 @@ export default class SettingsScreen extends React.Component {
           />
           <TouchableOpacity
             onPress={() => {this.changeEmail()}}>
-            <Text style={styles.registerButton}>Change Email Address</Text>
+            <Text style={styles.editButton}>Change Email Address</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => {this.changePassword()}}>
-            <Text style={styles.registerButton}>Change Password</Text>
+            <Text style={styles.editButton}>Change Password</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -180,34 +160,52 @@ export default class SettingsScreen extends React.Component {
         </View> :
         <View>
           <View>
-            <Text style={styles.label}>First Name: </Text>
+            <Text style={styles.label}>First Name:</Text>
             <Text style={styles.slideText}>{this.state.first}</Text>
           </View>
           <View>
-            <Text style={styles.label}>Last Name: </Text>
+            <Text style={styles.label}>Last Name:</Text>
             <Text style={styles.slideText}>{this.state.last}</Text>
           </View>
           <View>
-            <Text style={styles.label}>City: </Text>
+            <Text style={styles.label}>City:</Text>
             <Text style={styles.slideText}>{this.state.city}</Text>
           </View>
           <View>
-            <Text style={styles.label}>State/Country: </Text>
+            <Text style={styles.label}>State/Country:</Text>
             <Text style={styles.slideText}>{this.state.state}</Text>
           </View>
           <View>
-            <Text style={styles.label}>Email: </Text>
+            <Text style={styles.label}>Email:</Text>
             <Text style={styles.slideText}>{this.state.email}</Text>
           </View>
         </View>
-        }
-      </View>
-    );
-  }
+      }
+    </View>
+  );
+}
 
-  render() {
-    return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+// Allows carousel to be scrolled through, changing the state to mirror
+//  which slide is being viewed
+_onScroll(index){
+  this.setState({activeSlide: index})
+}
+
+// Controls the appearance of the dots indicating which slide of the carousel
+//  is being viewed
+get pagination () {
+  const activeSlide = this.state.activeSlide;
+  return (
+    <Pagination style={styles.pagination}
+      dotsLength={settings.length}
+      activeDotIndex={activeSlide}
+    />
+  );
+}
+
+render() {
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <View style={styles.strip} >
         </View>
@@ -223,21 +221,21 @@ export default class SettingsScreen extends React.Component {
         <View style={styles.carouselContainer}>
           <Text style={styles.headerText}>Account Settings</Text>
           <Carousel
-              renderItem={this._renderItem}
-              data={settings}
-              sliderWidth={320}
-              sliderHeight={320}
-              itemWidth={215}
-              loop={true}
-              activeSlideAlignment={'center'}
-              onSnapToItem={this._onScroll}
+            renderItem={this._renderItem}
+            data={settings}
+            sliderWidth={320}
+            sliderHeight={320}
+            itemWidth={215}
+            loop={true}
+            activeSlideAlignment={'center'}
+            onSnapToItem={this._onScroll}
           />
           { this.pagination }
         </View>
       </View>
-      </TouchableWithoutFeedback>
-    );
-  }
+    </TouchableWithoutFeedback>
+  );
+}
 }
 
 const styles = StyleSheet.create({
@@ -295,7 +293,7 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     color: 'white'
   },
-  registerButton: {
+  editButton: {
     fontFamily: 'kalam-bold',
     alignSelf: 'center',
     textAlign: 'center',

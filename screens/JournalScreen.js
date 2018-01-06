@@ -9,15 +9,17 @@ import {
   TouchableOpacity,
   View,
   Dimensions
-} from 'react-native';import { ExpoLinksView } from '@expo/samples';
+} from 'react-native';
 import Modal from 'react-native-modal'
 
-import Colors from '../constants/Colors';
 import firebase from '../firebase';
 var database = firebase.database();
 
+import Colors from '../constants/Colors';
+
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
+
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
@@ -38,6 +40,7 @@ export default class LinksScreen extends React.Component {
       quotes: [],
       quote: ''
     }
+
     this.readDayChanges = this.readDayChanges.bind(this)
     this.findEntries = this.findEntries.bind(this)
     this.save = this.save.bind(this)
@@ -328,8 +331,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
     padding: 15,
     alignItems: 'center',
-    // borderWidth: 1,
-    // borderColor: Colors.ourBlue
   },
   prompt: {
     fontFamily: 'kalam-bold',
@@ -366,18 +367,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 5
   },
-  removeEntry: {
-
-  },
-  removeText: {
-    width: 20,
-    paddingRight: 10,
-    fontSize: 14,
-    fontWeight: '900',
-    color: 'white',
-    textAlign: 'center',
-    backgroundColor: 'transparent'
-  },
   entryDay: {
     width: 60,
     paddingRight: 10,
@@ -395,8 +384,6 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'justify',
     backgroundColor: 'transparent',
-    // borderWidth: 1,
-    // borderColor: 'white'
   },
   line: {
     borderBottomColor: Colors.ourBlue,
@@ -444,15 +431,6 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     backgroundColor: 'transparent',
-  },
-  modalTextBlue: {
-    fontSize: 18,
-    fontStyle: 'italic',
-    fontWeight: 'bold',
-    color: Colors.ourBlue,
-    textAlign: 'center',
-    backgroundColor: 'transparent',
-    paddingBottom: 6
   },
   modalEntryLabel: {
     fontFamily: 'kalam-bold',
