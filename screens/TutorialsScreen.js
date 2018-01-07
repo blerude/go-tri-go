@@ -76,6 +76,11 @@ export default class LinksScreen extends React.Component {
       day.forEach(item => {
         if (item.type === type && item.category === category) {
           list.push(item)
+        } else if (type === 'transition' && item.category === category) {
+          // Handle the transition mismatches
+          if (item.type === 'swim/bike' || item.type === 'bike/run') {
+            list.push(item)
+          }
         }
       })
     })
