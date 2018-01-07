@@ -46,7 +46,7 @@ export default class SettingsScreen extends React.Component {
       city: '',
       state: '',
       email: '',
-      activeSlide: 0
+      activeSlide: 0  // which carousel slide is being viewed
     }
 
     this.changeEmail = this.changeEmail.bind(this);

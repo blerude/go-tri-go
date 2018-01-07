@@ -521,6 +521,7 @@ export default class TrainingPlanScreen extends React.Component {
               style={styles.logo}
             />
           </View>
+          
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>Weekly Plan</Text>
           </View>

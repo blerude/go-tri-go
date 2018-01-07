@@ -18,6 +18,7 @@ import Colors from '../constants/Colors';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
+// Content for the 'Instructions' section of the How To page
 const instructions = [
   'Training for a triathlon and managing three sports at once can be a bit of a "three ring circus"',
   'GO-TRI-GO takes your training week and maps it out for you: specific workouts with a specific focus. Training with a purpose and having a well-thought-out and progressive program is the key to success at any level or distance.',
@@ -40,17 +41,17 @@ export default class LinksScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      tuts: [],
-      showI: false,
-      showS: false,
-      showB: false,
-      showR: false,
-      showT: false
+      hows: [],       // array of how to's
+      showI: false,   // indicates if instruction block is shown
+      showS: false,   // indicates if swim block is shown
+      showB: false,   // indicates if bike block is shown
+      showR: false,   // indicates if run block is shown
+      showT: false    // indicates if transition block is shown
     }
 
     this.getList = this.getList.bind(this)
     this.setNewState = this.setNewState.bind(this)
-    this.getTitle = this.getTitle.bind(this)
+    this.getState = this.getState.bind(this)
     this.renderInstructions = this.renderInstructions.bind(this)
     this.renderGroup = this.renderGroup.bind(this)
   }
@@ -58,15 +59,19 @@ export default class LinksScreen extends React.Component {
   componentDidMount() {
     var user = firebase.auth().currentUser;
     database.ref('/tutorials/').once('value').then(snapshot => {
+      // Load how to's into the state array
       this.setState({
-        tuts: snapshot.val()
+        hows: snapshot.val()
       })
     })
   }
 
+  // Compiles list of tutorials, in alphabetical order, based on the given type
+  //  (swim, bike, etc.) and category (vocab, gear, etc.)
   getList(type, category) {
     var list = []
-    this.state.tuts.forEach(day => {
+    // Gather necessary items from the 'how to' array based on type and category
+    this.state.hows.forEach(day => {
       day.forEach(item => {
         if (item.type === type && item.category === category) {
           list.push(item)
@@ -74,6 +79,7 @@ export default class LinksScreen extends React.Component {
       })
     })
 
+    // Sort alphabetically
     var sortedList = list.sort((a, b) => {
       return a.text > b.text
     })
@@ -81,6 +87,9 @@ export default class LinksScreen extends React.Component {
     return sortedList
   }
 
+  // Depending on which block was touched, which is determined by the state
+  //  variable given as a parameter, toggle that value to show or hide that
+  //  section
   setNewState(newVar) {
     if (newVar === 'showS') {
       this.setState({
@@ -105,100 +114,102 @@ export default class LinksScreen extends React.Component {
     }
   }
 
-  getTitle(newVar, type) {
-    var title = ''
-    if (newVar === 'showS') {
-      this.state.showS ?
-        title = <Text style={styles.title}>{type + ' '} &and;</Text> :
-        title = <Text style={styles.title}>{type + ' '} &or;</Text>
-    } else if (newVar === 'showB') {
-      this.state.showB ?
-        title = <Text style={styles.title}>{type + ' '} &and;</Text> :
-        title = <Text style={styles.title}>{type + ' '} &or;</Text>
-    } else if (newVar === 'showR') {
-      this.state.showR ?
-        title = <Text style={styles.title}>{type + ' '} &and;</Text> :
-        title = <Text style={styles.title}>{type + ' '} &or;</Text>
-    } else if (newVar === 'showT') {
-      this.state.showT ?
-        title = <Text style={styles.title}>{type + ' '} &and;</Text> :
-        title = <Text style={styles.title}>{type + ' '} &or;</Text>
-    }
-    return title
-  }
-
+  // Flexibly returns the truth value of the state variable (showS, showB, etc.)
   getState(stateVar) {
-    var ourVar = ''
+    var truth;
     if (stateVar === 'showS') {
-      ourVar = this.state.showS
+      truth = this.state.showS
     } else if (stateVar === 'showB') {
-      ourVar = this.state.showB
+      truth = this.state.showB
     } else if (stateVar === 'showR') {
-      ourVar = this.state.showR
+      truth = this.state.showR
     } else if (stateVar === 'showT') {
-      ourVar = this.state.showT
+      truth = this.state.showT
     }
-    return ourVar
+    return truth
   }
 
-  renderInstructions(stateVar) {
-    return <View style={styles.groupContainer}>
-      <TouchableOpacity
-        onPress={() => this.setNewState(stateVar)}>
-          {this.state.showI ?
-            <Text style={styles.title}>Instructions: &and;</Text> :
-            <Text style={styles.title}>Instructions: &or;</Text>
-          }
-      </TouchableOpacity>
-      {this.state.showI ?
-        <View>
-          {instructions.map((item, i) => {
-            var style;
-            i % 2 ? style = styles.toTextBright : style = styles.toText
-            return <View key={i}>
-              <Text style={style}>{item}</Text>
-              <Text></Text>
-            </View>
-          })}
+  // Fed an item, it's index, and the category of the 'how to' content, the
+  //  function renders and returns each individual entry
+  renderEntry(item, i, type) {
+    return (
+      <View key={i}>
+        <View style={styles.itemGroup}>
+          <Text style={styles.toTextBright}>{item.text}</Text>
+          <Text style={styles.toTextBright}>{'Day ' + item.day}</Text>
         </View>
-        : null
-      }
-    </View>
+        <Text style={styles.toText}>{item.description}</Text>
+        {type === 'g' ? <Text>MAP</Text> : null}
+        {type === 'vi' ? <Text>VIDEO</Text> : null}
+        <Text></Text>
+      </View>
+    )
   }
 
+  // Renders the Instructions toggle switch, and the corresponding information
+  //  if the state indicates to show it; fed the 'showI' state variable
+  renderInstructions(stateVar) {
+    return (
+      <View style={styles.groupContainer}>
+        <TouchableOpacity
+          onPress={() => this.setNewState(stateVar)}>
+            {this.state.showI ?
+              <Text style={styles.title}>Instructions:  &and;</Text> :
+              <Text style={styles.title}>Instructions:  &or;</Text>
+            }
+        </TouchableOpacity>
+        {this.state.showI ?
+          <View>
+            {instructions.map((item, i) => {
+              // Alternate colors between bright blue and white
+              var style;
+              i % 2 ? style = styles.toTextBright : style = styles.toText
+              return <View key={i}>
+                <Text style={style}>{item}</Text>
+                <Text></Text>
+              </View>
+            })}
+          </View>
+          : null
+        }
+      </View>
+    )
+  }
+
+  // For each type of how to, this function renders and returns a toggle switch
+  //  that, when turned on, displays the how to's for each category of content;
+  //  the parameters are the type of toggle switch as it appears on the switch,
+  //  the corresponding state variable, and the type of the toggle switch as it
+  //  is stored in the database (difference between the first and third is that
+  //  the third is not capitalized)
   renderGroup(type, stateVar, getVar) {
+    var truth = this.getState(stateVar)
     return <View style={styles.groupContainer}>
       <TouchableOpacity
         onPress={() => this.setNewState(stateVar)}>
-          {this.getTitle(stateVar, type)}
+        <View style={styles.caretGroup}>
+          <Text style={styles.title}>{type + ':  '}</Text>
+          {truth ?
+            <Text style={styles.title}>&and;</Text> :
+            <Text style={styles.title}>&or;</Text>
+          }
+        </View>
       </TouchableOpacity>
-      {this.getState(stateVar) ?
+      {truth ?
         <View>
+          {/* Use the helper functions below to render each entry from each
+                list of content */}
           <Text style={styles.label}>Vocabulary</Text>
           {this.getList(getVar, 'vocabulary').map((item, i) => {
-            return <View key={i}>
-              <Text style={styles.toTextBright}>{item.text} ({'Day ' + item.day})</Text>
-              <Text style={styles.toText}>{item.description}</Text>
-              <Text></Text>
-            </View>
+            return this.renderEntry(item, i, 'vo')
           })}
           <Text style={styles.label}>Gear</Text>
           {this.getList(getVar, 'gear').map((item, i) => {
-            return <View key={i}>
-              <Text style={styles.toTextBright}>{'Day ' + item.day + ': ' + item.text}</Text>
-              <Text style={styles.toText}>{item.description}</Text>
-              <Text>MAP</Text>
-              <Text></Text>
-            </View>
+            return this.renderEntry(item, i, 'g')
           })}
           <Text style={styles.label}>Videos</Text>
           {this.getList(getVar, 'video').map((item, i) => {
-            return <View key={i}>
-              <Text style={styles.toTextBright}>{'Day ' + item.day + ': ' + item.text}</Text>
-              <Text style={styles.toText}>{item.description}</Text>
-              <Text>VIDEO</Text>
-              <Text></Text>
-            </View>
+            return this.renderEntry(item, i, 'vi')
           })}
         </View>
         : null
@@ -218,6 +229,7 @@ export default class LinksScreen extends React.Component {
               style={styles.logo}
             />
           </View>
+
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>How To's</Text>
           </View>
@@ -301,6 +313,10 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10
   },
+  caretGroup: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   title: {
     fontFamily: 'kalam-bold',
     fontSize: 24,
@@ -314,6 +330,10 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     backgroundColor: 'transparent'
+  },
+  itemGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
   toText: {
     fontSize: 15,

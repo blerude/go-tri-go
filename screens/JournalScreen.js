@@ -161,6 +161,7 @@ export default class LinksScreen extends React.Component {
               style={styles.logo}
             />
           </View>
+          
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>Journal</Text>
           </View>

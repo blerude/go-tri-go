@@ -37,7 +37,7 @@ export default class LinksScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      activeSlide: 0
+      activeSlide: 0  // which carousel slide is being viewed
     }
 
     this._renderItem = this._renderItem.bind(this);
@@ -86,7 +86,7 @@ export default class LinksScreen extends React.Component {
           </View>
           <View>
           </View>
-          
+
           <View style={styles.contentContainer}>
             <Text style={styles.contentHeaderText}>About GO-TRI-GO</Text>
             <Text style={styles.sloganText}>{slogan}</Text>
