@@ -52,6 +52,7 @@ export default class LinksScreen extends React.Component {
     this.getList = this.getList.bind(this)
     this.setNewState = this.setNewState.bind(this)
     this.getState = this.getState.bind(this)
+    this.renderEntry = this.renderEntry.bind(this)
     this.renderInstructions = this.renderInstructions.bind(this)
     this.renderGroup = this.renderGroup.bind(this)
   }
@@ -230,6 +231,7 @@ export default class LinksScreen extends React.Component {
             />
           </View>
 
+          {/* View for displaying tutorials */}
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>How To's</Text>
           </View>

@@ -30,15 +30,15 @@ export default class LinksScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      day: 0,
-      thisDay: '',
-      journals: {},
-      trainingText: '',
-      nutritionText: '',
-      raceText: '',
-      write: false,
-      quotes: [],
-      quote: ''
+      day: 0,             // the day the user is on in the training plan
+      thisDay: '',        // the day the user is journaling for
+      journals: {},       // an object of previously saved entries
+      trainingText: '',   // current text of the training value
+      nutritionText: '',  // current text of the nutrition value
+      raceText: '',       // current text of the race day value
+      write: false,       // indicates whether the journal modal is visible
+      quotes: [],         // array of weekly affirmations
+      quote: ''           // current weekly affirmation
     }
 
     this.readDayChanges = this.readDayChanges.bind(this)
@@ -48,6 +48,7 @@ export default class LinksScreen extends React.Component {
 
   componentDidMount() {
     var user = firebase.auth().currentUser;
+    // Load the user's current day and journal entries
     database.ref('/users/' + user.uid).once('value').then(snapshot => {
       var week = Math.ceil(snapshot.val().day / 7)
       this.setState({
@@ -55,6 +56,7 @@ export default class LinksScreen extends React.Component {
         journals: snapshot.val().journals ? snapshot.val().journals : {}
       })
     })
+    // Load the weekly affirmation quotes
     database.ref('/quotes/').once('value').then(snapshot => {
       var week = Math.floor(this.state.day / 7)
       this.setState({
@@ -62,9 +64,13 @@ export default class LinksScreen extends React.Component {
         quote: snapshot.val()[week]
       })
     })
+    // Initiate the database-change action listener
     this.readDayChanges()
   }
 
+  // Ensure that whenever the day of the user is changed, this component
+  //  updates the state, thereby re-rendering and updating the weekly
+  //  affirmation if necessary
   readDayChanges() {
     var user = firebase.auth().currentUser;
     database.ref('users/' + user.uid + '/day/').on('value', (snapshot) => {
@@ -76,6 +82,8 @@ export default class LinksScreen extends React.Component {
     });
   }
 
+  // Given an index that corresponds to the category of journal entry to search
+  //  for, this function returns the list of relevant entries
   findEntries(x) {
     var entries = []
     for (var key in this.state.journals) {
@@ -91,12 +99,31 @@ export default class LinksScreen extends React.Component {
     return entries
   }
 
+  // Given an entry and its index, return the rendering of the text
+  renderEntry(entry, i) {
+    return (
+      <View key={i} style={styles.entryPair}>
+        <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
+        <Text style={styles.entryEntry}>{entry.entry}</Text>
+        <View style={styles.line}></View>
+      </View>
+    )
+  }
+
+  // Saves the newly created journal entry
   save() {
     var user = firebase.auth().currentUser;
-    var train;
-    var nutr;
-    var race;
+    var train;      // value of the 'training' entry
+    var nutr;       // value of the 'nutrition' entry
+    var race;       // value of the 'race day' entry
+
+    // Compare the new entry with what the user has already saved to avoid
+    //  replacing an entry with a blank one (so that user's can add to their
+    //  previous entry if they had chosen not to enter in one section but want
+    //  to now)
     database.ref('/users/' + user.uid).once('value').then(snapshot => {
+      // These if statements check that valuable content isn't being overwritten
+      //  before setting the new value
       if (!this.state.trainingText &&
         snapshot.val().journals &&
         snapshot.val().journals[this.state.thisDay] &&
@@ -124,6 +151,7 @@ export default class LinksScreen extends React.Component {
         race = this.state.raceText
       }
 
+      // Update the database with the new journal entry
       var entry = [
         train,
         nutr,
@@ -137,8 +165,8 @@ export default class LinksScreen extends React.Component {
         console.log('Error Updating: ' + error.message)
       })
 
+      // Update the state to trigger re-rendering with new data
       this.state.journals[this.state.thisDay] = entry
-
       this.setState({
         write: false,
         trainingText: '',
@@ -161,7 +189,9 @@ export default class LinksScreen extends React.Component {
               style={styles.logo}
             />
           </View>
-          
+
+          {/* View for displaying previous journal entries as well as the
+                button for creating a new entry */}
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>Journal</Text>
           </View>
@@ -179,42 +209,25 @@ export default class LinksScreen extends React.Component {
             <Text style={styles.label}>Training:</Text>
             <View style={styles.entryContainer}>
               {this.findEntries(0).map((entry, i) => {
-                return (
-                  <View key={i} style={styles.entryPair}>
-                    <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
-                    <Text style={styles.entryEntry}>{entry.entry}</Text>
-                    <View style={styles.line}></View>
-                  </View>
-                )
+                return this.renderEntry(entry, i)
               })}
             </View>
             <Text style={styles.label}>Nutrition:</Text>
             <View style={styles.entryContainer}>
               {this.findEntries(1).map((entry, i) => {
-                return (
-                  <View key={i} style={styles.entryPair}>
-                    <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
-                    <Text style={styles.entryEntry}>{entry.entry}</Text>
-                    <View style={styles.line}></View>
-                  </View>
-                )
+                return this.renderEntry(entry, i)
               })}
             </View>
             <Text style={styles.label}>Race Day:</Text>
             <View style={styles.entryContainer}>
               {this.findEntries(2).map((entry, i) => {
-                return (
-                  <View key={i} style={styles.entryPair}>
-                    <Text style={styles.entryDay}>{'Day ' + entry.day}</Text>
-                    <Text style={styles.entryEntry}>{entry.entry}</Text>
-                    <View style={styles.line}></View>
-                  </View>
-                )
+                return this.renderEntry(entry, i)
               })}
             </View>
           </View>
         </View>
 
+        {/* Modal for writing a new journal entry */}
         <Modal
           isVisible={this.state.write}
           style={styles.modalContainer}>
@@ -229,38 +242,39 @@ export default class LinksScreen extends React.Component {
             <Text style={styles.modalHeader}>Write about your workout:</Text>
             <View style={styles.modalTextContainer}>
               <View style={styles.entryContainer}>
+
                 <Text style={styles.modalEntryLabel}>Day:</Text>
                 <View style={styles.center}>
                   <TextInput
-                      onChangeText={(thisDay) => this.setState({thisDay})}
-                      value={this.state.thisDay}
-                      style={styles.textInputDay}
-                      required/>
+                    onChangeText={(thisDay) => this.setState({thisDay})}
+                    value={this.state.thisDay}
+                    style={styles.textInputDay}
+                    required/>
                 </View>
+
                 <Text style={styles.modalEntryLabel}>Training:</Text>
                 <Text style={styles.modalInfo}>What went well, what didn't, challenge level</Text>
                 <TextInput
-                    multiline={true}
-                    numberOfLines={4}
-                    onChangeText={(trainingText) => this.setState({trainingText})}
-                    value={this.state.trainingText}
-                    style={styles.textInput}/>
+                  multiline={true}
+                  onChangeText={(trainingText) => this.setState({trainingText})}
+                  value={this.state.trainingText}
+                  style={styles.textInput}/>
+
                 <Text style={styles.modalEntryLabel}>Nutrition:</Text>
                 <Text style={styles.modalInfo}>What you ate, what you drank</Text>
                 <TextInput
-                    multiline={true}
-                    numberOfLines={8}
-                    onChangeText={(nutritionText) => this.setState({nutritionText})}
-                    value={this.state.nutritionText}
-                    style={styles.textInput}/>
+                  multiline={true}
+                  onChangeText={(nutritionText) => this.setState({nutritionText})}
+                  value={this.state.nutritionText}
+                  style={styles.textInput}/>
+
                 <Text style={styles.modalEntryLabel}>Race Day:</Text>
                 <Text style={styles.modalInfo}>What to think about before your race</Text>
                 <TextInput
-                    multiline={true}
-                    numberOfLines={12}
-                    onChangeText={(raceText) => this.setState({raceText})}
-                    value={this.state.raceText}
-                    style={styles.textInput}/>
+                  multiline={true}
+                  onChangeText={(raceText) => this.setState({raceText})}
+                  value={this.state.raceText}
+                  style={styles.textInput}/>
               </View>
             </View>
             <TouchableOpacity
