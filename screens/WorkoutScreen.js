@@ -9,7 +9,7 @@ import {
   View,
   Dimensions
 } from 'react-native';
-import Modal from 'react-native-modal'
+import Modal from 'react-native-modal';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 
 import firebase from '../firebase';
@@ -20,13 +20,13 @@ import Colors from '../constants/Colors';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const settings = []
+const settings = [];
 
 
 export default class WorkoutScreen extends React.Component {
   static navigationOptions = {
     title: 'My Workout',
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -63,8 +63,8 @@ export default class WorkoutScreen extends React.Component {
     this.getWorkoutLevel = this.getWorkoutLevel.bind(this)
     this.getWorkout = this.getWorkout.bind(this)
     this.renderWorkout = this.renderWorkout.bind(this)
-    this._renderItem = this._renderItem.bind(this);
-    this._onScroll = this._onScroll.bind(this);
+    this._renderItem = this._renderItem.bind(this)
+    this._onScroll = this._onScroll.bind(this)
     this.renderButton = this.renderButton.bind(this)
   }
 
@@ -75,7 +75,7 @@ export default class WorkoutScreen extends React.Component {
 
   // Loads the state with necessary information about the user's progress
   load() {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     var currDay;
 
     // Retrieve the relevant data from the user
@@ -118,11 +118,11 @@ export default class WorkoutScreen extends React.Component {
     }).then(response => {
       // Retrieve the entire workout for the current day
       database.ref('/workouts/' + currDay).once('value').then(snapshot => {
-        var rest = false;
+        var rest = false
         // Identify if the workout is a rest day, in which case the user's
         //  database is updated with the workout
         if (!snapshot.val().swim && !snapshot.val().bike && !snapshot.val().run) {
-          rest = true;
+          rest = true
           var choice = {
             day: currDay,
             completed: false,
@@ -140,15 +140,15 @@ export default class WorkoutScreen extends React.Component {
         }
 
         // Count the number of workouts the user has chosen based on the database
-        var total = 0;
+        var total = 0
         if (snapshot.val().swim) {
-          total = total + 1;
+          total = total + 1
         }
         if (snapshot.val().bike) {
-          total = total + 1;
+          total = total + 1
         }
         if (snapshot.val().run) {
-          total = total + 1;
+          total = total + 1
         }
         this.setState({
           rest: rest,
@@ -167,7 +167,7 @@ export default class WorkoutScreen extends React.Component {
             runInfo: snapshot.val().runInfo
           }
         })
-      });
+      })
     })
   }
 
@@ -175,10 +175,10 @@ export default class WorkoutScreen extends React.Component {
   //  updates its state, thereby re-rendering and updating the weekly
   //  affirmation if necessary
   readDayChanges() {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     firebase.database().ref('users/' + user.uid + '/day/').on('value', (snapshot) => {
       this.load()
-    });
+    })
   }
 
   // Opens the modal corresponding to the parameter (0-8)
@@ -205,9 +205,9 @@ export default class WorkoutScreen extends React.Component {
   }
 
   submit() {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     // Count the number of workouts selected for the day
-    var chosen = 0;
+    var chosen = 0
     if (this.state.swimLevel > -1) {
       chosen = chosen + 1
     }
@@ -329,7 +329,7 @@ export default class WorkoutScreen extends React.Component {
 
   // Find the 'how to' items for each workout, given the type of workout
   getHowTos(l) {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     var list = []
     var typeA;
     var typeB;
@@ -376,7 +376,7 @@ export default class WorkoutScreen extends React.Component {
   // Mark the selected entry as complete
   complete() {
     // Update database to show completion for this user's selected workout
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     var updates = {}
     updates['/users/' + user.uid + '/selectedWorkouts/' + this.state.day + "/completed"] = true
     firebase.database().ref().update(updates)
@@ -431,7 +431,7 @@ export default class WorkoutScreen extends React.Component {
     } else if (val === 8) {
       title = 'RUN: Advanced'
     }
-    return title;
+    return title
   }
 
   // Given the modal value, retrieve the text of the workout at the relevant
@@ -459,7 +459,7 @@ export default class WorkoutScreen extends React.Component {
     } else {
       action = []
     }
-    return action;
+    return action
   }
 
   // Renders the text for each workout, alternating colors between lines
@@ -540,13 +540,13 @@ export default class WorkoutScreen extends React.Component {
   // Controls the appearance of the dots indicating which slide of the carousel
   //  is being viewed
   get pagination () {
-    const activeSlide = this.state.activeSlide;
+    const activeSlide = this.state.activeSlide
     return (
       <Pagination style={styles.pagination}
         dotsLength={settings.length}
         activeDotIndex={activeSlide}
       />
-    );
+    )
   }
 
   // Renders each workout selector button, given the state variable for that
@@ -701,7 +701,7 @@ export default class WorkoutScreen extends React.Component {
           </ScrollView>
         </Modal>
       </ScrollView>
-    );
+    )
   }
 }
 
@@ -963,4 +963,4 @@ const styles = StyleSheet.create({
   pagination: {
     marginTop: 10
   }
-});
+})

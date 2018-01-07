@@ -24,13 +24,13 @@ import Colors from '../constants/Colors';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const slogan = "Plan your work and work your plan!"
+const slogan = "Plan your work and work your plan!";
 
 
 export default class Registration extends React.Component {
   static navigationOptions = {
     title: 'Registration',
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -43,7 +43,7 @@ export default class Registration extends React.Component {
       password: '',
     }
 
-    this.registerNewUser = this.registerNewUser.bind(this);
+    this.registerNewUser = this.registerNewUser.bind(this)
   }
 
   // Initiates the Firebase authentication process of creating a user; saves the
@@ -63,13 +63,13 @@ export default class Registration extends React.Component {
         selectedWorkouts: []
       })
       .then(user => {
-        var user = firebase.auth().currentUser;
+        var user = firebase.auth().currentUser
         user.sendEmailVerification().then(function() {
           nav.navigate('Login');
         }).catch(function(error) {
           // Handle Errors here.
           console.log('Error sending validation email: ' + error.message)
-        });
+        })
       })
       .catch(err => {
         // Handle Errors here.
@@ -78,10 +78,10 @@ export default class Registration extends React.Component {
     })
     .catch(function(error) {
       // Handle Errors here.
-      var errorMessage = error.message;
+      var errorMessage = error.message
       console.log('Error creating user: ' + errorMessage)
       alert('Error creating user: ' + errorMessage)
-    });
+    })
   }
 
   render() {
@@ -153,7 +153,7 @@ export default class Registration extends React.Component {
           </View>
         </View>
       </TouchableWithoutFeedback>
-    );
+    )
   }
 }
 
@@ -280,4 +280,4 @@ const styles = StyleSheet.create({
       {rotate: '-10deg'}
     ]
   }
-});
+})

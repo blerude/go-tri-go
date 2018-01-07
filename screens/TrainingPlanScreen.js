@@ -9,7 +9,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import Modal from 'react-native-modal'
+import Modal from 'react-native-modal';
 import { Ionicons } from '@expo/vector-icons';
 
 import firebase from '../firebase';
@@ -24,7 +24,7 @@ const screenHeight = Dimensions.get('window').height;
 export default class TrainingPlanScreen extends React.Component {
   static navigationOptions = {
     title: 'Weekly Plan',
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -64,7 +64,7 @@ export default class TrainingPlanScreen extends React.Component {
 
   // Loads the state with necessary information about the user's progress
   load() {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     var maxDays = 70
     var currDay;
 
@@ -109,7 +109,7 @@ export default class TrainingPlanScreen extends React.Component {
       // Retrieve the entire workout for the current day
       database.ref('/workouts/' + currDay).once('value').then(snapshot => {
         this.setState({todaysWorkout: snapshot.val()})
-      });
+      })
     })
     .then(response => {
       var past = this.state.pastWorkouts
@@ -117,7 +117,7 @@ export default class TrainingPlanScreen extends React.Component {
       // Check the workouts from the database and fill in all the gaps for the
       //  days that the user has not chosen a workout for
       database.ref('/workouts/').once('value').then(snapshot => {
-        var allWorkouts = snapshot.val();
+        var allWorkouts = snapshot.val()
         allWorkouts.forEach(item => {
           if (item.day < this.state.day && !past[item.day]) {
             past[item.day] = item
@@ -129,7 +129,7 @@ export default class TrainingPlanScreen extends React.Component {
           pastWorkouts: past,
           futureWorkouts: future
         })
-      });
+      })
     })
   }
 
@@ -137,27 +137,27 @@ export default class TrainingPlanScreen extends React.Component {
   //  updates its state, thereby re-rendering and updating the weekly
   //  affirmation if necessary
   readDayChanges() {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     firebase.database().ref('users/' + user.uid + '/day/').on('value', (snapshot) => {
       this.load()
-    });
+    })
   }
 
   // Ensure that whenever the selected workouts of the user change, this component
   //  updates its state, thereby re-rendering and updating the weekly
   //  affirmation if necessary
   readWorkoutChanges() {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     firebase.database().ref('users/' + user.uid + '/selectedWorkouts/').on('value', (snapshot) => {
       this.load()
-    });
+    })
   }
 
   // When a completed workout is chosen, open the past workouts modal and load
   //  the modal with the user's selected workout corresponding to the val
   //  parameter, which gives a completed day in the training plan
   openPastModal(val) {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     // Retrieve the user's choice
     database.ref('/users/' + user.uid + '/selectedWorkouts/').once('value').then(snapshot => {
       var today = snapshot.val()[val]
@@ -232,7 +232,7 @@ export default class TrainingPlanScreen extends React.Component {
         // Again, determine completion and render the entry accordingly
         var containerStyle = complete ? styles.completedWorkoutContainer : styles.workoutContainer
         var textStyle = complete ? styles.completedWorkoutDate : styles.workoutDate
-        var iconName = Platform.OS === 'ios' ? `ios-create${'-outline'}` : 'md-create';
+        var iconName = Platform.OS === 'ios' ? `ios-create${'-outline'}` : 'md-create'
         return (
           <View key={day}>
             {weekday === 1 ? <Text style={styles.week}>WEEK {Math.ceil(week)}</Text> : null}
@@ -577,7 +577,7 @@ export default class TrainingPlanScreen extends React.Component {
   // When a user opts to switch days, update the database with their new current
   //  day
   switch(val) {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     var updates = {}
     updates['/users/' + user.uid + '/day/'] = val
     firebase.database().ref().update(updates)
@@ -712,7 +712,7 @@ export default class TrainingPlanScreen extends React.Component {
           </ScrollView>
         </Modal>
       </ScrollView>
-    );
+    )
   }
 }
 
@@ -1043,4 +1043,4 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 7,
   },
-});
+})

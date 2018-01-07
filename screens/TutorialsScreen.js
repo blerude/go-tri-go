@@ -36,7 +36,7 @@ export default class LinksScreen extends React.Component {
   static navigationOptions = {
     title: "How To's",
     color: 'white'
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -58,7 +58,7 @@ export default class LinksScreen extends React.Component {
   }
 
   componentDidMount() {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     database.ref('/tutorials/').once('value').then(snapshot => {
       // Load how to's into the state array
       this.setState({
@@ -250,7 +250,7 @@ export default class LinksScreen extends React.Component {
           </View>
         </View>
       </ScrollView>
-    );
+    )
   }
 }
 
@@ -360,4 +360,4 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     paddingBottom: 4
   },
-});
+})

@@ -10,7 +10,7 @@ import {
   View,
   Dimensions
 } from 'react-native';
-import Modal from 'react-native-modal'
+import Modal from 'react-native-modal';
 
 import firebase from '../firebase';
 var database = firebase.database();
@@ -25,7 +25,7 @@ export default class LinksScreen extends React.Component {
   static navigationOptions = {
     title: 'Journal',
     color: 'white'
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -48,7 +48,7 @@ export default class LinksScreen extends React.Component {
   }
 
   componentDidMount() {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     // Load the user's current day and journal entries
     database.ref('/users/' + user.uid).once('value').then(snapshot => {
       var week = Math.ceil(snapshot.val().day / 7)
@@ -73,14 +73,14 @@ export default class LinksScreen extends React.Component {
   //  updates its state, thereby re-rendering and updating the weekly
   //  affirmation if necessary
   readDayChanges() {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     database.ref('users/' + user.uid + '/day/').on('value', (snapshot) => {
       var week = Math.floor(snapshot.val() / 7)
       this.setState({
         day: snapshot.val(),
         quote: this.state.quotes[week]
       })
-    });
+    })
   }
 
   // Given an index that corresponds to the category of journal entry to search
@@ -113,7 +113,7 @@ export default class LinksScreen extends React.Component {
 
   // Saves the newly created journal entry
   save() {
-    var user = firebase.auth().currentUser;
+    var user = firebase.auth().currentUser
     var train;      // value of the 'training' entry
     var nutr;       // value of the 'nutrition' entry
     var race;       // value of the 'race day' entry
@@ -287,7 +287,7 @@ export default class LinksScreen extends React.Component {
 
         </Modal>
       </ScrollView>
-    );
+    )
   }
 }
 
@@ -514,4 +514,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   }
-});
+})

@@ -24,13 +24,13 @@ import Colors from '../constants/Colors';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const slogan = "Plan your work and work your plan!"
+const slogan = "Plan your work and work your plan!";
 
 
 export default class Login extends React.Component {
   static navigationOptions = {
     title: 'Login',
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -39,8 +39,8 @@ export default class Login extends React.Component {
       password: '',
     }
 
-    this.loginUser = this.loginUser.bind(this);
-    this.needToRegister = this.needToRegister.bind(this);
+    this.loginUser = this.loginUser.bind(this)
+    this.needToRegister = this.needToRegister.bind(this)
   }
 
   // Initiates the Firebase authentication process of logging a user in while
@@ -56,38 +56,38 @@ export default class Login extends React.Component {
       return firebase.auth()
       .signInWithEmailAndPassword(email, password)
       .then(user => {
-        nav.navigate('MainTabNavigator');
+        nav.navigate('MainTabNavigator')
       }).catch(function(error) {
         // Handle Errors here.
-        var errorMessage = error.message;
+        var errorMessage = error.message
         console.log('Error signing in: ' + errorMessage)
         alert('Error signing in: ' + errorMessage)
-      });
+      })
     })
     .catch(function(error) {
       // Handle Errors here.
-      var errorMessage = error.message;
+      var errorMessage = error.message
       console.log('Error setting up local persistence: ' + errorMessage)
-    });
+    })
   }
 
   // Initiates the Firebase method of sending a password reset email and alerts
   //  the user that an email has been sent to their registered email
   forgotPassword() {
-    var auth = firebase.auth();
-    var emailAddress = this.state.email;
+    var auth = firebase.auth()
+    var emailAddress = this.state.email
     auth.sendPasswordResetEmail(emailAddress).then(function() {
       console.log('Password reset email sent.')
       alert('Check your email to reset your password.')
     }).catch(function(error) {
       console.log('Error sending password reset email: ' + error.message)
       alert('Please enter a valid email address through which can reset your password.')
-    });
+    })
   }
 
   // Redirects to the Registration page
   needToRegister() {
-    this.props.navigation.navigate('Registration');
+    this.props.navigation.navigate('Registration')
   }
 
   render() {
@@ -137,7 +137,7 @@ export default class Login extends React.Component {
           </View>
         </View>
       </TouchableWithoutFeedback>
-    );
+    )
   }
 }
 
@@ -255,4 +255,4 @@ const styles = StyleSheet.create({
       {rotate: '-10deg'}
     ]
   }
-});
+})

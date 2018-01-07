@@ -32,7 +32,7 @@ const intro = "GO-TRI-GO is a comprehensive 12 week Sprint Triathlon training pr
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
     title: 'About',
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -40,8 +40,8 @@ export default class LinksScreen extends React.Component {
       activeSlide: 0  // which carousel slide is being viewed
     }
 
-    this._renderItem = this._renderItem.bind(this);
-    this._onScroll = this._onScroll.bind(this);
+    this._renderItem = this._renderItem.bind(this)
+    this._onScroll = this._onScroll.bind(this)
   }
 
   // Renders each slide of the carousel
@@ -51,7 +51,7 @@ export default class LinksScreen extends React.Component {
         <Text style={styles.slideText}>{item.text}</Text>
         <Text style={styles.slideAuthor}>{item.author}</Text>
       </View>
-    );
+    )
   }
 
   // Allows carousel to be scrolled through, changing the state to mirror
@@ -63,13 +63,13 @@ export default class LinksScreen extends React.Component {
   // Controls the appearance of the dots indicating which slide of the carousel
   //  is being viewed
   get pagination () {
-    const activeSlide = this.state.activeSlide;
+    const activeSlide = this.state.activeSlide
     return (
       <Pagination style={styles.pagination}
         dotsLength={testimonials.length}
         activeDotIndex={activeSlide}
       />
-    );
+    )
   }
 
   render() {
@@ -105,7 +105,7 @@ export default class LinksScreen extends React.Component {
           </View>
         </View>
       </ScrollView>
-    );
+    )
   }
 }
 
@@ -209,4 +209,4 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     backgroundColor: 'transparent'
   }
-});
+})

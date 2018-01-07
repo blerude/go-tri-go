@@ -33,24 +33,24 @@ const slogan = "Plan your work and work your plan!"
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
-  };
+  }
 
   constructor(props) {
     super(props)
 
-    this.goToRegistration = this.goToRegistration.bind(this);
-    this.goToLogin = this.goToLogin.bind(this);
-    this._renderItem = this._renderItem.bind(this);
+    this.goToRegistration = this.goToRegistration.bind(this)
+    this.goToLogin = this.goToLogin.bind(this)
+    this._renderItem = this._renderItem.bind(this)
   }
 
   // Redirect to registration screen
   goToRegistration(e) {
-    this.props.navigation.navigate('Registration');
+    this.props.navigation.navigate('Registration')
   }
 
   // Redirect to login screen
   goToLogin(e) {
-    this.props.navigation.navigate('Login');
+    this.props.navigation.navigate('Login')
   }
 
   // Renders each slide of the carousel
@@ -63,7 +63,7 @@ export default class HomeScreen extends React.Component {
         />
         <Text style={styles.slideText}>{item.text}</Text>
       </View>
-    );
+    )
   }
 
   render() {
@@ -79,7 +79,7 @@ export default class HomeScreen extends React.Component {
             style={styles.logo}
           />
         </View>
-        
+
         <View>
           <Text style={styles.titleText}>GO-TRI-GO</Text>
         </View>
@@ -102,7 +102,7 @@ export default class HomeScreen extends React.Component {
           </TouchableOpacity>
         </View>
       </View>
-    );
+    )
   }
 }
 
@@ -202,4 +202,4 @@ const styles = StyleSheet.create({
       {rotate: '-10deg'}
     ]
   }
-});
+})
