@@ -20,12 +20,6 @@ import Colors from '../constants/Colors';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-//STYLING NOTES:
-// if not completed in the past, indicate it somehow
-// change color of "todays workout" based on if its done or not
-// change the styling of future days to look better without all the words
-//if you click on previous workout, modal with all the info comes up
-
 
 export default class TrainingPlanScreen extends React.Component {
   static navigationOptions = {
@@ -35,29 +29,31 @@ export default class TrainingPlanScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      day: 0,
-      pastWorkouts: [],
-      todaysWorkout: {},
-      todaysChoice: {},
-      futureWorkouts: [],
-      modalVal: -1,
-      pastModalVisible: false,
-      futModalVisible: false,
-      temp: {},
-      tempChoice: {}
+      day: 0,                     // the day the user is on in the training plan
+      pastWorkouts: [],           // workouts before the current day
+      todaysWorkout: {},          // workout corresponding to the current day
+      todaysChoice: {},           // workout that the user selected today
+      futureWorkouts: [],         // workouts after the current day
+      modalVal: -1,               // indicates which modal is open
+      pastModalVisible: false,    // indicates if a completed workout modal is open
+      futModalVisible: false,     // indicates if a future workout modal is open
+      temp: {},                   // workout of the modal's day (not the current day)
+      tempChoice: {}              // workout choice of the modal's day
     }
 
     this.load = this.load.bind(this)
     this.readDayChanges = this.readDayChanges.bind(this)
     this.readWorkoutChanges = this.readWorkoutChanges.bind(this)
     this.openPastModal = this.openPastModal.bind(this)
-    this.openFutModal = this.openFutModal.bind(this)
     this.redirect = this.redirect.bind(this)
+    this.openFutModal = this.openFutModal.bind(this)
     this.getTodaysWorkout = this.getTodaysWorkout.bind(this)
     this.getWorkouts = this.getWorkouts.bind(this)
     this.getChoice = this.getChoice.bind(this)
     this.getOptions = this.getOptions.bind(this)
     this.getJournal = this.getJournal.bind(this)
+    this.renderWorkout = this.renderWorkout.bind(this)
+    this.switch = this.switch.bind(this)
   }
 
   componentDidMount() {
@@ -66,25 +62,36 @@ export default class TrainingPlanScreen extends React.Component {
     this.readWorkoutChanges()
   }
 
+  // Loads the state with necessary information about the user's progress
   load() {
     var user = firebase.auth().currentUser;
     var maxDays = 70
     var currDay;
+
+    // Retrieve the relevant data from the user
     database.ref('/users/' + user.uid).once('value').then(snapshot => {
       currDay = snapshot.val().day
-      this.setState({day: snapshot.val().day})
+      this.setState({
+        day: snapshot.val().day
+      })
+
       var workouts = snapshot.val().selectedWorkouts
       var chosen = {}
       var past = []
       var future = []
+      // If the user has selected workouts previously, store them in either the
+      //  past or future array based on its relation to the current day
       if (workouts) {
+        // Identify if user has already chosen a workout for the current day
         chosen = workouts[currDay] || {}
+        // Load past array
         for (var i = 1; i < currDay; i++) {
           var item = workouts[i]
           if (item && item.day) {
             past[item.day] = item
           }
         }
+        // Load future array
         for (var i = currDay + 1; i < 70; i++) {
           var item = workouts[i]
           if (item && item.day) {
@@ -99,6 +106,7 @@ export default class TrainingPlanScreen extends React.Component {
       })
     })
     .then(response => {
+      // Retrieve the entire workout for the current day
       database.ref('/workouts/' + currDay).once('value').then(snapshot => {
         this.setState({todaysWorkout: snapshot.val()})
       });
@@ -106,6 +114,8 @@ export default class TrainingPlanScreen extends React.Component {
     .then(response => {
       var past = this.state.pastWorkouts
       var future = this.state.futureWorkouts
+      // Check the workouts from the database and fill in all the gaps for the
+      //  days that the user has not chosen a workout for
       database.ref('/workouts/').once('value').then(snapshot => {
         var allWorkouts = snapshot.val();
         allWorkouts.forEach(item => {
@@ -123,6 +133,9 @@ export default class TrainingPlanScreen extends React.Component {
     })
   }
 
+  // Ensure that whenever the day of the user is changed, this component
+  //  updates its state, thereby re-rendering and updating the weekly
+  //  affirmation if necessary
   readDayChanges() {
     var user = firebase.auth().currentUser;
     firebase.database().ref('users/' + user.uid + '/day/').on('value', (snapshot) => {
@@ -130,6 +143,9 @@ export default class TrainingPlanScreen extends React.Component {
     });
   }
 
+  // Ensure that whenever the selected workouts of the user change, this component
+  //  updates its state, thereby re-rendering and updating the weekly
+  //  affirmation if necessary
   readWorkoutChanges() {
     var user = firebase.auth().currentUser;
     firebase.database().ref('users/' + user.uid + '/selectedWorkouts/').on('value', (snapshot) => {
@@ -137,8 +153,12 @@ export default class TrainingPlanScreen extends React.Component {
     });
   }
 
+  // When a completed workout is chosen, open the past workouts modal and load
+  //  the modal with the user's selected workout corresponding to the val
+  //  parameter, which gives a completed day in the training plan
   openPastModal(val) {
     var user = firebase.auth().currentUser;
+    // Retrieve the user's choice
     database.ref('/users/' + user.uid + '/selectedWorkouts/').once('value').then(snapshot => {
       var today = snapshot.val()[val]
       this.setState({
@@ -147,6 +167,7 @@ export default class TrainingPlanScreen extends React.Component {
         tempChoice: today
       })
     })
+    // Retrieve the entire workout for the day
     database.ref('/workouts/').once('value').then(snapshot => {
       var today = snapshot.val()[val]
       this.setState({
@@ -155,6 +176,15 @@ export default class TrainingPlanScreen extends React.Component {
     })
   }
 
+  // When today's workout is selected, redirect to the My Workout page
+  redirect() {
+    const { navigate } = this.props.navigation
+    navigate('MyWorkout')
+  }
+
+  // When a incomplete workout is chosen, open the future workouts modal and
+  //  load the modal with the workout corresponding to the val parameter, which
+  //  gives an incomplete day in the training plan
   openFutModal(val) {
     database.ref('/workouts/').once('value').then(snapshot => {
       var today = snapshot.val()[val]
@@ -167,13 +197,11 @@ export default class TrainingPlanScreen extends React.Component {
 
   }
 
-  redirect() {
-    const { navigate } = this.props.navigation
-    navigate('MyWorkout')
-  }
-
+  // Renders the workouts for all included in the list parameter; the second
+  //  parameter indicates whether the list holds past workouts or not
   getWorkouts(list, past) {
     var workoutList = list.map((workout, day) => {
+      // Identify the current week, day of the week, and completion status
       var weekday = workout.day % 7
       var weekdayPrint
       if (!weekday) {
@@ -184,20 +212,24 @@ export default class TrainingPlanScreen extends React.Component {
         weekdayPrint = weekday
       }
       var week = workout.day / 7
+      var complete = workout.completed
 
+      // Determine whether the day is a rest day or not
       if (!workout.swim && !workout.bike && !workout.run) {
-        var containerStyle = workout.completed ? styles.restDayWorkoutContainer : styles.futureRestDayWorkoutContainer
-        var textStyle = workout.completed ? styles.restDayWorkoutText : styles.futureRestDayWorkoutText
+        // If on a rest day, determine whether the rest day has been completed
+        //  or not and render the day's entry
+        var containerStyle = complete ? styles.restDayWorkoutContainer : styles.futureRestDayWorkoutContainer
+        var textStyle = complete ? styles.restDayWorkoutText : styles.futureRestDayWorkoutText
         return (
           <TouchableOpacity
             key={day}
             style={containerStyle}
-            onPress={workout.completed ? null : () => this.switch(workout.day)}>
+            onPress={complete ? null : () => this.switch(workout.day)}>
             <Text style={textStyle}>REST DAY</Text>
           </TouchableOpacity>
         )
       } else {
-        var complete = workout.completed
+        // Again, determine completion and render the entry accordingly
         var containerStyle = complete ? styles.completedWorkoutContainer : styles.workoutContainer
         var textStyle = complete ? styles.completedWorkoutDate : styles.workoutDate
         var iconName = Platform.OS === 'ios' ? `ios-create${'-outline'}` : 'md-create';
@@ -208,6 +240,10 @@ export default class TrainingPlanScreen extends React.Component {
               style={containerStyle}
               onPress={() => complete ? this.openPastModal(workout.day) : this.openFutModal(workout.day)}>
               <Text style={textStyle}>DAY {workout.day} ({weekdayPrint})</Text>
+              {/* If complete, render yellow entry with text indicating the
+                    difficulty level the user chose that day and an icon for
+                    whether a journal entry is attached; if not, render green
+                    entry with just the icons */}
               {complete ?
                 <View style={styles.workoutPlanContainer}>
                   {(workout.hasOwnProperty('swimDifficulty')) ?
@@ -276,8 +312,10 @@ export default class TrainingPlanScreen extends React.Component {
     return workoutList
   }
 
+  // Renders today's workout box
   getTodaysWorkout() {
-    var todaysWorkout
+    // Identify the current week and day of the week
+    var todaysWorkout;
     var weekday = this.state.day % 7
     var weekdayPrint
     if (!weekday) {
@@ -288,7 +326,10 @@ export default class TrainingPlanScreen extends React.Component {
       weekdayPrint = weekday
     }
     var week = this.state.day / 7
-    if (!this.state.todaysWorkout.run && !this.state.todaysWorkout.bike && !this.state.todaysWorkout.swim){
+
+    // Determine if the workout is a rest day or not
+    if (!this.state.todaysWorkout.run && !this.state.todaysWorkout.bike && !this.state.todaysWorkout.swim) {
+      // If a rest, return a rest entry
       todaysWorkout = (
         <TouchableOpacity
           style={styles.futureRestDayWorkoutContainer}
@@ -297,6 +338,7 @@ export default class TrainingPlanScreen extends React.Component {
         </TouchableOpacity>
       )
     } else {
+      // If not, render a usual workout entry
       var chosen = this.state.todaysChoice
       todaysWorkout = (
         <View>
@@ -306,6 +348,9 @@ export default class TrainingPlanScreen extends React.Component {
             onPress={() => this.redirect()}>
             <Text style={styles.workoutDate}>TODAY ({weekdayPrint})</Text>
             <View style={styles.workoutPlanContainer}>
+              {/* Render the correct icon for each workout type, paying
+                    attention to whether or not the user has selected a
+                    workout for today or not */}
               {(this.state.todaysWorkout.swim) ?
                 <View style={styles.eachWorkoutContainer}>
                   <Image
@@ -344,9 +389,17 @@ export default class TrainingPlanScreen extends React.Component {
     return todaysWorkout
   }
 
+  // For completed workouts, identify and return the user's workout choice; each
+  //  of the nine workouts (swim: beginner, swim: intermediate, etc.) has its
+  //  own index within the list array, and all are returned, with the user's
+  //  choice indicated by 'chosen' attribute
   getChoice(val) {
     var list = []
+
+    // These if statements determine which types of workouts are included in the
+    //  day
     if (this.state.temp.hasOwnProperty('swimWorkout')) {
+      // If the swim workout exists, add each level to the list
       list[0] = {
         title: 'SWIM: Beginner',
         workout: this.state.temp.swimWorkout[0],
@@ -362,6 +415,8 @@ export default class TrainingPlanScreen extends React.Component {
         workout: this.state.temp.swimWorkout[2],
         chosen: false
       }
+      // This clause modifies the list entry for the difficulty level that was
+      //  chosen
       if (this.state.tempChoice.swimDifficulty === "Beginner") {
         list[0]['chosen'] = true
       } else if (this.state.tempChoice.swimDifficulty === "Intermediate") {
@@ -370,6 +425,7 @@ export default class TrainingPlanScreen extends React.Component {
         list[2]['chosen'] = true
       }
     }
+    // The following two sections work the same as the one above
     if (this.state.temp.hasOwnProperty('bikeWorkout')) {
       list[3] = {
         title: 'BIKE: Beginner',
@@ -421,8 +477,13 @@ export default class TrainingPlanScreen extends React.Component {
     return list
   }
 
+  // For incomplete workouts, iterate through the workout and print out the
+  //  options
   getOptions(val) {
     var list = []
+
+    // These clauses identify which types of workouts are included in the day,
+    //  and push the three levels for each into the return list
     if (this.state.temp.hasOwnProperty('swimWorkout')) {
       list.push({
         title: 'SWIM: Beginner',
@@ -468,10 +529,13 @@ export default class TrainingPlanScreen extends React.Component {
     return list
   }
 
+  // If the completed workout has a journal entry, return an array with an
+  //  object for each category of entry
   getJournal() {
-    var journ = this.state.tempChoice.journal || []
+    var journal = this.state.tempChoice.journal || []
     var list = []
-    journ.forEach((entry, i) => {
+    // Break the journal entry up by entry type and push to the return array
+    journal.forEach((entry, i) => {
       var title
       if (i === 0) {
         title = 'Training:'
@@ -490,6 +554,28 @@ export default class TrainingPlanScreen extends React.Component {
     return list
   }
 
+  // Renders the text for each workout, alternating colors between lines
+  renderWorkout(text, i) {
+    // Alternate colors between bright blue and white
+    var style;
+    i % 2 ? style = styles.modalTextYellow : style = styles.modalText
+    // Some of the workouts contain arrays to more detailed
+    //  sets or workout components; this if statement
+    //  determines whether to print a string or dive into
+    //  a new level of the array
+    if (typeof(text) === 'string') {
+      return <Text key={i} style={style}>{text}</Text>
+    } else {
+      return (
+        text.map((text2, i2) => {
+          return <Text key={i2} style={style}>{text2}</Text>
+        })
+      )
+    }
+  }
+
+  // When a user opts to switch days, update the database with their new current
+  //  day
   switch(val) {
     var user = firebase.auth().currentUser;
     var updates = {}
@@ -500,13 +586,13 @@ export default class TrainingPlanScreen extends React.Component {
         futModalVisible: false,
         day: val
       })
+      // Redirect to the My Workout page
       const { navigate } = this.props.navigation
       navigate('MyWorkout')
     })
     .catch(error => {
       console.log('Error Updating: ' + error.message)
     })
-
   }
 
   render() {
@@ -521,7 +607,9 @@ export default class TrainingPlanScreen extends React.Component {
               style={styles.logo}
             />
           </View>
-          
+
+          {/* View for displaying the default screen, a scrollable display of
+                the entire workout plan from day 1 to the final day */}
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>Weekly Plan</Text>
           </View>
@@ -532,6 +620,7 @@ export default class TrainingPlanScreen extends React.Component {
           </View>
         </View>
 
+        {/* Modal for completed workouts */}
         <Modal
           isVisible={this.state.pastModalVisible}
           style={styles.yellowModalContainer}>
@@ -547,6 +636,8 @@ export default class TrainingPlanScreen extends React.Component {
             <View style={styles.modalTextContainer}>
               <Text style={styles.yellowModalTitle}>Day {this.state.modalVal}</Text>
               {this.getChoice(this.state.modalVal).map((item, j) => {
+                // Iterate through the workouts and render each, taking note of
+                //  whether it was selected by the user or not
                 if (item) {
                   var boxStyle = item.chosen ? styles.workoutBoxChosen : styles.workoutBox
                   var titleStyle = item.chosen ? styles.greenModalLabel : styles.labelChosen
@@ -556,23 +647,10 @@ export default class TrainingPlanScreen extends React.Component {
                       <Text style={titleStyle}>{title}</Text>
                       <View style={boxStyle}>
                         {item.workout.map((text, i) => {
-                          var style;
-                          if (i % 2 === 0) {
-                            style = styles.modalTextYellow
-                          } else {
-                            style = styles.modalText
-                          }
-                          if (typeof(text) === 'string') {
-                            return <Text key={i} style={style}>{text}</Text>
-                          } else {
-                            return (
-                              text.map((text2, i2) => {
-                                return <Text key={i2} style={style}>{text2}</Text>
-                              })
-                            )
-                          }
+                          return this.renderWorkout(text, i)
                         })}
                       </View>
+                      {/* Insert an extra line after each 'Advanced' workout */}
                       {item.title[item.title.length - 1] === 'd' ?
                       <Text></Text>
                       : null}
@@ -580,6 +658,7 @@ export default class TrainingPlanScreen extends React.Component {
                   )
                 }
               })}
+              {/* Print journal entry for the completed workout */}
               {this.getJournal().map((entry, i) => {
                 return (
                   <View key={i}>
@@ -592,6 +671,7 @@ export default class TrainingPlanScreen extends React.Component {
           </ScrollView>
         </Modal>
 
+        {/* Modal for incomplete workouts */}
         <Modal
           isVisible={this.state.futModalVisible}
           style={styles.greenModalContainer}>
@@ -607,28 +687,16 @@ export default class TrainingPlanScreen extends React.Component {
             <View style={styles.modalTextContainer}>
               <Text style={styles.greenModalTitle}>Day {this.state.modalVal}</Text>
               {this.getOptions(this.state.modalVal).map((item, j) => {
+                // Iterate through the workouts and render each
                 return (
                   <View key={j}>
                     <Text style={styles.greenModalLabel}>{item.title}</Text>
                     <View style={styles.workoutBox}>
                       {item.workout.map((text, i) => {
-                        var style;
-                        if (i % 2 === 0) {
-                          style = styles.modalTextYellow
-                        } else {
-                          style = styles.modalText
-                        }
-                        if (typeof(text) === 'string') {
-                          return <Text key={i} style={style}>{text}</Text>
-                        } else {
-                          return (
-                            text.map((text2, i2) => {
-                              return <Text key={i2} style={style}>{text2}</Text>
-                            })
-                          )
-                        }
+                        return this.renderWorkout(text, i)
                       })}
                     </View>
+                    {/* Insert an extra line after each 'Advanced' workout */}
                     {item.title[item.title.length - 1] === 'd' ?
                     <Text></Text>
                     : null}

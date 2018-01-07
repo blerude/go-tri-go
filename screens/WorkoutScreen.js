@@ -45,7 +45,7 @@ export default class WorkoutScreen extends React.Component {
       selectModalVisible: false,
       workoutModalVisible: false,
       congratsModalVisible: false,
-      day: 0,
+      day: 0,                         // the day the user is on in the plan
       dailyWorkout: [],
       chosenWorkout: [],
       swimHows: [],
@@ -160,6 +160,9 @@ export default class WorkoutScreen extends React.Component {
     })
   }
 
+  // Ensure that whenever the day of the user is changed, this component
+  //  updates its state, thereby re-rendering and updating the weekly
+  //  affirmation if necessary
   readDayChanges() {
     var user = firebase.auth().currentUser;
     firebase.database().ref('users/' + user.uid + '/day/').on('value', (snapshot) => {

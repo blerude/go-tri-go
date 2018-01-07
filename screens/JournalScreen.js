@@ -43,6 +43,7 @@ export default class LinksScreen extends React.Component {
 
     this.readDayChanges = this.readDayChanges.bind(this)
     this.findEntries = this.findEntries.bind(this)
+    this.renderEntry = this.renderEntry.bind(this)
     this.save = this.save.bind(this)
   }
 
@@ -69,7 +70,7 @@ export default class LinksScreen extends React.Component {
   }
 
   // Ensure that whenever the day of the user is changed, this component
-  //  updates the state, thereby re-rendering and updating the weekly
+  //  updates its state, thereby re-rendering and updating the weekly
   //  affirmation if necessary
   readDayChanges() {
     var user = firebase.auth().currentUser;
