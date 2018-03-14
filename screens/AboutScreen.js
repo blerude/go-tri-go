@@ -22,7 +22,8 @@ const testimonials = [
   {text: "I am an active but heavier female. The adaptability of the program helped me to build on each aspect of my baseline strengths and turn my perceived weaknesses into measurable training opportunities.", author: 'Lillian Morton'},
   {text: "I would have never successfully reached the finish line on race day without the GO-TRI-GO program. I would recommend this invaluable program without hesitation.", author: 'GO-TRI-GO user'},
   {text: "GO-TRI- GO was a great program and helped me achieve my goal. Without it I am certain I would not have been able to finish, or maybe even start, the race.", author: 'Cheryl Olson'},
-  {text: "This program helped me to tailor my training to my specific skill level in the various disciplines, which kept me motivated and engaged. I was able to build up my confidence in my weak areas!", author: 'Beginner Triathlete'}
+  {text: "This program helped me to tailor my training to my specific skill level in the various disciplines, which kept me motivated and engaged. I was able to build up my confidence in my weak areas!", author: 'Beginner Triathlete'},
+  {text: "The training plan really helped me progress towards my goal of completing my first triathlon. Come race day, I was confient and knew what to expect. I couldn't have done it without GO-TRI-GO!", author: 'Troy Hill'}
 ]
 
 const slogan = "Plan your work and work your plan!"
